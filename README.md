@@ -1,4 +1,4 @@
-# HokkienLLM
+# HokkienTranslation
 
 Major TODOs:
 
