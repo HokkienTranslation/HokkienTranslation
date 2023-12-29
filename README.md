@@ -1,16 +1,9 @@
 # HokkienTranslation
 
-Major TODOs:
+Now updated to a React Native app
 
-1. Add flash cards functionalities
-2. Add text to speech
-3. Add text to image
-4. Figure out how to deploy to a local running server
+To run, please ensure that you have `npm`
 
-# Guide to run the app locally
+Then, just ensure that you are in the directory of `HokkienTranslation`, then just call `npx expo start`
 
-1. Use Conda or any environment manager, and create a new environment
-2. `pip install Flask`
-3. `python app.py`
-
-And the app should run in localhost
+In the pop-up, press `w` for web version, you might need to install `react-native-web` and `react-dom` first before you can do this. 
