@@ -1,6 +1,6 @@
 const colors = {
-    onSurfaceVariant: '#49454F',
     surface: '#FEF7FF',
+    onSurfaceVariant: '#49454F',
     primaryContainer: '#EADDFF',
     onPrimaryContainer: '#21005D',
 }
