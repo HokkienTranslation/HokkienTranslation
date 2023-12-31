@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../styles/Colors"; // Ensure this path is correct
+import TextToImage from "./components/TextToImage";
 
 const ResultScreen = ({ route, navigation }) => {
   return (
@@ -239,11 +240,8 @@ const ResultScreen = ({ route, navigation }) => {
             paddingBottom: 10,
           }}
         >
-          <Ionicons
-            name="image-outline"
-            size={100}
-            color={colors.onPrimaryContainer}
-          />
+          {/* Placeholder prompt for input */}
+          {/* <TextToImage prompt={"Lion"} /> */}
         </View>
 
         <Text
