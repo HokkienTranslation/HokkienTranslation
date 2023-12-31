@@ -241,7 +241,7 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           {/* Placeholder prompt for input */}
-          {/* <TextToImage prompt={"Lion"} /> */}
+          <TextToImage prompt={"Lion"} />
         </View>
 
         <Text

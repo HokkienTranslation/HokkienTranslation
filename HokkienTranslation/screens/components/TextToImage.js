@@ -49,3 +49,24 @@ const TextToImage = ({ prompt }) => {
 };
 
 export default TextToImage;
+
+// const OpenAI = require("openai");
+
+// const openai = new OpenAI({
+//   apiKey: "",
+// });
+
+// openai.images
+//   .generate({
+//     model: "dall-e-2",
+//     prompt: "Lion",
+//     n: 1,
+//     size: "1024x1024",
+//   })
+//   .then((response) => {
+//     // console.log("Image URL:", response.data.data[0].url);
+//     console.log("Image URL:", response.data);
+//   })
+//   .catch((error) => {
+//     console.error("Error:", error);
+//   });
