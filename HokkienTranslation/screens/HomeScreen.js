@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-import colors from "../../styles/Colors";
+import colors from "../styles/Colors";
 
 export default function HomeScreen({ navigation }) {
   const [query, setQuery] = React.useState("");

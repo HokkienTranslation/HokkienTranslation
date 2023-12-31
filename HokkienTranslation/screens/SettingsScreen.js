@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../styles/Colors"; // Ensure this path is correct
+import colors from "../styles/Colors"; // Ensure this path is correct
 // Adjust the path as needed
 
 const SettingsScreen = ({ navigation }) => {

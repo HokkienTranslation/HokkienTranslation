@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../../styles/Colors"; // Ensure this path is correct
+import colors from "../styles/Colors"; // Ensure this path is correct
 
 const ResultScreen = ({ route, navigation }) => {
   return (
