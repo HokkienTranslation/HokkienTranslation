@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { View, Image, Text } from "react-native";
 
 const TextToImage = ({ prompt }) => {
-  const [imageUrl, setImageUrl] = useState(null);
-  const [error, setError] = useState(null);
+  const [imageUrl, setImageUrl] = useState();
+  const [error, setError] = useState();
 
   useEffect(() => {
     if (prompt) {

@@ -48,7 +48,7 @@ const ResultScreen = ({ route, navigation }) => {
           justifyContent: "left",
         }}
       >
-        <Text
+        {/* <Text
           style={{
             fontSize: 20,
             fontWeight: "bold",
@@ -56,7 +56,8 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           Query
-        </Text>
+        </Text> */}
+        {/* <HokkienTranslationTool query="Banana" /> */}
       </View>
       <View
         style={{
@@ -241,7 +242,7 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           {/* Placeholder prompt for input */}
-          <TextToImage prompt={"Lion"} />
+          {/* <TextToImage prompt={"Lion"} /> */}
         </View>
 
         <Text
