@@ -15,7 +15,6 @@
     "axios": "^1.6.3",
     "expo": "~49.0.15",
     "expo-status-bar": "~1.6.0",
-    "openai": "^4.24.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.72.6",
