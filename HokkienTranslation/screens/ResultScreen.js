@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../styles/Colors"; // Ensure this path is correct
+import colors from "../styles/Colors";
 import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import TextToImage from "./components/TextToImage";
 
 const ResultScreen = ({ route, navigation }) => {
+  const { query } = route.params;
+  const [imageGenerated, setImageGenerated] = useState("");
+
+  const handleTranslationComplete = (translation) => {
+    setImageGenerated(translation);
+  };
+
   return (
     <ScrollView
       style={{
@@ -49,7 +56,7 @@ const ResultScreen = ({ route, navigation }) => {
           justifyContent: "left",
         }}
       >
-        {/* <Text
+        <Text
           style={{
             fontSize: 20,
             fontWeight: "bold",
@@ -57,8 +64,7 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           Query
-        </Text> */}
-        {/* <HokkienTranslationTool query="Banana" /> */}
+        </Text>
       </View>
       <View
         style={{
@@ -154,7 +160,10 @@ const ResultScreen = ({ route, navigation }) => {
               color: colors.onSurfaceVariant,
             }}
           >
-            Translation Output
+            <HokkienTranslationTool
+              query={query}
+              onTranslationComplete={handleTranslationComplete}
+            />
           </Text>
         </View>
         <View
@@ -202,10 +211,7 @@ const ResultScreen = ({ route, navigation }) => {
             color: colors.onPrimaryContainer,
           }}
         >
-          This is the definition output. The quick brown fox jumps over the lazy
-          dog. The quick brown fox jumps over the lazy dog. This is the
-          definition output. The quick brown fox jumps over the lazy dog. The
-          quick brown fox jumps over the lazy dog.
+          This is the definition output.
         </Text>
       </View>
 
@@ -219,6 +225,7 @@ const ResultScreen = ({ route, navigation }) => {
           borderRadius: 10,
           paddingBottom: 20,
           paddingTop: 20,
+          marginBottom: 20,
         }}
       >
         <Text
@@ -235,7 +242,6 @@ const ResultScreen = ({ route, navigation }) => {
         <View
           style={{
             width: "100%",
-            height: "50%",
             justifyContent: "center",
             alignItems: "center",
             paddingTop: 10,
@@ -243,7 +249,7 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           {/* Placeholder prompt for input */}
-          {/* <TextToImage prompt={"Lion"} /> */}
+          <TextToImage prompt={imageGenerated} />
         </View>
 
         <Text

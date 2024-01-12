@@ -1,29 +1,46 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { Text } from "react-native";
+import colors from "../../styles/Colors";
+import axios from "axios";
 
-const HokkienTranslationTool = ({ query }) => {
-  const axios = require("axios");
-  const [translation, setTranslation] = useState();
+const HokkienTranslationTool = ({ query, onTranslationComplete }) => {
+  const [translation, setTranslation] = useState("");
   const apiUrl = "http://203.145.216.157:56238/generate";
-  const requestData = {
-    inputs: "[TRANS]\n${query}\n[/TRANS]\n[HAN]\n",
-    parameters: {
-      max_new_tokens: 128,
-      repetition_penalty: 1.1,
-    },
-  };
 
-  try {
-    const response = axios.post(apiUrl, requestData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    setTranslation(response.data);
-    console.log(response.data);
-  } catch (error) {
-    console.error("Error:", error);
-  }
+  useEffect(() => {
+    const fetchTranslation = async () => {
+      try {
+        const requestData = {
+          inputs: `[TRANS]\n${query}\n[/TRANS]\n[HAN]\n`,
+          parameters: {
+            max_new_tokens: 128,
+            repetition_penalty: 1.1,
+          },
+        };
+
+        const response = await axios.post(apiUrl, requestData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        // Accessing response
+        if (response.data && response.data.generated_text) {
+          const translationText = response.data.generated_text.split("\n")[0];
+          setTranslation(translationText);
+          onTranslationComplete(translationText);
+          // console.log(response.data.generated_text.split("\n")[0]);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setTranslation("Error in translation.");
+      }
+    };
+
+    if (query) {
+      fetchTranslation();
+    }
+  }, [query, onTranslationComplete]);
 
   return (
     <Text

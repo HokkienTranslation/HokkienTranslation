@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { View, Image, Text } from "react-native";
+import axios from "axios";
 
 const TextToImage = ({ prompt }) => {
-  const axios = require("axios");
   const [imageUrl, setImageUrl] = useState();
   const [error, setError] = useState();
   const apiUrl = "https://535f-203-145-219-124.ngrok-free.app/generateImage";
   const requestData = {
-    prompt: "Cute cat on the bed.", //option types: string or list of strings.
+    prompt: "banana", //option types: string or list of strings.
     prompt_style: "photography", //options: "anime", "portraits", "landscape", "sci-fi", "photography", "video_game", None for default.
     negative_prompt: "", //can change to your negative prompt here.
-    negative_prompt_style: None, //options: "comic", "basic", "natural_human", None for default.
+    negative_prompt_style: null, //options: "comic", "basic", "natural_human", None for default.
     n_steps: 40, //generating steps
     high_noise_frac: 0.8, //generating parameters
-    base64_string: True, //please set True for api call, False is for testing.
+    base64_string: true, //please set True for api call, False is for testing.
   };
 
   const headers = {
@@ -25,8 +25,10 @@ const TextToImage = ({ prompt }) => {
       axios
         .post(apiUrl, requestData, { headers })
         .then((response) => {
+          console.log("API Response:", response);
           const imgBase64 = response.data.img_base64_list[0];
           setImageUrl(`data:image/jpeg;base64,${imgBase64}`);
+          console.log(imageUrl);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -34,10 +36,6 @@ const TextToImage = ({ prompt }) => {
         });
     }
   }, [prompt]);
-
-  if (error) {
-    return <Text>Error: {error.message}</Text>;
-  }
 
   if (!imageUrl) {
     return <Text>Loading...</Text>;
@@ -48,10 +46,12 @@ const TextToImage = ({ prompt }) => {
       {imageUrl && (
         <Image
           source={{ uri: imageUrl }}
-          style={{ width: "100%", height: "100%" }}
+          style={{ width: 300, height: 300 }} // Adjust the size as needed
+          resizeMode="contain" // This ensures the aspect ratio is maintained
         />
       )}
-      {error && <Text>Error loading image.</Text>}
+      {error && <Text>Error loading image: {error.message}</Text>}
+      {!imageUrl && !error && <Text>Loading...</Text>}
     </View>
   );
 };
