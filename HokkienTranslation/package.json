@@ -2,6 +2,7 @@
   "name": "hokkientranslation",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
+  "type": "module",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -12,6 +13,7 @@
   "dependencies": {
     "@expo/webpack-config": "^19.0.0",
     "@react-native-firebase/app": "^18.7.3",
+    "@react-native-firebase/auth": "^18.7.3",
     "@react-native-firebase/database": "^18.7.3",
     "@react-native-firebase/firestore": "^18.7.3",
     "@react-navigation/native": "^6.1.9",
