@@ -1,0 +1,17 @@
+// ExcelReader.js
+import fs from "fs";
+import XLSX from "xlsx";
+
+const readExcelFile = () => {
+  const filePath = "../../data/example.csv";
+  const fileContents = fs.readFileSync(filePath, "utf8");
+  const workbook = XLSX.read(fileContents, { type: "string" });
+  const sheetName = workbook.SheetNames[0];
+  const sheet = workbook.Sheets[sheetName];
+  const jsonData = XLSX.utils.sheet_to_json(sheet);
+  // console.log(jsonData[0]);
+  return jsonData;
+};
+// readExcelFile();
+
+export default readExcelFile;

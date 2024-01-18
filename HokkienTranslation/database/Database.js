@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
@@ -15,12 +14,23 @@ const db = getFirestore(app);
 
 const collectionName = "translation";
 
-export async function addTranslation(eng, hok) {
-  // Note that setDoc overwrites the document if it already exists
-  await setDoc(doc(db, collectionName, eng), {
-    hokkien: hok,
+export async function addTranslation(data) {
+  const docRef = doc(collection(db, collectionName));
+  await setDoc(docRef, {
+    englishInput: "",
+    chineseInput: "",
+    hokkienTranslation: data.word,
+    definitions: data.definition,
+    sentence_id: "",
   });
 }
+
+// export async function addTranslation(eng, hok) {
+//   // Note that setDoc overwrites the document if it already exists
+//   await setDoc(doc(db, collectionName, eng), {
+//     hokkien: hok,
+//   });
+// }
 
 export async function getTranslation() {
   // Dumps all the documents in the collection
