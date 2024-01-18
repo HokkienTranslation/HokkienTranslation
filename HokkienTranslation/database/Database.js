@@ -31,14 +31,6 @@ export async function addTranslation(data) {
 //   });
 // }
 
-export async function getTranslation() {
-  // Dumps all the documents in the collection
-  const querySnapshot = await getDocs(collection(db, collectionName));
-  querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data()}`);
-  });
-}
-
 export async function addSentence(data) {
   const collectionName = "sentence";
   const docRef = doc(collection(db, collectionName));
@@ -46,5 +38,13 @@ export async function addSentence(data) {
     translation_list: [],
     sentences: [],
     image_url: "",
+  });
+}
+
+export async function getData(collectionName) {
+  // Dumps all the documents in the collection
+  const querySnapshot = await getDocs(collection(db, collectionName));
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${doc.data()}`);
   });
 }
