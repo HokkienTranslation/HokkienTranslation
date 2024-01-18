@@ -12,9 +12,8 @@ import firebase from "./Firebase.js";
 const app = firebase;
 const db = getFirestore(app);
 
-const collectionName = "translation";
-
 export async function addTranslation(data) {
+  const collectionName = "translation";
   const docRef = doc(collection(db, collectionName));
   await setDoc(docRef, {
     englishInput: "",
@@ -36,6 +35,16 @@ export async function getTranslation() {
   // Dumps all the documents in the collection
   const querySnapshot = await getDocs(collection(db, collectionName));
   querySnapshot.forEach((doc) => {
-    console.log(`${doc.id} => ${doc.data().hokkien}`);
+    console.log(`${doc.id} => ${doc.data()}`);
+  });
+}
+
+export async function addSentence(data) {
+  const collectionName = "sentence";
+  const docRef = doc(collection(db, collectionName));
+  await setDoc(docRef, {
+    translation_list: [],
+    sentences: [],
+    image_url: "",
   });
 }
