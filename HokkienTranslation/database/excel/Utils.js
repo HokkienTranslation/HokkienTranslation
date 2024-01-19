@@ -18,5 +18,4 @@ async function storeDataInDatabase() {
     console.log("Translation already exists in the database.");
   }
 }
-
 storeDataInDatabase();
