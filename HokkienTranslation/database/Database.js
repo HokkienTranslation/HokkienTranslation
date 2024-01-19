@@ -34,6 +34,9 @@ export async function addTranslation(data) {
 export async function addSentence(data) {
   const collectionName = "sentence";
   const docRef = doc(collection(db, collectionName));
+  const engSentence = data.English_sentence;
+  const hokSentence = data.Sentence;
+  const imagePath = path.join("../../data/total_img_125", data.Gpt4_image_path);
   await setDoc(docRef, {
     translation_list: [],
     sentences: [],
