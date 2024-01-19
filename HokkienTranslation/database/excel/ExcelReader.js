@@ -13,5 +13,4 @@ const readExcelFile = () => {
   return jsonData;
 };
 // readExcelFile();
-
-export default readExcelFile;
+export { readExcelFile };
