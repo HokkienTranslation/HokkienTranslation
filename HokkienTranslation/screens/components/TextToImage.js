@@ -7,7 +7,7 @@ const TextToImage = ({ prompt }) => {
   const [error, setError] = useState();
   const apiUrl = "https://535f-203-145-219-124.ngrok-free.app/generateImage";
   const requestData = {
-    prompt: "banana", //option types: string or list of strings.
+    prompt: prompt, //option types: string or list of strings.
     prompt_style: "photography", //options: "anime", "portraits", "landscape", "sci-fi", "photography", "video_game", None for default.
     negative_prompt: "", //can change to your negative prompt here.
     negative_prompt_style: null, //options: "comic", "basic", "natural_human", None for default.

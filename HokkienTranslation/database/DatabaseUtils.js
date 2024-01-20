@@ -6,6 +6,10 @@ import {
   where,
 } from "firebase/firestore";
 import firebase from "./Firebase.js";
+import {
+  determineLanguage,
+  HokkienTranslationTool,
+} from "../screens/components/HokkienTranslationTool.js";
 
 const app = firebase;
 const db = getFirestore(app);
@@ -39,5 +43,23 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
     throw error;
   }
 }
+
+// Return englishInput, chineseInput, and hokkienTranslation
+// export async function translateToThree(query) {
+//   const inputLanguage = useMemo(() => determineLanguage(query), [query]);
+//   const inputStoreLanguage = inputLanguage === "ZH" ? "EN" : "ZH";
+//   const englishInput = "";
+//   const chineseInput = "";
+
+//   if (inputLanguage === "ZH") {
+//     englishInput = inputStoreLanguage;
+//     chineseInput = inputLanguage;
+//   } else if (inputLanguage === "EN") {
+//     englishInput = inputLanguage;
+//     chineseInput = inputStoreLanguage;
+//   }
+
+//   return englishInput, chineseInput, HokkienTranslationTool(query, "HAN");
+// }
 
 // checkIfTranslationExists("Thank you", "谢谢");

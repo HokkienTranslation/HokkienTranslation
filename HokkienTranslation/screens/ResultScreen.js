@@ -8,11 +8,6 @@ import TextToSpeech from "./components/TextToSpeech";
 
 const ResultScreen = ({ route, navigation }) => {
   const { query } = route.params;
-  const [imageGenerated, setImageGenerated] = useState("");
-
-  const handleTranslationComplete = (translation) => {
-    setImageGenerated(translation);
-  };
 
   return (
     <ScrollView
@@ -161,10 +156,7 @@ const ResultScreen = ({ route, navigation }) => {
               color: colors.onSurfaceVariant,
             }}
           >
-            <HokkienTranslationTool
-              query={query}
-              onTranslationComplete={handleTranslationComplete}
-            />
+            <HokkienTranslationTool query={query} />
           </Text>
         </View>
         <View
@@ -250,7 +242,7 @@ const ResultScreen = ({ route, navigation }) => {
           }}
         >
           {/* Placeholder prompt for input */}
-          <TextToImage prompt={imageGenerated} />
+          <TextToImage prompt={query} />
         </View>
 
         {/* Audio */}

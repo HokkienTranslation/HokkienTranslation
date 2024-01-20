@@ -33,7 +33,7 @@ export async function addTranslation(data) {
   });
 }
 
-// Add Senetence data to Firebase
+// Add Sentence data to Firebase
 export async function addSentence(data) {
   const collectionName = "sentence";
   const docRef = doc(collection(db, collectionName));
