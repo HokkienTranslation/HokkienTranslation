@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import colors from "../styles/Colors";
 import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import TextToImage from "./components/TextToImage";
+import TextToSpeech from "./components/TextToSpeech";
 
 const ResultScreen = ({ route, navigation }) => {
   const { query } = route.params;
@@ -250,6 +251,20 @@ const ResultScreen = ({ route, navigation }) => {
         >
           {/* Placeholder prompt for input */}
           <TextToImage prompt={imageGenerated} />
+        </View>
+
+        {/* Audio */}
+        <View
+          style={{
+            width: "100%",
+            justifyContent: "center",
+            alignItems: "center",
+            paddingTop: 10,
+            paddingBottom: 10,
+          }}
+        >
+          {/* Placeholder prompt for input */}
+          <TextToSpeech prompt="king-tsio" />
         </View>
 
         <Text
