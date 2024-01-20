@@ -45,21 +45,21 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
 }
 
 // Return englishInput, chineseInput, and hokkienTranslation
-// export async function translateToThree(query) {
-//   const inputLanguage = useMemo(() => determineLanguage(query), [query]);
-//   const inputStoreLanguage = inputLanguage === "ZH" ? "EN" : "ZH";
-//   const englishInput = "";
-//   const chineseInput = "";
+export async function translateToThree(query) {
+  const inputLanguage = useMemo(() => determineLanguage(query), [query]);
+  const inputStoreLanguage = inputLanguage === "ZH" ? "EN" : "ZH";
+  const englishInput = "";
+  const chineseInput = "";
 
-//   if (inputLanguage === "ZH") {
-//     englishInput = inputStoreLanguage;
-//     chineseInput = inputLanguage;
-//   } else if (inputLanguage === "EN") {
-//     englishInput = inputLanguage;
-//     chineseInput = inputStoreLanguage;
-//   }
+  if (inputLanguage === "ZH") {
+    englishInput = inputStoreLanguage;
+    chineseInput = inputLanguage;
+  } else if (inputLanguage === "EN") {
+    englishInput = inputLanguage;
+    chineseInput = inputStoreLanguage;
+  }
 
-//   return englishInput, chineseInput, HokkienTranslationTool(query, "HAN");
-// }
+  return englishInput, chineseInput, HokkienTranslationTool(query, "HAN");
+}
 
-// checkIfTranslationExists("Thank you", "谢谢");
+checkIfTranslationExists("Thank you", "谢谢");
