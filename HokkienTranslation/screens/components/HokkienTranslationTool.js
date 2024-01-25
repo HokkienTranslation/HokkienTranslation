@@ -13,9 +13,12 @@ const determineLanguage = (query) => {
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
 // default "HAN" (Hokkien)
-const HokkienTranslationTool = ({ query, outputLanguage = "HAN" }) => {
+const HokkienTranslationTool = ({
+  query,
+  translationResult,
+  outputLanguage = "HAN",
+}) => {
   const [translation, setTranslation] = useState("");
-  const [error, setError] = useState("");
   useEffect(() => {
     const fetchTranslation = async () => {
       if (!query) return;
@@ -36,7 +39,9 @@ const HokkienTranslationTool = ({ query, outputLanguage = "HAN" }) => {
         });
 
         if (response.data && response.data.generated_text) {
-          const translationText = response.data.generated_text.split("\n")[0];
+          const translationText = response.data.generated_text
+            .split("\n")[0]
+            .trimStart();
           if (outputLanguage === "EN") {
             translationText = translationText.substring(
               0,
@@ -44,6 +49,9 @@ const HokkienTranslationTool = ({ query, outputLanguage = "HAN" }) => {
             );
           }
           setTranslation(translationText);
+          if (translationResult) {
+            translationResult(translation);
+          }
         }
       } catch (error) {
         console.error("Error:", error);
@@ -51,7 +59,7 @@ const HokkienTranslationTool = ({ query, outputLanguage = "HAN" }) => {
       }
     };
     fetchTranslation();
-  }, [query, translation]);
+  }, [query, translation, translationResult]);
 
   return <Text style={styles.text}>{translation}</Text>;
 };
