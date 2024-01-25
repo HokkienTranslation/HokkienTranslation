@@ -6,7 +6,7 @@ import axios from "axios";
 const apiUrl = "https://e402-203-145-219-124.ngrok-free.app/translateHAN2KIP";
 const apiKey = "iisriisra305";
 
-const HokkienHanziRomanizer = ({ hokkien }) => {
+const HokkienHanziRomanizer = ({ hokkien, romanizedResult }) => {
   const [romanized, setRomanized] = useState("");
   const [error, setError] = useState("");
 
@@ -29,6 +29,9 @@ const HokkienHanziRomanizer = ({ hokkien }) => {
         if (response.data && response.data.result) {
           const romanizedText = response.data.result;
           setRomanized(romanizedText);
+          if (romanizedResult) {
+            romanizedResult(romanized);
+          }
         }
       } catch (error) {
         console.error("Error:", error);
@@ -37,7 +40,7 @@ const HokkienHanziRomanizer = ({ hokkien }) => {
     };
 
     fetchRomanized();
-  }, [hokkien, romanized]);
+  }, [hokkien, romanized, romanizedResult]);
 
   return <Text style={styles.text}>{romanized || error}</Text>;
 };

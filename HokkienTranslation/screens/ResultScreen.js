@@ -10,9 +10,14 @@ import TextToSpeech from "./components/TextToSpeech";
 const ResultScreen = ({ route, navigation }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
+  const [hokkienRomanized, setHokkienRomanized] = useState("");
 
   const handleHokkienTranslation = (translation) => {
     setHokkienTranslation(translation);
+  };
+
+  const handleHokkienRomanized = (romanized) => {
+    setHokkienRomanized(romanized);
   };
 
   return (
@@ -174,7 +179,22 @@ const ResultScreen = ({ route, navigation }) => {
               color: colors.onSurfaceVariant,
             }}
           >
-            <HokkienHanziRomanizer hokkien={hokkienTranslation} />
+            <HokkienHanziRomanizer
+              hokkien={hokkienTranslation}
+              romanizedResult={handleHokkienRomanized}
+            />
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+              fontWeight: "light",
+              color: colors.onSurfaceVariant,
+            }}
+          >
+            <TextToSpeech
+              prompt={hokkienRomanized}
+              onAudioLoad={handleAudioLoad}
+            />
           </Text>
         </View>
 
@@ -265,7 +285,7 @@ const ResultScreen = ({ route, navigation }) => {
         </View>
 
         {/* Audio */}
-        <View
+        {/* <View
           style={{
             width: "100%",
             justifyContent: "center",
@@ -274,9 +294,8 @@ const ResultScreen = ({ route, navigation }) => {
             paddingBottom: 10,
           }}
         >
-          {/* Placeholder prompt for input */}
-          <TextToSpeech prompt="king-tsio" />
-        </View>
+          <TextToSpeech prompt={hokkienRomanized} />
+        </View> */}
 
         <Text
           style={{
