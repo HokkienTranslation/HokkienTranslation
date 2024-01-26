@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 
 const TextToSpeech = ({ prompt }) => {
   const [error, setError] = useState();
+  const [numericTones, setNumericTones] = useState("");
   const NUMERIC_TONES_API = "http://tts001.iptcloud.net:8804/display2";
   const TEXT_TO_SPEECH_API = "http://tts001.iptcloud.net:8804/synthesize_TLPA";
 
@@ -32,6 +33,7 @@ const TextToSpeech = ({ prompt }) => {
         .then((response) => response.text())
         .then((data) => {
           numeric_tones = data;
+          setNumericTones(numeric_tones);
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -70,7 +72,11 @@ const TextToSpeech = ({ prompt }) => {
     return <Text>Error: {error.message}</Text>;
   }
 
-  return <View></View>;
+  return (
+    <View>
+      <Text>{numericTones}</Text>
+    </View>
+  );
 };
 
 export default TextToSpeech;
