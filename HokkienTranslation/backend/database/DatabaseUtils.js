@@ -6,8 +6,8 @@ import {
   where,
 } from "firebase/firestore";
 import firebase from "./Firebase.js";
-import { determineLanguage } from "../backend/BackendUtils.js";
-import { fetchTranslation } from "../backend/API/HokkienTranslationToolService.js";
+import { determineLanguage } from "../BackendUtils.js";
+import { fetchTranslation } from "../API/HokkienTranslationToolService.js";
 
 const app = firebase;
 const db = getFirestore(app);
@@ -44,20 +44,22 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
 
 // Return englishInput, chineseInput, and hokkienTranslation
 export async function translateToThree(query) {
-  const inputLanguage = useMemo(() => determineLanguage(query), [query]);
-  const inputStoreLanguage = inputLanguage === "ZH" ? "EN" : "ZH";
-  const englishInput = "";
-  const chineseInput = "";
+  const inputLanguage = determineLanguage(query);
+  let englishInput = "";
+  let chineseInput = "";
 
   if (inputLanguage === "ZH") {
-    englishInput = inputStoreLanguage;
-    chineseInput = inputLanguage;
+    englishInput = await fetchTranslation(query, "EN");
+    chineseInput = await fetchTranslation(query, "ZH");
   } else if (inputLanguage === "EN") {
-    englishInput = inputLanguage;
-    chineseInput = inputStoreLanguage;
+    englishInput = query;
+    chineseInput = await fetchTranslation(query, "ZH");
   }
 
-  return englishInput, chineseInput, fetchTranslation(query, "HAN");
+  const hokkienTranslation = await fetchTranslation(query, "HAN");
+  // console.log(englishInput, chineseInput, hokkienTranslation);
+
+  return { englishInput, chineseInput, hokkienTranslation };
 }
 
-checkIfTranslationExists("Thank you", "谢谢");
+// checkIfTranslationExists("Thank you", "谢谢");

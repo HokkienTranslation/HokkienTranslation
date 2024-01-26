@@ -5,6 +5,7 @@ import {
   setDoc,
   addDoc,
   getDocs,
+  updateDoc,
 } from "firebase/firestore";
 import {
   getStorage,
@@ -25,32 +26,32 @@ export async function addTranslation(data) {
   const collectionName = "translation";
   const docRef = doc(collection(db, collectionName));
   await setDoc(docRef, {
-    englishInput: "",
-    chineseInput: "",
-    hokkienTranslation: data.word,
-    definitions: data.definition,
-    sentence_id: "",
+    englishInput: data.englishInput,
+    chineseInput: data.chineseInput,
+    hokkienTranslation: data.hokkienTranslation,
+    definitions: data.definitions,
+    sentence: "",
   });
+  return docRef.id;
 }
 
 // Add Sentence data to Firebase
 export async function addSentence(data) {
   const collectionName = "sentence";
   const docRef = doc(collection(db, collectionName));
-  const engSentence = data.English_sentence;
-  const hokSentence = data.Sentence;
-  const imageUrl = uploadImage(data.imagePath);
 
   await setDoc(docRef, {
-    translation_list: [],
-    sentences: [],
-    image_url: imageUrl,
+    translationList: [],
+    sentences: data.sentences,
+    imageURL: data.imageURL,
   });
+  return docRef.id;
 }
 
 // Upload image to google storage
+// TODO: Do not upload Image with same Image Path for Excel Reading
 export async function uploadImage(filename) {
-  const localPath = `../data/total_img_125/${filename}`;
+  const localPath = `../../../data/total_img_125/${filename}`;
   console.log(localPath);
 
   try {
@@ -67,6 +68,25 @@ export async function uploadImage(filename) {
     console.error("Error uploading file:", error);
     throw error;
   }
+}
+
+// Update Translation with Sentence ID
+export async function updateTranslationWithSentence(translationId, sentenceId) {
+  const translationRef = doc(db, "translation", translationId);
+  await updateDoc(translationRef, {
+    sentence: sentenceId,
+  });
+}
+
+// Update Sentence with Translation ID
+export async function updateSentenceWithTranslation(
+  sentenceId,
+  translationList
+) {
+  const sentenceRef = doc(db, "sentence", sentenceId);
+  await updateDoc(sentenceRef, {
+    translationList: translationList,
+  });
 }
 
 // export async function getData(collectionName) {

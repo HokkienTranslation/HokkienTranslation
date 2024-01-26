@@ -3,7 +3,7 @@ import fs from "fs";
 import XLSX from "xlsx";
 
 const readExcelFile = () => {
-  const filePath = "../../data/example_gpt4.csv";
+  const filePath = "../../../data/example_gpt4.csv";
   const fileContents = fs.readFileSync(filePath, "utf8");
   const workbook = XLSX.read(fileContents, { type: "string" });
   const sheetName = workbook.SheetNames[0];
