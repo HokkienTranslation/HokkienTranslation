@@ -191,10 +191,7 @@ const ResultScreen = ({ route, navigation }) => {
               color: colors.onSurfaceVariant,
             }}
           >
-            <TextToSpeech
-              prompt={hokkienRomanized}
-              onAudioLoad={handleAudioLoad}
-            />
+            {/* <TextToSpeech prompt={hokkienRomanized} /> */}
           </Text>
         </View>
 
