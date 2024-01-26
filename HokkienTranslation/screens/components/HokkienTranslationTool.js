@@ -1,15 +1,7 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { Text, StyleSheet } from "react-native";
 import colors from "../../styles/Colors";
-import axios from "axios";
-
-const apiUrl = "http://203.145.216.157:56238/generate";
-
-// Return input language type ZH (Chinese) / EN (English)
-const determineLanguage = (query) => {
-  const chineseCharPattern = /[\u3400-\u9FBF]/;
-  return chineseCharPattern.test(query) ? "ZH" : "EN";
-};
+import { fetchTranslation } from "../../backend/API/HokkienTranslationToolService";
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
 // default "HAN" (Hokkien)
@@ -19,47 +11,19 @@ const HokkienTranslationTool = ({
   outputLanguage = "HAN",
 }) => {
   const [translation, setTranslation] = useState("");
+
   useEffect(() => {
-    const fetchTranslation = async () => {
-      if (!query) return;
-
-      try {
-        const requestData = {
-          inputs: `[TRANS]\n${query}\n[/TRANS]\n${outputLanguage}}\n`,
-          parameters: {
-            max_new_tokens: 128,
-            repetition_penalty: 1.1,
-          },
-        };
-
-        const response = await axios.post(apiUrl, requestData, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-
-        if (response.data && response.data.generated_text) {
-          const translationText = response.data.generated_text
-            .split("\n")[0]
-            .trimStart();
-          if (outputLanguage === "EN") {
-            translationText = translationText.substring(
-              0,
-              translationText.length - 1
-            );
-          }
-          setTranslation(translationText);
-          if (translationResult) {
-            translationResult(translation);
-          }
+    const getTranslation = async () => {
+      const translationText = await fetchTranslation(query, outputLanguage);
+      if (translationText) {
+        setTranslation(translationText);
+        if (translationResult) {
+          translationResult(translationText);
         }
-      } catch (error) {
-        console.error("Error:", error);
-        setError("Error in translation.");
       }
     };
-    fetchTranslation();
-  }, [query, translation, translationResult]);
+    getTranslation();
+  }, [query, outputLanguage, translationResult]);
 
   return <Text style={styles.text}>{translation}</Text>;
 };
@@ -73,4 +37,3 @@ const styles = StyleSheet.create({
 });
 
 export default HokkienTranslationTool;
-export { determineLanguage };

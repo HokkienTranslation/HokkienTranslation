@@ -6,10 +6,8 @@ import {
   where,
 } from "firebase/firestore";
 import firebase from "./Firebase.js";
-import {
-  determineLanguage,
-  HokkienTranslationTool,
-} from "../screens/components/HokkienTranslationTool.js";
+import { determineLanguage } from "../backend/BackendUtils.js";
+import { fetchTranslation } from "../backend/API/HokkienTranslationToolService.js";
 
 const app = firebase;
 const db = getFirestore(app);
@@ -59,7 +57,7 @@ export async function translateToThree(query) {
     chineseInput = inputStoreLanguage;
   }
 
-  return englishInput, chineseInput, HokkienTranslationTool(query, "HAN");
+  return englishInput, chineseInput, fetchTranslation(query, "HAN");
 }
 
 checkIfTranslationExists("Thank you", "谢谢");
