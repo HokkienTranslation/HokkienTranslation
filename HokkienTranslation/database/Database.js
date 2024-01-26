@@ -20,7 +20,6 @@ const app = firebase;
 const db = getFirestore(app);
 const storage = getStorage(app);
 
-// Add Translation data to Firebase
 export async function addTranslation(data) {
   const collectionName = "translation";
   const docRef = doc(collection(db, collectionName));
@@ -33,7 +32,6 @@ export async function addTranslation(data) {
   });
 }
 
-// Add Sentence data to Firebase
 export async function addSentence(data) {
   const collectionName = "sentence";
   const docRef = doc(collection(db, collectionName));
@@ -48,7 +46,6 @@ export async function addSentence(data) {
   });
 }
 
-// Upload image to google storage
 export async function uploadImage(filename) {
   const localPath = `../data/total_img_125/${filename}`;
   console.log(localPath);
@@ -69,14 +66,12 @@ export async function uploadImage(filename) {
   }
 }
 
-// export async function getData(collectionName) {
-//   // Dumps all the documents in the collection
-//   const querySnapshot = await getDocs(collection(db, collectionName));
-//   querySnapshot.forEach((doc) => {
-//     console.log(`${doc.id} => ${doc.data()}`);
-//   });
-// }
+export async function getData(collectionName) {
+  // Dumps all the documents in the collection
+  const querySnapshot = await getDocs(collection(db, collectionName));
+  querySnapshot.forEach((doc) => {
+    console.log(`${doc.id} => ${doc.data()}`);
+  });
+}
 
-// uploadImage("ID_1.png");
-
-// getData("sentence");
+uploadImage("ID_1.png");

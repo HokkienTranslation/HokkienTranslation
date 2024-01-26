@@ -1,7 +1,6 @@
 import { initializeApp } from "firebase/app";
 import "firebase/database";
 
-// Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDXUQYIqoMXKCvuC_Htz4hykUnaZI_tFPM",
   authDomain: "hokkientranslationapp.firebaseapp.com",

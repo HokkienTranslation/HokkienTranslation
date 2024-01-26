@@ -1,31 +1,17 @@
-import React, { useState, useEffect, useMemo } from "react";
-import { Text, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { Text } from "react-native";
 import colors from "../../styles/Colors";
 import axios from "axios";
 
-const apiUrl = "http://203.145.216.157:56238/generate";
-
-// Return input language type ZH (Chinese) / EN (English)
-const determineLanguage = (query) => {
-  const chineseCharPattern = /[\u3400-\u9FBF]/;
-  return chineseCharPattern.test(query) ? "ZH" : "EN";
-};
-
-// outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
-// default "HAN" (Hokkien)
-const HokkienTranslationTool = ({
-  query,
-  translationResult,
-  outputLanguage = "HAN",
-}) => {
+const HokkienTranslationTool = ({ query, onTranslationComplete }) => {
   const [translation, setTranslation] = useState("");
+  const apiUrl = "http://203.145.216.157:56238/generate";
+
   useEffect(() => {
     const fetchTranslation = async () => {
-      if (!query) return;
-
       try {
         const requestData = {
-          inputs: `[TRANS]\n${query}\n[/TRANS]\n${outputLanguage}}\n`,
+          inputs: `[TRANS]\n${query}\n[/TRANS]\n[HAN]\n`,
           parameters: {
             max_new_tokens: 128,
             repetition_penalty: 1.1,
@@ -38,6 +24,7 @@ const HokkienTranslationTool = ({
           },
         });
 
+        // Accessing response
         if (response.data && response.data.generated_text) {
           const translationText = response.data.generated_text
             .split("\n")[0]
@@ -49,28 +36,29 @@ const HokkienTranslationTool = ({
             );
           }
           setTranslation(translationText);
-          if (translationResult) {
-            translationResult(translation);
-          }
+          onTranslationComplete(translationText);
         }
       } catch (error) {
         console.error("Error:", error);
-        setError("Error in translation.");
+        setTranslation("Error in translation.");
       }
     };
+
     fetchTranslation();
-  }, [query, translation, translationResult]);
+  }, [query, onTranslationComplete]);
 
-  return <Text style={styles.text}>{translation}</Text>;
+  return (
+    <Text
+      style={{
+        fontSize: 20,
+        fontWeight: "bold",
+        color: colors.onSurfaceVariant,
+      }}
+    >
+      {translation}
+    </Text>
+  );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.onSurfaceVariant,
-  },
-});
 
 export default HokkienTranslationTool;
 export { determineLanguage };
