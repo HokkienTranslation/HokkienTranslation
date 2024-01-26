@@ -14,7 +14,7 @@ import {
 const app = firebase;
 const db = getFirestore(app);
 const collectionName = "translation";
-
+// Function to check if user input already in database
 export async function checkIfTranslationExists(englishInput, chineseInput) {
   const translationsRef = collection(db, collectionName);
   const q = query(
@@ -23,9 +23,27 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
     where("chineseInput", "==", chineseInput)
   );
 
-  const querySnapshot = await getDocs(q);
+  try {
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+      // Assuming pair of englishInput and chineseInput is unique, only one document matching the query.
+      const translationDocument = querySnapshot.docs[0];
+      console.log("Translation Found:");
+      console.log(translationDocument.data());
+      return translationDocument.data();
+    } else {
+      // No data in the database
+      console.log(
+        `No Translation with englishInput: ${englishInput} and chineseInput:${chineseInput}`
+      );
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting Translation: ", error);
+    throw error;
+  }
+}
 
-<<<<<<< HEAD
 // Return englishInput, chineseInput, and hokkienTranslation
 export async function translateToThree(query) {
   const inputLanguage = useMemo(() => determineLanguage(query), [query]);
@@ -45,7 +63,3 @@ export async function translateToThree(query) {
 }
 
 checkIfTranslationExists("Thank you", "谢谢");
-=======
-  return !querySnapshot.empty;
-}
->>>>>>> parent of 578f933 (Updated HokkienTranslationTool to translate ENG->HAN & HAN->ENG)

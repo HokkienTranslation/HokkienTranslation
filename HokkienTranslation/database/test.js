@@ -1,4 +1,4 @@
-import { addTranslation, getTranslation } from "./Database.js";
+import { addTranslation, getTranslation } from "./Database";
 
 async function testAdd() {
   await addTranslation("Thank you", "感谢");
