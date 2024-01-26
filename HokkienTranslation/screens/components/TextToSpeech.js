@@ -8,8 +8,6 @@ const TextToSpeech = ({ prompt }) => {
 
   const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Proxy server URL
 
-  prompt = "king-tsio";
-
   let params = new URLSearchParams({
     text0: prompt,
   });
