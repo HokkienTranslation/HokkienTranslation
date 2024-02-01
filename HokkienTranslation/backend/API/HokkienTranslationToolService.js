@@ -22,15 +22,8 @@ const fetchTranslation = async (query, outputLanguage) => {
     });
 
     if (response.data && response.data.generated_text) {
-      let translationText = response.data.generated_text
-        .split("\n")[0]
-        .trimStart();
-      if (outputLanguage === "EN") {
-        // Remove non-alphabet characters
-        const regex = /\w+/;
-        const match = translationText.match(regex);
-        translationText = match[0];
-      }
+      let translationText = response.data.generated_text.split("\n")[0].trim();
+      // console.log(translationText);
       return translationText;
     }
   } catch (error) {

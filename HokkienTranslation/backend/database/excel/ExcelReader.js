@@ -9,8 +9,7 @@ const readExcelFile = () => {
   const sheetName = workbook.SheetNames[0];
   const sheet = workbook.Sheets[sheetName];
   const jsonData = XLSX.utils.sheet_to_json(sheet);
-  // console.log(jsonData[121]);
+  // console.log(jsonData[3]);
   return jsonData;
 };
-// readExcelFile();
 export { readExcelFile };

@@ -28,8 +28,8 @@ export async function formatedData(row) {
     threeTranslations.englishInput,
     threeTranslations.chineseInput
   );
-  console.log("-------------------------------");
-  console.log(exist);
+  // console.log("-------------------------------");
+  // console.log(exist);
 
   if (!exist) {
     console.log("Adding new Translation and Sentence");
@@ -79,9 +79,9 @@ export async function formatedData(row) {
 // Function to store excel data in the database if not present already
 export async function storeExcelDataInDatabase() {
   const data = readExcelFile();
-  await formatedData(data);
-  // for (let row of data) {
-  //   await formatedData(row);
-  // }
+  // formatedData(data);
+  for (let row of data) {
+    await formatedData(row);
+  }
 }
 storeExcelDataInDatabase();

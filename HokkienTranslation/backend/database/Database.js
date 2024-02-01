@@ -52,13 +52,13 @@ export async function addSentence(data) {
 // TODO: Do not upload Image with same Image Path for Excel Reading
 export async function uploadImage(filename) {
   const localPath = `../../../data/total_img_125/${filename}`;
-  console.log(localPath);
+  // console.log(localPath);
 
   try {
     const buffer = await readFile(localPath);
     const imageRef = storageRef(storage, `images/${filename}`);
     const snapshot = await uploadBytes(imageRef, buffer);
-    console.log("Uploaded a blob or file!");
+    // console.log("Uploaded a blob or file!");
 
     const imageUrl = await getDownloadURL(snapshot.ref);
     console.log(imageUrl);

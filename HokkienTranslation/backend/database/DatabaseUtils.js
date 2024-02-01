@@ -50,12 +50,10 @@ export async function translateToThree(query) {
 
   if (inputLanguage === "ZH") {
     englishInput = await fetchTranslation(query, "EN");
-    chineseInput = await fetchTranslation(query, "ZH");
   } else if (inputLanguage === "EN") {
     englishInput = query;
-    chineseInput = await fetchTranslation(query, "ZH");
   }
-
+  chineseInput = await fetchTranslation(query, "ZH");
   const hokkienTranslation = await fetchTranslation(query, "HAN");
   // console.log(englishInput, chineseInput, hokkienTranslation);
 
