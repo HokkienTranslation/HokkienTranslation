@@ -26,10 +26,10 @@ const fetchTranslation = async (query, outputLanguage) => {
         .split("\n")[0]
         .trimStart();
       if (outputLanguage === "EN") {
-        translationText = translationText.substring(
-          0,
-          translationText.length - 1
-        );
+        // Remove non-alphabet characters
+        const regex = /\w+/;
+        const match = translationText.match(regex);
+        translationText = match[0];
       }
       return translationText;
     }

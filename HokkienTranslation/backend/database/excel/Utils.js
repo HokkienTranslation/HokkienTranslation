@@ -36,7 +36,7 @@ export async function formatedData(row) {
     let TranslationData = {
       englishInput: threeTranslations.englishInput,
       chineseInput: threeTranslations.chineseInput,
-      hokkienTranslation: threeTranslations.hokkienTranslation,
+      hokkienTranslation: word,
       definitions: definitions,
       sentence: "",
     };
@@ -79,8 +79,9 @@ export async function formatedData(row) {
 // Function to store excel data in the database if not present already
 export async function storeExcelDataInDatabase() {
   const data = readExcelFile();
-  for (let row of data) {
-    await formatedData(row);
-  }
+  await formatedData(data);
+  // for (let row of data) {
+  //   await formatedData(row);
+  // }
 }
 storeExcelDataInDatabase();
