@@ -59,5 +59,3 @@ export async function translateToThree(query) {
 
   return { englishInput, chineseInput, hokkienTranslation };
 }
-
-// checkIfTranslationExists("Thank you", "谢谢");

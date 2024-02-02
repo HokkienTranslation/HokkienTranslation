@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 
 const TextToSpeech = ({ prompt }) => {
   const [error, setError] = useState();
   const [numericTones, setNumericTones] = useState("");
+  const [audioUrl, setAudioUrl] = useState("");
   const NUMERIC_TONES_API = "http://tts001.iptcloud.net:8804/display2";
   const TEXT_TO_SPEECH_API = "http://tts001.iptcloud.net:8804/synthesize_TLPA";
 
@@ -54,8 +55,8 @@ const TextToSpeech = ({ prompt }) => {
         .then((data) => {
           const blob = new Blob([data], { type: "audio/wav" });
           const url = window.URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          audio.play();
+          setAudioUrl(url);
+          // audio.play();
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -68,6 +69,13 @@ const TextToSpeech = ({ prompt }) => {
     }
   }, [prompt]);
 
+  const playAudio = () => {
+    if (audioUrl) {
+      const audio = new Audio(audioUrl);
+      audio.play();
+    }
+  };
+
   if (error) {
     return <Text>Error: {error.message}</Text>;
   }
@@ -75,6 +83,7 @@ const TextToSpeech = ({ prompt }) => {
   return (
     <View>
       <Text>{numericTones}</Text>
+      <Button title="Play Audio" onPress={playAudio} disabled={!audioUrl} />
     </View>
   );
 };
