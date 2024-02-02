@@ -13,6 +13,7 @@ import {
   uploadBytes,
   getDownloadURL,
 } from "firebase/storage";
+import { checkIfTranslationExists } from "./DatabaseUtils.js";
 import { readFile } from "fs/promises";
 import firebase from "./Firebase.js";
 

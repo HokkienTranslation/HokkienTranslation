@@ -1,6 +1,8 @@
 import {
   getFirestore,
   collection,
+  doc,
+  getDoc,
   getDocs,
   query,
   where,
@@ -11,9 +13,9 @@ import { fetchTranslation } from "../API/HokkienTranslationToolService.js";
 
 const app = firebase;
 const db = getFirestore(app);
-const collectionName = "translation";
 // Function to check if user input already in database
 export async function checkIfTranslationExists(englishInput, chineseInput) {
+  const collectionName = "translation";
   const translationsRef = collection(db, collectionName);
   const q = query(
     translationsRef,
@@ -42,6 +44,28 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
   }
 }
 
+// Function to check if a sentence exists by its ID
+export async function checkIfSentenceExists(sentenceID) {
+  const collectionName = "sentence";
+  const sentenceRef = doc(db, collectionName, sentenceID);
+
+  try {
+    const docSnap = await getDoc(sentenceRef);
+    if (docSnap.exists()) {
+      console.log("Sentence Found:");
+      console.log(docSnap.data());
+      return docSnap.data();
+    } else {
+      // No sentence found with the given ID
+      console.log(`No Sentence with ID: ${sentenceID}`);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error getting Sentence: ", error);
+    throw error;
+  }
+}
+
 // Return englishInput, chineseInput, and hokkienTranslation
 export async function translateToThree(query) {
   const inputLanguage = determineLanguage(query);
@@ -59,3 +83,5 @@ export async function translateToThree(query) {
 
   return { englishInput, chineseInput, hokkienTranslation };
 }
+
+checkIfSentenceExists("02EE9vZ2wZ5Ewl7faQXT");
