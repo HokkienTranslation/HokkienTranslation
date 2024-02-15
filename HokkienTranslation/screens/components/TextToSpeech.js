@@ -5,32 +5,19 @@ const TextToSpeech = ({ prompt }) => {
   const [error, setError] = useState();
   const [numericTones, setNumericTones] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
-  const NUMERIC_TONES_API = "http://tts001.iptcloud.net:8804/display2";
-  const TEXT_TO_SPEECH_API = "http://tts001.iptcloud.net:8804/synthesize_TLPA";
-
-  const proxyUrl = "https://cors-anywhere.herokuapp.com/"; // Proxy server URL
+  const NUMERIC_TONES_API = "https://tw-tts.z12.tw/display2";
+  const TEXT_TO_SPEECH_API = "https://tw-tts.z12.tw/synthesize_TLPA";
 
   let params = new URLSearchParams({
     text0: prompt,
   });
 
-  const options = {
-    method: "GET",
-    mode: "cors", // Set the mode to 'cors'
-    headers: {
-      // Add the necessary headers
-      "Access-Control-Allow-Origin": "*",
-      "Content-Type": "application/json",
-    },
-  };
-
   useEffect(() => {
-    async function fetchWav(prompt) {
+    async function fetchWav() {
       let url = `${NUMERIC_TONES_API}?${params.toString()}`;
-      let proxiedUrl = proxyUrl + url; // Append the proxy server URL to the original URL
 
       let numeric_tones;
-      await fetch(proxiedUrl, options)
+      await fetch(url)
         .then((response) => response.text())
         .then((data) => {
           numeric_tones = data;
@@ -48,9 +35,8 @@ const TextToSpeech = ({ prompt }) => {
       });
 
       url = `${TEXT_TO_SPEECH_API}?${params.toString()}`;
-      proxiedUrl = proxyUrl + url; // Append the proxy server URL to the original URL
 
-      await fetch(proxiedUrl, options)
+      await fetch(url)
         .then((response) => response.blob())
         .then((data) => {
           const blob = new Blob([data], { type: "audio/wav" });
@@ -65,7 +51,7 @@ const TextToSpeech = ({ prompt }) => {
     }
 
     if (prompt) {
-      fetchWav(prompt);
+      fetchWav();
     }
   }, [prompt]);
 
