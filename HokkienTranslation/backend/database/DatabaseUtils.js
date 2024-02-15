@@ -28,8 +28,8 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
     if (!querySnapshot.empty) {
       // Assuming pair of englishInput and chineseInput is unique, only one document matching the query.
       const translationDocument = querySnapshot.docs[0];
-      console.log("Translation Found:");
-      console.log(translationDocument.data());
+      // console.log("Translation Found:");
+      // console.log(translationDocument.data());
       return translationDocument.data();
     } else {
       // No data in the database
@@ -52,8 +52,8 @@ export async function checkIfSentenceExists(sentenceID) {
   try {
     const docSnap = await getDoc(sentenceRef);
     if (docSnap.exists()) {
-      console.log("Sentence Found:");
-      console.log(docSnap.data());
+      // console.log("Sentence Found:");
+      // console.log(docSnap.data());
       return docSnap.data();
     } else {
       // No sentence found with the given ID
@@ -83,5 +83,3 @@ export async function translateToThree(query) {
 
   return { englishInput, chineseInput, hokkienTranslation };
 }
-
-checkIfSentenceExists("02EE9vZ2wZ5Ewl7faQXT");

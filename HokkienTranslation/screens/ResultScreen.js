@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../styles/Colors";
@@ -6,19 +6,39 @@ import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import HokkienHanziRomanizer from "./components/HokkienHanziRomanizer";
 import TextToImage from "./components/TextToImage";
 import TextToSpeech from "./components/TextToSpeech";
+import { CheckDatabase } from "../backend/CheckDatabase";
 
 const ResultScreen = ({ route, navigation }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
-  const [hokkienRomanized, setHokkienRomanized] = useState("");
+  const [hokkienRomanized1, setHokkienRomanized1] = useState("");
+  const [hokkienRomanized2, setHokkienRomanized2] = useState("");
+  const [dataFromDatabase, setDataFromDatabase] = useState(null);
 
   const handleHokkienTranslation = (translation) => {
     setHokkienTranslation(translation);
   };
 
-  const handleHokkienRomanized = (romanized) => {
-    setHokkienRomanized(romanized);
+  const handleHokkienRomanized1 = (romanized) => {
+    setHokkienRomanized1(romanized);
   };
+
+  const handleHokkienRomanized2 = (romanized) => {
+    setHokkienRomanized2(romanized);
+  };
+
+  useEffect(() => {
+    const checkData = async () => {
+      // Attempt to fetch data from database
+      const { translation, sentence } = await CheckDatabase(query);
+      if (translation && sentence) {
+        setDataFromDatabase({ translation, sentence });
+      }
+    };
+    checkData();
+  }, [query]);
+
+  console.log(dataFromDatabase);
 
   return (
     <ScrollView
@@ -28,22 +48,18 @@ const ResultScreen = ({ route, navigation }) => {
         backgroundColor: colors.surface,
       }}
       contentContainerStyle={{
-        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        rowGap: 10,
-        columnGap: 10,
+        padding: 10,
       }}
     >
       {/* Header */}
       <View
         style={{
           width: "80%",
-          height: "5%",
           flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
           justifyContent: "flex-start",
+          alignItems: "center",
           marginTop: 80,
         }}
       >
@@ -144,209 +160,310 @@ const ResultScreen = ({ route, navigation }) => {
         </Text>
       </View>
 
-      <View
-        style={{
-          width: "80%",
-          height: "10%",
-          justifyContent: "center",
-          alignItems: "center",
-          flexDirection: "row",
-        }}
-      >
+      {/* Translation && Sentence & Romanizer & TTS */}
+      {dataFromDatabase ? (
         <View
           style={{
             width: "80%",
-            height: "100%",
-            justifyContent: "center",
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "light",
-              color: colors.onSurfaceVariant,
-            }}
-          >
-            <HokkienTranslationTool
-              query={query}
-              translationResult={handleHokkienTranslation}
-            />
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "light",
-              color: colors.onSurfaceVariant,
-            }}
-          >
-            <HokkienHanziRomanizer
-              hokkien={hokkienTranslation}
-              romanizedResult={handleHokkienRomanized}
-            />
-          </Text>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "light",
-              color: colors.onSurfaceVariant,
-            }}
-          >
-            <TextToSpeech prompt={hokkienRomanized} />
-          </Text>
-        </View>
-
-        <View
-          style={{
-            width: "20%",
-            justifyContent: "center",
-            alignItems: "flex-end",
-          }}
-        >
-          <Ionicons
-            name="copy-outline"
-            size={20}
-            color={colors.onPrimaryContainer}
-            // TODO: Implement onPress
-            // onPress=
-          />
-        </View>
-      </View>
-
-      {/* Definition */}
-      <View
-        style={{
-          width: "80%",
-          flexDirection: "column",
-          backgroundColor: colors.primaryContainer,
-          padding: 10,
-          borderRadius: 10,
-          paddingBottom: 20,
-          paddingTop: 20,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          Definition
-        </Text>
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "light",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          This is the definition output.
-        </Text>
-      </View>
-
-      {/* Context */}
-      <View
-        style={{
-          width: "80%",
-          flexDirection: "column",
-          backgroundColor: colors.primaryContainer,
-          padding: 10,
-          borderRadius: 10,
-          paddingBottom: 20,
-          paddingTop: 20,
-          marginBottom: 20,
-        }}
-      >
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          Context
-        </Text>
-
-        {/* Image */}
-        <View
-          style={{
-            width: "100%",
             justifyContent: "center",
             alignItems: "center",
-            paddingTop: 10,
-            paddingBottom: 10,
+            flexDirection: "row",
+            marginVertical: 20,
           }}
         >
-          {/* Placeholder prompt for input */}
-          <TextToImage prompt={query} />
+          <View
+            style={{
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 24,
+                fontWeight: "600",
+                color: colors.onSurfaceVariant,
+                marginBottom: 8,
+              }}
+            >
+              {dataFromDatabase.translation.hokkienTranslation}
+            </Text>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                color: colors.onSurfaceVariant,
+                marginBottom: 10,
+              }}
+            >
+              <HokkienHanziRomanizer
+                hokkien={dataFromDatabase.translation.hokkienTranslation}
+                romanizedResult={handleHokkienRomanized1}
+              />
+            </Text>
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "light",
+                color: colors.onSurfaceVariant,
+              }}
+            >
+              <TextToSpeech prompt={hokkienRomanized1} />
+            </Text>
+            <View
+              style={{
+                width: "80%",
+                flexDirection: "column",
+                backgroundColor: colors.primaryContainer,
+                padding: 10,
+                borderRadius: 10,
+                paddingBottom: 20,
+                paddingTop: 20,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: colors.onPrimaryContainer,
+                }}
+              >
+                Definition
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                }}
+              >
+                {dataFromDatabase.translation.definitions}
+              </Text>
+            </View>
+            <View
+              style={{
+                width: "80%",
+                flexDirection: "column",
+                backgroundColor: colors.primaryContainer,
+                padding: 10,
+                borderRadius: 10,
+                paddingBottom: 20,
+                paddingTop: 20,
+                marginBottom: 20,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: colors.onPrimaryContainer,
+                }}
+              >
+                Context
+              </Text>
+
+              {/* Image */}
+              <View
+                style={{
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingTop: 10,
+                  paddingBottom: 10,
+                  marginBottom: 20,
+                }}
+              >
+                <Image
+                  source={{ uri: dataFromDatabase.sentence.imageURL }}
+                  style={{ width: 300, height: 300 }}
+                  resizeMode="contain"
+                />
+              </View>
+
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "bold",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                Example Sentence
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                {dataFromDatabase.sentence.sentences[0]}
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                <HokkienHanziRomanizer
+                  hokkien={dataFromDatabase.sentence.sentences[0]}
+                  romanizedResult={handleHokkienRomanized2}
+                />
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                <TextToSpeech prompt={hokkienRomanized2} />
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                {dataFromDatabase.sentence.sentences[1]}
+              </Text>
+
+              <Text
+                style={{
+                  paddingTop: 10,
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onPrimaryContainer,
+                  marginBottom: 10,
+                }}
+              >
+                {dataFromDatabase.sentence.sentences[2]}
+              </Text>
+            </View>
+          </View>
         </View>
+      ) : (
+        <View>
+          <View
+            style={{
+              width: "80%",
+              height: "10%",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+              marginVertical: "auto",
+            }}
+          >
+            <View
+              style={{
+                width: "80%",
+                height: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onSurfaceVariant,
+                }}
+              >
+                <HokkienTranslationTool
+                  query={query}
+                  translationResult={handleHokkienTranslation}
+                />
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onSurfaceVariant,
+                }}
+              >
+                <HokkienHanziRomanizer
+                  hokkien={hokkienTranslation}
+                  romanizedResult={handleHokkienRomanized1}
+                />
+              </Text>
+              <Text
+                style={{
+                  fontSize: 20,
+                  fontWeight: "light",
+                  color: colors.onSurfaceVariant,
+                }}
+              >
+                <TextToSpeech prompt={hokkienRomanized1} />
+              </Text>
+            </View>
+          </View>
+          <View
+            style={{
+              width: "80%",
+              flexDirection: "column",
+              backgroundColor: colors.primaryContainer,
+              padding: 10,
+              borderRadius: 10,
+              paddingBottom: 20,
+              paddingTop: 20,
+              marginBottom: 20,
+            }}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontWeight: "bold",
+                color: colors.onPrimaryContainer,
+              }}
+            >
+              Context
+            </Text>
 
-        {/* Audio */}
-        {/* <View
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            paddingTop: 10,
-            paddingBottom: 10,
-          }}
-        >
-          <TextToSpeech prompt={hokkienRomanized} />
-        </View> */}
+            {/* Image */}
+            <View
+              style={{
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                paddingTop: 10,
+                paddingBottom: 10,
+              }}
+            >
+              <TextToImage prompt={query} />
+            </View>
+          </View>
+        </View>
+      )}
 
-        <Text
-          style={{
-            fontSize: 20,
-            fontWeight: "bold",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          Example Sentence
-        </Text>
-
-        <Text
-          style={{
-            paddingTop: 10,
-            fontSize: 20,
-            fontWeight: "light",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          Test Chinese Sentence.
-        </Text>
-
-        <Text
-          style={{
-            paddingTop: 10,
-            fontSize: 20,
-            fontWeight: "light",
-            color: colors.onPrimaryContainer,
-          }}
-        >
-          Test Pronounciation.
-        </Text>
-
-        {/* Divider */}
-        {/* <View
-          style={{
-            paddingTop: 20,
-            paddingBottom: 20,
-            width: '100%',
-            borderBottomColor: colors.onSurfaceVariant,
-            borderBottomWidth: StyleSheet.hairlineWidth,
-          }}
-        /> */}
-
-        {/* TODO: Fix the layout on the English sentence */}
-        {/* <Text style={{
-          paddingTop: 10,
-          fontSize: 20,
-          fontWeight: 'light',
-          color: colors.onPrimaryContainer,
-        }}>
-          Test English Sentence.
-        </Text> */}
-      </View>
+      {/* <View
+        style={{
+          width: "20%",
+          justifyContent: "center",
+          alignItems: "flex-end",
+        }}
+      >
+        <Ionicons
+          name="copy-outline"
+          size={20}
+          color={colors.onPrimaryContainer}
+          // TODO: Implement onPress
+          // onPress=
+        />
+      </View> */}
     </ScrollView>
   );
 };
