@@ -1,5 +1,6 @@
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
+import { NativeBaseProvider } from "native-base";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
@@ -10,25 +11,27 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route }) => ({
-          headerShown: route.name !== "Landing",
-          headerStyle: {
-            backgroundColor: "#fbf2fc",
-          },
-          headerTitleStyle: {
-            fontSize: 25,
-          },
-          headerTitleAlign: "center",
-        })}
-      >
-        <Stack.Screen name="Landing" component={LandingPage} />
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Result" component={ResultScreen} />
-        <Stack.Screen name="Settings" component={SettingsScreen} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <NativeBaseProvider>
+      <NavigationContainer>
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={({ route }) => ({
+            headerShown: route.name !== "Landing",
+            headerStyle: {
+              backgroundColor: "#fbf2fc",
+            },
+            headerTitleStyle: {
+              fontSize: 25,
+            },
+            headerTitleAlign: "center",
+          })}
+        >
+          <Stack.Screen name="Landing" component={LandingPage} />
+          <Stack.Screen name="Home" component={HomeScreen} />
+          <Stack.Screen name="Result" component={ResultScreen} />
+          <Stack.Screen name="Settings" component={SettingsScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </NativeBaseProvider>
   );
 }

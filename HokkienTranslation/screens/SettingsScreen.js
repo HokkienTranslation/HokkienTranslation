@@ -20,29 +20,6 @@ const SettingsScreen = ({ navigation }) => {
         paddingLeft: 20,
       }}
     >
-      {/* Header */}
-      <View
-        style={{
-          width: "100%",
-          height: "5%",
-          flexDirection: "row",
-          justifyContent: "space-between",
-          alignItems: "center",
-          justifyContent: "flex-start",
-          paddingLeft: 20,
-          paddingRight: 20,
-          marginTop: 20,
-          marginLeft: 20,
-        }}
-      >
-        <Ionicons
-          name="arrow-back-outline"
-          size={40}
-          color={colors.onPrimaryContainer}
-          onPress={() => navigation.goBack()}
-        />
-      </View>
-
       {/* Appearance section */}
       <View
         style={{

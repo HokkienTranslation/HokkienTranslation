@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button } from "react-native";
+import { View, Text, Button, StyleSheet } from "react-native";
+import colors from "../../styles/Colors";
 import { TONE_API_URL, SPEECH_API_URL } from "@env";
 
 const TextToSpeech = ({ prompt }) => {
@@ -69,10 +70,18 @@ const TextToSpeech = ({ prompt }) => {
 
   return (
     <View>
-      <Text>{numericTones}</Text>
+      <Text style={styles.text}>{numericTones}</Text>
       <Button title="Play Audio" onPress={playAudio} disabled={!audioUrl} />
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: colors.onSurfaceVariant,
+  },
+});
 
 export default TextToSpeech;
