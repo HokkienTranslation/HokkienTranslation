@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text } from "native-base";
 import colors from "../../styles/Colors";
 import { fetchTranslation } from "../../backend/API/HokkienTranslationToolService";
 
@@ -25,15 +25,11 @@ const HokkienTranslationTool = ({
     getTranslation();
   }, [query, outputLanguage, translationResult]);
 
-  return <Text style={styles.text}>{translation}</Text>;
+  return (
+    <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
+      {translation}
+    </Text>
+  );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.onSurfaceVariant,
-  },
-});
 
 export default HokkienTranslationTool;

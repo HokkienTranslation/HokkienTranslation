@@ -6,6 +6,7 @@ import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
+import colors from "./styles/Colors";
 
 const Stack = createNativeStackNavigator();
 

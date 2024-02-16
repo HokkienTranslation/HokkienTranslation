@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Text, StyleSheet } from "react-native";
+import { Text } from "native-base";
 import colors from "../../styles/Colors";
 import { fetchRomanizer } from "../../backend/API/HokkienHanziRomanizerService";
 
@@ -25,15 +25,11 @@ const HokkienHanziRomanizer = ({ hokkien, romanizedResult }) => {
     getRomanized();
   }, [hokkien, romanizedResult]);
 
-  return <Text style={styles.text}>{romanized || error}</Text>;
+  return (
+    <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
+      {romanized || error}
+    </Text>
+  );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.onSurfaceVariant,
-  },
-});
 
 export default HokkienHanziRomanizer;

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Image, Text } from "react-native";
+import { Image, Box, Text } from "native-base";
 import { generateImage } from "../../backend/API/TextToImageService";
 
 const TextToImage = ({ prompt }) => {
@@ -27,16 +27,12 @@ const TextToImage = ({ prompt }) => {
   }
 
   return (
-    <View>
+    <Box alignItems="center" justifyContent="center">
       {imageUrl && (
-        <Image
-          source={{ uri: imageUrl }}
-          style={{ width: 300, height: 300 }}
-          resizeMode="contain"
-        />
+        <Image source={{ uri: imageUrl }} size="2xl" resizeMode="contain" />
       )}
       {error && <Text>Error loading image: {error.message}</Text>}
-    </View>
+    </Box>
   );
 };
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { HStack, Text, IconButton } from "native-base";
+import { Feather } from "@expo/vector-icons";
 import colors from "../../styles/Colors";
 import { TONE_API_URL, SPEECH_API_URL } from "@env";
 
@@ -44,7 +45,6 @@ const TextToSpeech = ({ prompt }) => {
           const blob = new Blob([data], { type: "audio/wav" });
           const url = window.URL.createObjectURL(blob);
           setAudioUrl(url);
-          // audio.play();
         })
         .catch((error) => {
           console.error("Error:", error);
@@ -69,19 +69,23 @@ const TextToSpeech = ({ prompt }) => {
   }
 
   return (
-    <View>
-      <Text style={styles.text}>{numericTones}</Text>
-      <Button title="Play Audio" onPress={playAudio} disabled={!audioUrl} />
-    </View>
+    <HStack alignItems="center" space={2}>
+      <Text fontSize="md" color={colors.onSurfaceVariant}>
+        {numericTones}
+      </Text>
+      <IconButton
+        icon={
+          <Feather
+            name="volume-2"
+            size={20}
+            color={colors.onPrimaryContainer}
+          />
+        }
+        onPress={playAudio}
+        isDisabled={!audioUrl}
+      />
+    </HStack>
   );
 };
-
-const styles = StyleSheet.create({
-  text: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: colors.onSurfaceVariant,
-  },
-});
 
 export default TextToSpeech;
