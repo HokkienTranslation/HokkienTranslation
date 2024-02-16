@@ -1,5 +1,8 @@
 import axios from "axios";
+import { IMAGE_API_URL, API_KEY } from "@env";
 
+// const apiUrl = IMAGE_API_URL;
+// const apiKey = API_KEY;
 const apiUrl = "https://535f-203-145-219-124.ngrok-free.app/generateImage";
 const apiKey = "iisriisra305";
 
