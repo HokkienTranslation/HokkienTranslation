@@ -17,19 +17,25 @@ const db = getFirestore(app);
 export async function checkIfTranslationExists(englishInput, chineseInput) {
   const collectionName = "translation";
   const translationsRef = collection(db, collectionName);
-  const q = query(
+  const qEnglish = query(
     translationsRef,
-    where("englishInput", "==", englishInput),
+    where("englishInput", "==", englishInput)
+  );
+  const qChinese = query(
+    translationsRef,
     where("chineseInput", "==", chineseInput)
   );
 
   try {
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-      // Assuming pair of englishInput and chineseInput is unique, only one document matching the query.
-      const translationDocument = querySnapshot.docs[0];
+    const englishQuerySnapshot = await getDocs(qEnglish);
+    const chineseQuerySnapshot = await getDocs(qChinese);
+    if (!englishQuerySnapshot.empty) {
+      const translationDocument = englishQuerySnapshot.docs[0];
       // console.log("Translation Found:");
       // console.log(translationDocument.data());
+      return translationDocument.data();
+    } else if (!chineseQuerySnapshot.empty) {
+      const translationDocument = chineseQuerySnapshot.docs[0];
       return translationDocument.data();
     } else {
       // No data in the database

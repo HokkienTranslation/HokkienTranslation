@@ -1,7 +1,8 @@
 import axios from "axios";
+import { ROMANIZER_API_URL, API_KEY } from "@env";
 
-const apiUrl = "https://e402-203-145-219-124.ngrok-free.app/translateHAN2KIP";
-const apiKey = "iisriisra305";
+const apiUrl = ROMANIZER_API_URL;
+const apiKey = API_KEY;
 
 const fetchRomanizer = async (hokkien) => {
   if (!hokkien) return null;

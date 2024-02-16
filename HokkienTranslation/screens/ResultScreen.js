@@ -53,30 +53,13 @@ const ResultScreen = ({ route, navigation }) => {
         padding: 10,
       }}
     >
-      {/* Header */}
-      <View
-        style={{
-          width: "80%",
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "center",
-          marginTop: 80,
-        }}
-      >
-        <Ionicons
-          name="arrow-back-outline"
-          size={40}
-          color={colors.onPrimaryContainer}
-          onPress={() => navigation.goBack()}
-        />
-      </View>
-
       {/* Query */}
       <View
         style={{
           width: "80%",
           height: "5%",
           justifyContent: "left",
+          marginVertical: 10,
         }}
       >
         <Text

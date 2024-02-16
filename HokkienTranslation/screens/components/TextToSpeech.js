@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button } from "react-native";
+import { TONE_API_URL, SPEECH_API_URL } from "@env";
 
 const TextToSpeech = ({ prompt }) => {
   const [error, setError] = useState();
   const [numericTones, setNumericTones] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
-  const NUMERIC_TONES_API = "https://tw-tts.z12.tw/display2";
-  const TEXT_TO_SPEECH_API = "https://tw-tts.z12.tw/synthesize_TLPA";
+  const NUMERIC_TONES_API = TONE_API_URL;
+  const TEXT_TO_SPEECH_API = SPEECH_API_URL;
 
   let params = new URLSearchParams({
     text0: prompt,
