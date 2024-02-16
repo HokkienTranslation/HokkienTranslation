@@ -15,7 +15,7 @@ export default function App() {
     <NativeBaseProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="Landing"
           screenOptions={({ route }) => ({
             headerShown: route.name !== "Landing",
             headerStyle: {
