@@ -71,7 +71,7 @@ const TextToSpeech = ({ prompt }) => {
   return (
     <HStack alignItems="center" space={2}>
       <Text fontSize="md" color={colors.onSurfaceVariant}>
-        {numericTones}
+        [{numericTones}]
       </Text>
       <IconButton
         icon={
