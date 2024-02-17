@@ -16,10 +16,9 @@ import {
 } from "native-base";
 import colors from "../styles/Colors";
 import HokkienTranslationTool from "./components/HokkienTranslationTool";
-import HokkienHanziRomanizer from "./components/HokkienHanziRomanizer";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import TextToImage from "./components/TextToImage";
-import TextToSpeech from "./components/TextToSpeech";
+import TextToSpeech from "../backend/API/TextToSpeech";
 import { CheckDatabase } from "../backend/CheckDatabase";
 
 const ResultScreen = ({ route, navigation }) => {
