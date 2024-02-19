@@ -25,7 +25,7 @@ const LandingPage = ({ navigation }) => {
           }}
         >
           <Image
-            source={require("../assets/icon.png")}
+            source={require("../assets/favicon.png")}
             style={{ width: 150, height: 150 }}
           />
           <Text style={{ fontSize: 20, marginTop: 40, color: "gray" }}>
