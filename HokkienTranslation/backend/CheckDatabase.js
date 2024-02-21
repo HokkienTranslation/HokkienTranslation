@@ -13,15 +13,19 @@ async function CheckDatabase(query) {
       threeTranslations.englishInput,
       threeTranslations.chineseInput
     );
-    const sentence = await checkIfSentenceExists(translation.sentence);
-
-    // console.log(translation, sentence);
-    return { translation, sentence };
+    if (translation) {
+      const sentence = await checkIfSentenceExists(translation.sentence);
+      if (sentence) {
+        return { translation, sentence };
+      } else {
+        console.log("No sentence found in database");
+      }
+    } else {
+      console.log("No translation and sentence found in database");
+    }
   } catch (error) {
     console.error("Error:", error);
   }
 }
-
-// CheckDatabase("壁櫥");
 
 export { CheckDatabase };

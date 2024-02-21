@@ -1,18 +1,9 @@
 import React from "react";
-import {
-  View,
-  Image,
-  Text,
-  TouchableOpacity,
-  ImageBackground,
-} from "react-native";
+import { View, Image, Text, Pressable, ImageBackground } from "react-native";
 
 const LandingPage = ({ navigation }) => {
   return (
-    <TouchableOpacity
-      style={{ flex: 1 }}
-      onPress={() => navigation.navigate("Home")}
-    >
+    <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate("Home")}>
       <ImageBackground
         source={require("../assets/background.png")}
         style={{ flex: 1, justifyContent: "flex-start", alignItems: "center" }}
@@ -36,7 +27,7 @@ const LandingPage = ({ navigation }) => {
           </Text>
         </View>
       </ImageBackground>
-    </TouchableOpacity>
+    </Pressable>
   );
 };
 

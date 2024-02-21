@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import colors from "../styles/Colors"; // Ensure this path is correct
 // Adjust the path as needed
@@ -38,7 +38,7 @@ const SettingsScreen = ({ navigation }) => {
           Appearance
         </Text>
 
-        <TouchableOpacity
+        <Pressable
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -62,8 +62,8 @@ const SettingsScreen = ({ navigation }) => {
           >
             System default
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Pressable>
+        <Pressable
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -87,8 +87,8 @@ const SettingsScreen = ({ navigation }) => {
           >
             Light
           </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
+        </Pressable>
+        <Pressable
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -112,7 +112,7 @@ const SettingsScreen = ({ navigation }) => {
           >
             Dark
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* TODO: Models section */}
