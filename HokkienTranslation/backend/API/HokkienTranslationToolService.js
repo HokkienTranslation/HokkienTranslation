@@ -22,9 +22,10 @@ const fetchTranslation = async (query, outputLanguage) => {
       },
     });
 
-    if (response.data && response.data.generated_text) {
-      let translationText = response.data.generated_text.split("\n")[0].trim();
-      // console.log(translationText);
+    if (response.data && response.data[0].generated_text) {
+      const text = response.data[0].generated_text;
+      const lines = text.split("\n");
+      const translationText = lines[lines.length - 2].trim();
       return translationText;
     }
   } catch (error) {

@@ -18,23 +18,19 @@ import colors from "../styles/Colors";
 import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import TextToImage from "./components/TextToImage";
-import TextToSpeech from "../backend/API/TextToSpeech";
+import TextToSpeech from "./components/TextToSpeech";
 import { CheckDatabase } from "../backend/CheckDatabase";
 
 const ResultScreen = ({ route, navigation }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
-  // const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
+  const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
 
   const handleHokkienTranslation = (translation) => {
     setHokkienTranslation(translation);
   };
-
-  // const handletemp = (translation) => {
-  //   setHokkienRomanized(translation);
-  // };
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
@@ -46,6 +42,25 @@ const ResultScreen = ({ route, navigation }) => {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const BoldWordInSentence = ({ sentence, wordToBold }) => {
+    if (!wordToBold) return <Text>{sentence}</Text>;
+
+    const parts = sentence.split(new RegExp(`(${wordToBold})`, "gi"));
+    return (
+      <Text fontSize="lg" color={colors.onSurface}>
+        {parts.map((part, index) =>
+          part.toLowerCase() === wordToBold.toLowerCase() ? (
+            <Text key={index} bold>
+              {part}
+            </Text>
+          ) : (
+            part
+          )
+        )}
+      </Text>
+    );
   };
 
   const copyToClipboard = (text) => Clipboard.setString(text);
@@ -61,11 +76,14 @@ const ResultScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const checkData = async () => {
-      const { translation, sentence } = await CheckDatabase(query);
-      if (translation && sentence) {
-        setDataFromDatabase({ translation, sentence });
-        await fetchAndSetRomanization(translation.hokkienTranslation, 1);
-        await fetchAndSetRomanization(sentence.sentences[0], 2);
+      const result = await CheckDatabase(query);
+      if (result) {
+        const { translation = {}, sentence = {} } = result;
+        if (translation && sentence) {
+          setDataFromDatabase({ translation, sentence });
+          await fetchAndSetRomanization(translation.hokkienTranslation, 1);
+          await fetchAndSetRomanization(sentence.sentences[0], 2);
+        }
       }
     };
     checkData();
@@ -88,7 +106,7 @@ const ResultScreen = ({ route, navigation }) => {
         <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
           Query
         </Text>
-        <HStack alignItems="center" space={2}>
+        <HStack alignItems="center">
           <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
             {query}
           </Text>
@@ -103,7 +121,7 @@ const ResultScreen = ({ route, navigation }) => {
             onPress={() => copyToClipboard(query)}
           />
         </HStack>
-        <Divider />
+        <Divider my={2} />
         {/* Translation */}
         <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
           Hokkien Translation
@@ -112,7 +130,7 @@ const ResultScreen = ({ route, navigation }) => {
         {dataFromDatabase ? (
           <View justifyContent="center" width="100%">
             {/* Hokkien Translation */}
-            <HStack space={2}>
+            <HStack>
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
                 {dataFromDatabase.translation.hokkienTranslation}
               </Text>
@@ -131,11 +149,6 @@ const ResultScreen = ({ route, navigation }) => {
                 }
               />
             </HStack>
-            {/* Text To Speech */}
-            {/* <HokkienHanziRomanizer
-              hokkien={dataFromDatabase.translation.hokkienTranslation}
-              romanizedResult={handletemp}
-            /> */}
             <TextToSpeech prompt={hokkienRomanized} />
             {/* Definition */}
             <Box
@@ -186,14 +199,15 @@ const ResultScreen = ({ route, navigation }) => {
               w="100%"
               alignSelf="center"
             >
-              {/* English Sentence */}
+              {/* Hokkien Sentence */}
               <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
-                English Example Sentence
+                Hokkien Example Sentence
               </Text>
-              <HStack space={2} alignItems={"center"}>
-                <Text fontSize="lg" color={colors.onSurface}>
-                  {dataFromDatabase.sentence.sentences[1]}
-                </Text>
+              <HStack alignItems={"center"}>
+                <BoldWordInSentence
+                  sentence={dataFromDatabase.sentence.sentences[0]}
+                  wordToBold={dataFromDatabase.translation.hokkienTranslation}
+                />
                 <IconButton
                   icon={
                     <Ionicons
@@ -203,16 +217,17 @@ const ResultScreen = ({ route, navigation }) => {
                     />
                   }
                   onPress={() =>
-                    copyToClipboard(dataFromDatabase.sentence.sentences[1])
+                    copyToClipboard(dataFromDatabase.sentence.sentences[0])
                   }
                 />
               </HStack>
+              <TextToSpeech prompt={hokkienSentenceRomanized} />
 
               {/* Chinese Sentence */}
               <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
                 Chinese Example Sentence
               </Text>
-              <HStack space={2} alignItems={"center"}>
+              <HStack alignItems={"center"}>
                 <Text fontSize="lg" color={colors.onSurface}>
                   {dataFromDatabase.sentence.sentences[2]}
                 </Text>
@@ -230,13 +245,13 @@ const ResultScreen = ({ route, navigation }) => {
                 />
               </HStack>
 
-              {/* Hokkien Sentence */}
+              {/* English Sentence */}
               <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
-                Hokkien Example Sentence
+                English Example Sentence
               </Text>
-              <HStack space={2} alignItems={"center"}>
+              <HStack alignItems={"center"}>
                 <Text fontSize="lg" color={colors.onSurface}>
-                  {dataFromDatabase.sentence.sentences[0]}
+                  {dataFromDatabase.sentence.sentences[1]}
                 </Text>
                 <IconButton
                   icon={
@@ -247,21 +262,15 @@ const ResultScreen = ({ route, navigation }) => {
                     />
                   }
                   onPress={() =>
-                    copyToClipboard(dataFromDatabase.sentence.sentences[0])
+                    copyToClipboard(dataFromDatabase.sentence.sentences[1])
                   }
                 />
               </HStack>
-              {/* Text To Speech */}
-              {/* <HokkienHanziRomanizer
-                hokkien={dataFromDatabase.sentence.sentences[0]}
-                romanizedResult={handletemp}
-              /> */}
-              <TextToSpeech prompt={dataFromDatabase.sentence.sentences[0]} />
             </Box>
           </View>
         ) : (
           <View justifyContent="center" width="100%">
-            <HStack space={2}>
+            <HStack>
               <HokkienTranslationTool
                 query={query}
                 translationResult={handleHokkienTranslation}
@@ -301,66 +310,5 @@ const ResultScreen = ({ route, navigation }) => {
     </ScrollView>
   );
 };
-
-// return (
-//   <ScrollView
-//     flex={1}
-//     bg={colors.surface}
-//     _contentContainerStyle={{ px: 4, mb: 4, minW: "72" }}
-//   >
-//     <VStack space={4} alignItems="flex-start">
-//       <TextSection title="Query" content={query} onCopy={() => copyToClipboard(query)} />
-//       <Divider my="2" />
-//       <TextSection title="Translation" content={dataFromDatabase?.translation.hokkienTranslation} onCopy={() => copyToClipboard(dataFromDatabase?.translation.hokkienTranslation)} />
-//       {!dataFromDatabase && (
-//         <TranslationTool query={query} onTranslation={setHokkienTranslation} />
-//       )}
-//       <TextToSpeech prompt={hokkienRomanized} />
-//       <ImageSection query={query} />
-//     </VStack>
-//   </ScrollView>
-// );
-
-const TextSection = ({ title, content, onCopy }) => (
-  <VStack>
-    <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
-      {title}
-    </Text>
-    <HStack alignItems="center" space={2}>
-      <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
-        {content}
-      </Text>
-      <IconButton
-        icon={
-          <Ionicons
-            name="copy-outline"
-            size={20}
-            color={colors.onPrimaryContainer}
-          />
-        }
-        onPress={onCopy}
-      />
-    </HStack>
-  </VStack>
-);
-
-const TranslationTool = ({ query, onTranslation }) => (
-  <HokkienTranslationTool query={query} translationResult={onTranslation} />
-);
-
-const ImageSection = ({ query }) => (
-  <Box
-    width="80%"
-    backgroundColor={colors.primaryContainer}
-    p={3}
-    borderRadius="10"
-    my={5}
-  >
-    <Text fontSize="lg" fontWeight="bold" color={colors.onPrimaryContainer}>
-      Context
-    </Text>
-    <TextToImage prompt={query} />
-  </Box>
-);
 
 export default ResultScreen;

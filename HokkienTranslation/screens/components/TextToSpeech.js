@@ -24,6 +24,9 @@ const TextToSpeech = ({ prompt }) => {
         .then((response) => response.text())
         .then((data) => {
           numeric_tones = data;
+          if (numeric_tones.endsWith(".")) {
+            numeric_tones = numeric_tones.slice(0, -1);
+          }
           setNumericTones(numeric_tones);
         })
         .catch((error) => {
@@ -69,8 +72,8 @@ const TextToSpeech = ({ prompt }) => {
   }
 
   return (
-    <HStack alignItems="center" space={2}>
-      <Text fontSize="md" color={colors.onSurfaceVariant}>
+    <HStack alignItems="center">
+      <Text fontSize="lg" color={colors.onSurfaceVariant}>
         [{numericTones}]
       </Text>
       <IconButton
