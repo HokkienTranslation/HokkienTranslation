@@ -14,4 +14,3 @@ Commands to deploy to vercel
 `vercel`
 
 Reference: https://docs.expo.dev/distribution/publishing-websites/
-test
