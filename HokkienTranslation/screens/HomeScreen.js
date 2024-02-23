@@ -88,4 +88,4 @@ export default function HomeScreen({ navigation }) {
       </VStack>
     </ScrollView>
   );
-}
+} 
