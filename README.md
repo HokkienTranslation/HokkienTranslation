@@ -13,4 +13,4 @@ Commands to deploy to vercel
 `npm run build`
 `vercel`
 
-Reference: https://docs.expo.dev/distribution/publishing-websites/
+Reference: https://docs.expo.dev/distribution/publishing-websites/ 
