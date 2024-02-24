@@ -89,15 +89,3 @@ export async function updateSentenceWithTranslation(
     translationList: translationList,
   });
 }
-
-// export async function getData(collectionName) {
-//   // Dumps all the documents in the collection
-//   const querySnapshot = await getDocs(collection(db, collectionName));
-//   querySnapshot.forEach((doc) => {
-//     console.log(`${doc.id} => ${doc.data()}`);
-//   });
-// }
-
-// uploadImage("ID_1.png");
-
-// getData("sentence");
