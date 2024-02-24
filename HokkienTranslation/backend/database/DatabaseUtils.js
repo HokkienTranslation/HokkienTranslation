@@ -31,8 +31,6 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
     const chineseQuerySnapshot = await getDocs(qChinese);
     if (!englishQuerySnapshot.empty) {
       const translationDocument = englishQuerySnapshot.docs[0];
-      // console.log("Translation Found:");
-      // console.log(translationDocument.data());
       return translationDocument.data();
     } else if (!chineseQuerySnapshot.empty) {
       const translationDocument = chineseQuerySnapshot.docs[0];
