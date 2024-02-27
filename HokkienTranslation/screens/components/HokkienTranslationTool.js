@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Text } from "native-base";
-import colors from "../../styles/Colors";
+import colors from "../../styles/ThemeProvider";
 import { fetchTranslation } from "../../backend/API/HokkienTranslationToolService";
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)

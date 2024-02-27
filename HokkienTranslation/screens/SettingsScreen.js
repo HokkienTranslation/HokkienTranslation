@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import colors from "../styles/Colors"; // Ensure this path is correct
+import { useTheme } from "../styles/ThemeProvider";
 // Adjust the path as needed
 
-const SettingsScreen = ({ navigation }) => {
-  const [appearance, setAppearance] = useState("light");
+const SettingsScreen = () => {
+  const { theme, toggleTheme, themes } = useTheme();
+  const colors = themes[theme];
 
   return (
     <View
@@ -33,9 +34,10 @@ const SettingsScreen = ({ navigation }) => {
             fontWeight: "bold",
             marginLeft: 15,
             marginBottom: 10,
+            color: colors.onSurface,
           }}
         >
-          Appearance
+          Theme
         </Text>
 
         <Pressable
@@ -45,44 +47,18 @@ const SettingsScreen = ({ navigation }) => {
             paddingVertical: 10,
             marginLeft: 15,
           }}
-          onPress={() => setAppearance("system")}
+          onPress={toggleTheme}
         >
           <Ionicons
-            name={
-              appearance === "system" ? "radio-button-on" : "radio-button-off"
-            }
+            name={theme === "light" ? "radio-button-on" : "radio-button-off"}
             size={24}
-            color={appearance === "system" ? "blue" : "grey"}
+            color={colors.onPrimaryContainer}
           />
           <Text
             style={{
               fontSize: 16,
               marginLeft: 10,
-            }}
-          >
-            System default
-          </Text>
-        </Pressable>
-        <Pressable
-          style={{
-            flexDirection: "row",
-            alignItems: "center",
-            paddingVertical: 10,
-            marginLeft: 15,
-          }}
-          onPress={() => setAppearance("light")}
-        >
-          <Ionicons
-            name={
-              appearance === "light" ? "radio-button-on" : "radio-button-off"
-            }
-            size={24}
-            color={appearance === "light" ? "blue" : "grey"}
-          />
-          <Text
-            style={{
-              fontSize: 16,
-              marginLeft: 10,
+              color: colors.onSurface,
             }}
           >
             Light
@@ -95,19 +71,18 @@ const SettingsScreen = ({ navigation }) => {
             paddingVertical: 10,
             marginLeft: 15,
           }}
-          onPress={() => setAppearance("dark")}
+          onPress={toggleTheme}
         >
           <Ionicons
-            name={
-              appearance === "dark" ? "radio-button-on" : "radio-button-off"
-            }
+            name={theme === "dark" ? "radio-button-on" : "radio-button-off"}
             size={24}
-            color={appearance === "dark" ? "blue" : "grey"}
+            color={colors.onPrimaryContainer}
           />
           <Text
             style={{
               fontSize: 16,
               marginLeft: 10,
+              color: colors.onSurface,
             }}
           >
             Dark
@@ -128,6 +103,7 @@ const SettingsScreen = ({ navigation }) => {
             fontWeight: "bold",
             marginLeft: 15,
             marginBottom: 10,
+            color: colors.onSurface,
           }}
         >
           Model

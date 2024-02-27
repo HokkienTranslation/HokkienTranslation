@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { HStack, Text, IconButton } from "native-base";
 import { Feather } from "@expo/vector-icons";
-import colors from "../../styles/Colors";
+import colors from "../../styles/ThemeProvider";
 import { TONE_API_URL, SPEECH_API_URL } from "@env";
 
 const TextToSpeech = ({ prompt }) => {

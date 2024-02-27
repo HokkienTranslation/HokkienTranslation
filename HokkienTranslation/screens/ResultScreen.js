@@ -14,14 +14,16 @@ import {
   Divider,
   Spacer,
 } from "native-base";
-import colors from "../styles/Colors";
 import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import TextToImage from "./components/TextToImage";
 import TextToSpeech from "./components/TextToSpeech";
 import { CheckDatabase } from "../backend/CheckDatabase";
+import { useTheme } from "../styles/ThemeProvider";
 
 const ResultScreen = ({ route }) => {
+  const { theme, themes } = useTheme();
+  const colors = themes[theme];
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
