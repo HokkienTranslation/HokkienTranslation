@@ -37,9 +37,9 @@ export async function checkIfTranslationExists(englishInput, chineseInput) {
       return translationDocument.data();
     } else {
       // No data in the database
-      console.log(
-        `No Translation with englishInput: ${englishInput} and chineseInput:${chineseInput}`
-      );
+      // console.log(
+      //   `No Translation with englishInput: ${englishInput} and chineseInput:${chineseInput}`
+      // );
       return null;
     }
   } catch (error) {
@@ -61,7 +61,7 @@ export async function checkIfSentenceExists(sentenceID) {
       return docSnap.data();
     } else {
       // No sentence found with the given ID
-      console.log(`No Sentence with ID: ${sentenceID}`);
+      // console.log(`No Sentence with ID: ${sentenceID}`);
       return null;
     }
   } catch (error) {

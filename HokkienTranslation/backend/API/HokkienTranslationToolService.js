@@ -4,7 +4,7 @@ import { TRANSLATION_API_URL } from "@env";
 const apiUrl = TRANSLATION_API_URL;
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
-const fetchTranslation = async (query, outputLanguage) => {
+const fetchTranslation = async (query, outputLanguage = "HAN") => {
   if (!query) return null;
 
   try {

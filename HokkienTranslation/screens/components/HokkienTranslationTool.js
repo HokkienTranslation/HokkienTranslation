@@ -11,7 +11,6 @@ const HokkienTranslationTool = ({
   outputLanguage = "HAN",
 }) => {
   const [translation, setTranslation] = useState("");
-
   useEffect(() => {
     const getTranslation = async () => {
       const translationText = await fetchTranslation(query, outputLanguage);
@@ -21,9 +20,11 @@ const HokkienTranslationTool = ({
           translationResult(translationText);
         }
       }
+      console.log("------------In API-----------");
+      console.log("translationText: " + translationText);
     };
     getTranslation();
-  }, [query, outputLanguage, translationResult]);
+  }, [query, outputLanguage]);
 
   return (
     <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
