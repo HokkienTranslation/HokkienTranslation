@@ -16,13 +16,14 @@ async function CheckDatabase(query) {
     if (translation) {
       const sentence = await checkIfSentenceExists(translation.sentence);
       if (sentence) {
-        console.log(translation);
         return { translation, sentence };
       } else {
-        console.log("No sentence found in database");
+        // console.log("No sentence found in database");
+        return { translation };
       }
     } else {
-      console.log("No translation and sentence found in database");
+      // console.log("No translation and sentence found in database");
+      return { threeTranslations };
     }
   } catch (error) {
     console.error("Error:", error);

@@ -21,7 +21,7 @@ import TextToImage from "./components/TextToImage";
 import TextToSpeech from "./components/TextToSpeech";
 import { CheckDatabase } from "../backend/CheckDatabase";
 
-const ResultScreen = ({ route, navigation }) => {
+const ResultScreen = ({ route }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
@@ -39,6 +39,13 @@ const ResultScreen = ({ route, navigation }) => {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
+      console.log(
+        "----------------In fetchAndSetRomanization-----------------"
+      );
+      console.log("dataFromDatabase: " + dataFromDatabase);
+      console.log("hokkienTranslation: " + hokkienTranslation);
+      console.log("hokkienRomanized: " + hokkienRomanized);
+      console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
     } catch (error) {
       console.error(error);
     }
@@ -66,28 +73,46 @@ const ResultScreen = ({ route, navigation }) => {
   const copyToClipboard = (text) => Clipboard.setString(text);
 
   useEffect(() => {
-    const fetchRomanization = async () => {
-      if (hokkienTranslation && !dataFromDatabase) {
-        await fetchAndSetRomanization(hokkienTranslation, 1);
-      }
-    };
-    fetchRomanization();
-  }, [hokkienTranslation, dataFromDatabase]);
-
-  useEffect(() => {
     const checkData = async () => {
       const result = await CheckDatabase(query);
-      if (result) {
-        const { translation = {}, sentence = {} } = result;
-        if (translation && sentence) {
-          setDataFromDatabase({ translation, sentence });
-          await fetchAndSetRomanization(translation.hokkienTranslation, 1);
-          await fetchAndSetRomanization(sentence.sentences[0], 2);
-        }
+      if (result.translation && result.sentence) {
+        // const { translation = {}, sentence = {} } = result;
+        setDataFromDatabase(result);
+        // setDataFromDatabase({ translation, sentence });
+        setHokkienTranslation(result.translation.hokkienTranslation);
+        await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
+        await fetchAndSetRomanization(result.sentence.sentences[0], 2);
+        console.log("-----------In CheckDatabase: data-----------");
+        console.log("dataFromDatabase: " + dataFromDatabase);
+        console.log("hokkienTranslation: " + hokkienTranslation);
+        console.log("hokkienRomanized: " + hokkienRomanized);
+        console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
+      } else {
+        setHokkienTranslation(result.threeTranslations.hokkienTranslation);
+        await fetchAndSetRomanization(hokkienTranslation, 1);
+        console.log("-----------In CheckDatabase: no data-----------");
+        console.log("dataFromDatabase: " + dataFromDatabase);
+        console.log("hokkienTranslation: " + hokkienTranslation);
+        console.log("hokkienRomanized: " + hokkienRomanized);
+        console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
       }
     };
     checkData();
-  }, [query]);
+  }, [query, hokkienTranslation]);
+
+  // useEffect(() => {
+  //   const fetchRomanization = async () => {
+  //     if (hokkienTranslation && !dataFromDatabase) {
+  //       await fetchAndSetRomanization(hokkienTranslation, 1);
+  //       console.log("----------------In fetchRomanization-----------------");
+  //       console.log("dataFromDatabase: " + dataFromDatabase);
+  //       console.log("hokkienTranslation: " + hokkienTranslation);
+  //       console.log("hokkienRomanized: " + hokkienRomanized);
+  //       console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
+  //     }
+  //   };
+  //   fetchRomanization();
+  // }, [hokkienTranslation, dataFromDatabase]);
 
   return (
     <ScrollView
@@ -127,12 +152,15 @@ const ResultScreen = ({ route, navigation }) => {
           Hokkien Translation
         </Text>
         {/* Result */}
-        {dataFromDatabase ? (
+        {dataFromDatabase &&
+        dataFromDatabase.translation &&
+        dataFromDatabase.sentence ? (
           <View justifyContent="center" width="100%">
             {/* Hokkien Translation */}
             <HStack>
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
-                {dataFromDatabase.translation.hokkienTranslation}
+                {hokkienTranslation}
+                {/* Database */}
               </Text>
               <IconButton
                 icon={
@@ -271,10 +299,14 @@ const ResultScreen = ({ route, navigation }) => {
         ) : (
           <View justifyContent="center" width="100%">
             <HStack>
-              <HokkienTranslationTool
+              {/* <HokkienTranslationTool
                 query={query}
                 translationResult={handleHokkienTranslation}
-              />
+              /> */}
+              <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
+                {hokkienTranslation}
+                {/* Poop */}
+              </Text>
               <IconButton
                 icon={
                   <Ionicons
