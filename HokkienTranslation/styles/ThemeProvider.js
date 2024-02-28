@@ -21,7 +21,7 @@ export const ThemeProvider = ({ children }) => {
       surface: "#37323D",
       onSurface: "#E6E1E5",
       onSurfaceVariant: "#CAC4D0",
-      primaryContainer: "#4A4468",
+      primaryContainer: "#444a68",
       onPrimaryContainer: "#EADDFF",
       outlineVariant: "#49454F",
       header: "#646165",

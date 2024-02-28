@@ -8,13 +8,10 @@ import {
   Text,
   Box,
   Image,
-  Icon,
   IconButton,
   View,
   Divider,
-  Spacer,
 } from "native-base";
-import HokkienTranslationTool from "./components/HokkienTranslationTool";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import TextToImage from "./components/TextToImage";
 import TextToSpeech from "./components/TextToSpeech";
@@ -30,10 +27,6 @@ const ResultScreen = ({ route }) => {
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
 
-  const handleHokkienTranslation = (translation) => {
-    setHokkienTranslation(translation);
-  };
-
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
       const romanizedText = await fetchRomanizer(hokkienText);
@@ -41,13 +34,6 @@ const ResultScreen = ({ route }) => {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
-      console.log(
-        "----------------In fetchAndSetRomanization-----------------"
-      );
-      console.log("dataFromDatabase: " + dataFromDatabase);
-      console.log("hokkienTranslation: " + hokkienTranslation);
-      console.log("hokkienRomanized: " + hokkienRomanized);
-      console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
     } catch (error) {
       console.error(error);
     }
@@ -78,43 +64,17 @@ const ResultScreen = ({ route }) => {
     const checkData = async () => {
       const result = await CheckDatabase(query);
       if (result.translation && result.sentence) {
-        // const { translation = {}, sentence = {} } = result;
         setDataFromDatabase(result);
-        // setDataFromDatabase({ translation, sentence });
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        console.log("-----------In CheckDatabase: data-----------");
-        console.log("dataFromDatabase: " + dataFromDatabase);
-        console.log("hokkienTranslation: " + hokkienTranslation);
-        console.log("hokkienRomanized: " + hokkienRomanized);
-        console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
-        console.log("-----------In CheckDatabase: no data-----------");
-        console.log("dataFromDatabase: " + dataFromDatabase);
-        console.log("hokkienTranslation: " + hokkienTranslation);
-        console.log("hokkienRomanized: " + hokkienRomanized);
-        console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
       }
     };
     checkData();
   }, [query, hokkienTranslation]);
-
-  // useEffect(() => {
-  //   const fetchRomanization = async () => {
-  //     if (hokkienTranslation && !dataFromDatabase) {
-  //       await fetchAndSetRomanization(hokkienTranslation, 1);
-  //       console.log("----------------In fetchRomanization-----------------");
-  //       console.log("dataFromDatabase: " + dataFromDatabase);
-  //       console.log("hokkienTranslation: " + hokkienTranslation);
-  //       console.log("hokkienRomanized: " + hokkienRomanized);
-  //       console.log("hokkienSentenceRomanized: " + hokkienSentenceRomanized);
-  //     }
-  //   };
-  //   fetchRomanization();
-  // }, [hokkienTranslation, dataFromDatabase]);
 
   return (
     <ScrollView
@@ -162,7 +122,6 @@ const ResultScreen = ({ route }) => {
             <HStack>
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
                 {hokkienTranslation}
-                {/* Database */}
               </Text>
               <IconButton
                 icon={
@@ -301,13 +260,8 @@ const ResultScreen = ({ route }) => {
         ) : (
           <View justifyContent="center" width="100%">
             <HStack>
-              {/* <HokkienTranslationTool
-                query={query}
-                translationResult={handleHokkienTranslation}
-              /> */}
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
                 {hokkienTranslation}
-                {/* Poop */}
               </Text>
               <IconButton
                 icon={

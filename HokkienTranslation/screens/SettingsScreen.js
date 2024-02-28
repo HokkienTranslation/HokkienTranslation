@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../styles/ThemeProvider";
-// Adjust the path as needed
 
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
