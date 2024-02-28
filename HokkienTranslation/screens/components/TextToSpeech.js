@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { HStack, Text, IconButton } from "native-base";
 import { Feather } from "@expo/vector-icons";
 import { TONE_API_URL, SPEECH_API_URL } from "@env";
-import { useTheme } from "../../styles/ThemeProvider";
+import { useTheme } from "../context/ThemeProvider";
 
 const TextToSpeech = ({ prompt }) => {
   const { theme, themes } = useTheme();

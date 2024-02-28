@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Box, Input, IconButton, ScrollView, VStack } from "native-base";
-import { useTheme } from "../styles/ThemeProvider";
+import { useTheme } from "./context/ThemeProvider";
 
 export default function HomeScreen({ navigation }) {
   const [query, setQuery] = useState("");

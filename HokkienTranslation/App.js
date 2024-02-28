@@ -6,7 +6,8 @@ import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
-import ThemeProvider, { useTheme } from "./styles/ThemeProvider";
+import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
+import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 
 const Stack = createNativeStackNavigator();
 
@@ -45,7 +46,9 @@ const AppContent = () => {
 export default function App() {
   return (
     <ThemeProvider>
-      <AppContent />
+      <ComponentVisibilityProvider>
+        <AppContent />
+      </ComponentVisibilityProvider>
     </ThemeProvider>
   );
 }
