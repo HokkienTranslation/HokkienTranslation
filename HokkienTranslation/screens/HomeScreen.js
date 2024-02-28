@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Box, Input, IconButton, ScrollView, VStack } from "native-base";
-import colors from "../styles/Colors";
+import { useTheme } from "./context/ThemeProvider";
 
 export default function HomeScreen({ navigation }) {
   const [query, setQuery] = useState("");
+  const { theme, themes } = useTheme();
+  const colors = themes[theme];
 
   return (
     <ScrollView
@@ -47,6 +49,7 @@ export default function HomeScreen({ navigation }) {
             paddingY={2}
             style={{
               fontSize: 20,
+              color: colors.onSurface,
             }}
           />
           {query.length > 0 && (
@@ -88,4 +91,4 @@ export default function HomeScreen({ navigation }) {
       </VStack>
     </ScrollView>
   );
-} 
+}

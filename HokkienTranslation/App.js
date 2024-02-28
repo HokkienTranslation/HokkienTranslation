@@ -6,11 +6,15 @@ import HomeScreen from "./screens/HomeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
-import colors from "./styles/Colors";
+import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
+import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 
 const Stack = createNativeStackNavigator();
 
-export default function App() {
+const AppContent = () => {
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+
   return (
     <NativeBaseProvider>
       <NavigationContainer>
@@ -19,12 +23,14 @@ export default function App() {
           screenOptions={({ route }) => ({
             headerShown: route.name !== "Landing",
             headerStyle: {
-              backgroundColor: "#fbf2fc",
+              backgroundColor: colors.header,
             },
             headerTitleStyle: {
               fontSize: 25,
+              color: colors.onSurface,
             },
             headerTitleAlign: "center",
+            headerTintColor: colors.onSurface,
           })}
         >
           <Stack.Screen name="Landing" component={LandingPage} />
@@ -34,5 +40,15 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
+  );
+};
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <ComponentVisibilityProvider>
+        <AppContent />
+      </ComponentVisibilityProvider>
+    </ThemeProvider>
   );
 }
