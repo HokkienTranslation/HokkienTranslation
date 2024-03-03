@@ -1,16 +1,59 @@
-# HokkienTranslation
+# HokkienTranslation Setup Guide
 
-To run, please ensure that you have `npm`
+This guide provides instructions on how to set up and deploy the `HokkienTranslation` project.
 
-Ensure you are in the directory of `HokkienTranslation`, and call
--`npm install` to install all the dependencies
--`npm run start` or `npm run web`
+## Prerequisites
 
-## Deploy
+Before you begin, make sure that `npm` and `expo-cli` is installed on your system. If you do not have `npm`, please install it from [npm's official website](https://www.npmjs.com/get-npm).
+If you do not have `expo-cli` run the following command to install:
+    ```
+    npm install -g expo-cli
+    ```
 
-Commands to deploy to vercel
+## Installation
 
--`npm run build`
--`vercel`
+1. Navigate to the `HokkienTranslation` project directory.
+2. Run the following command to install all necessary dependencies:
 
-Reference: https://docs.expo.dev/distribution/publishing-websites/
+   ```
+   npm install
+   ```
+
+## Running the Project
+
+- To start the project on your local machine, run:
+
+  ```
+  npm run start
+  ```
+
+- To run the project in a web environment, use:
+
+  ```
+  npm run web
+  ```
+
+## Deployment
+
+To deploy the `HokkienTranslation` project to Vercel, follow these steps:
+
+1. Build the project for production by running:
+
+   ```
+   expo-cli build:web
+   ```
+2. Navigate to the web-build folder:
+  ```
+  cd web-build
+  ```
+3. Deploy the build to Vercel using the `vercel` command:
+
+   ```
+   vercel
+   ```
+
+For more detailed information on publishing websites, refer to the [Expo documentation on publishing websites](https://docs.expo.dev/distribution/publishing-websites/).
+
+--- 
+
+This format should make the guide more straightforward and easier to follow.
