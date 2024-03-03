@@ -13,7 +13,7 @@ const SettingsScreen = () => {
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable
       onPress={toggleTheme}
-      hitSlop={10} // Optional: to increase the pressable area slightly if needed
+      hitSlop={10} //Increase the pressable area
     >
       <HStack space={2} alignItems="center">
         <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
