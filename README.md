@@ -56,7 +56,3 @@ To deploy the `HokkienTranslation` project to Vercel, follow these steps:
    ```
 
 For more detailed information on publishing websites, refer to the [Expo documentation on publishing websites](https://docs.expo.dev/distribution/publishing-websites/).
-
---- 
-
-This format should make the guide more straightforward and easier to follow.
