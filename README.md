@@ -42,11 +42,13 @@ To deploy the `HokkienTranslation` project to Vercel, follow these steps:
    ```
    expo-cli build:web
    ```
+   
 2. Navigate to the web-build folder:
    
   ```
   cd web-build
   ```
+
 3. Deploy the build to Vercel using the `vercel` command:
 
    ```
