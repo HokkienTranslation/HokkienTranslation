@@ -70,7 +70,7 @@ const ResultScreen = ({ route }) => {
   useEffect(() => {
     const checkData = async () => {
       const result = await CheckDatabase(query);
-      setProgress(0.5);
+      // setProgress(0.5);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
@@ -86,7 +86,7 @@ const ResultScreen = ({ route }) => {
     };
     checkData();
     console.log('p', progress);
-  }, []);
+  }, [query, hokkienTranslation]);
 
   if (progress < 1.0) {
     return <LoadingScreen progress={progress} />;
