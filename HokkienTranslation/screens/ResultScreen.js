@@ -15,6 +15,7 @@ import {
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import TextToImage from "./components/TextToImage";
 import TextToSpeech from "./components/TextToSpeech";
+import LoadingScreen from "./LoadingScreen";
 import { CheckDatabase } from "../backend/CheckDatabase";
 import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
@@ -28,6 +29,8 @@ const ResultScreen = ({ route }) => {
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
   const { visibilityStates } = useComponentVisibility();
+
+  const [progress, setProgress] = useState(0);
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
@@ -62,6 +65,8 @@ const ResultScreen = ({ route }) => {
 
   const copyToClipboard = (text) => Clipboard.setString(text);
 
+  const updateProgress = (progress, amount) => setProgress(progress + amount);
+
   useEffect(() => {
     const checkData = async () => {
       const result = await CheckDatabase(query);
@@ -69,14 +74,22 @@ const ResultScreen = ({ route }) => {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
+        setProgress(progress => progress + 0.25);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
+        setProgress(progress => progress + 0.25);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
+        setProgress(progress => progress + 0.5);
       }
     };
     checkData();
+    console.log('p', progress);
   }, [query, hokkienTranslation]);
+
+  if (progress < 1.0) {
+    return <LoadingScreen progress={progress} />;
+  }
 
   return (
     <ScrollView
