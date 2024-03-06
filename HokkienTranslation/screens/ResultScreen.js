@@ -121,11 +121,8 @@ const ResultScreen = ({ route }) => {
       setImageUrl(imgBase64);
       updateProgress(1.0);
     };
-
-    if (query) {
-      loadImage();
-    }
-  }, [query]);
+    loadImage();
+  }, []);
 
   if (progress < 1.0) {
     return <LoadingScreen progress={progress} />;
