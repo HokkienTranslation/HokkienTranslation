@@ -8,6 +8,11 @@ export default function HomeScreen({ navigation }) {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
 
+  const handleTextChange = (text) => {
+    const cleanedText = text.replace(/\n/, "");
+    setQuery(cleanedText);
+  };
+
   return (
     <ScrollView
       bg={colors.surface}
@@ -41,7 +46,7 @@ export default function HomeScreen({ navigation }) {
           <Input
             variant="outline"
             placeholder="Type English or Chinese..."
-            onChangeText={setQuery}
+            onChangeText={handleTextChange}
             value={query}
             multiline={true}
             h={40}

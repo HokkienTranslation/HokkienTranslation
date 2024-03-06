@@ -2,24 +2,28 @@ import React, { useState, useEffect } from "react";
 import { Image, Box, Text } from "native-base";
 import { generateImage } from "../../backend/API/TextToImageService";
 
-const TextToImage = ({ prompt }) => {
+const TextToImage = ({ prompt, onLoadingComplete }) => {
   const [imageUrl, setImageUrl] = useState();
   const [error, setError] = useState();
 
   useEffect(() => {
+    console.log("TextToImage: useEffect is called");
     const fetchImage = async () => {
-      const { imgBase64, error } = await generateImage(prompt);
-      if (imgBase64) {
-        setImageUrl(`data:image/jpeg;base64,${imgBase64}`);
-      }
-      if (error) {
+      try {
+        const { imgBase64, error } = await generateImage(prompt);
+        if (imgBase64) {
+          setImageUrl(`data:image/jpeg;base64,${imgBase64}`);
+          console.log("TextToImage: onLoadingComplete is called");
+          onLoadingComplete();
+        } else if (error) {
+          setError(error);
+        }
+      } catch (error) {
         setError(error);
       }
     };
 
-    if (prompt) {
-      fetchImage();
-    }
+    fetchImage();
   }, [prompt]);
 
   if (!imageUrl && !error) {

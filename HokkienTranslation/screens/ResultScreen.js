@@ -29,16 +29,17 @@ const ResultScreen = ({ route }) => {
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
   const { visibilityStates } = useComponentVisibility();
-
   const [progress, setProgress] = useState(0);
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
       const romanizedText = await fetchRomanizer(hokkienText);
+      updateProgress(0.125);
       if (romanizedText) {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
+      updateProgress(0.125);
     } catch (error) {
       console.error(error);
     }
@@ -65,27 +66,34 @@ const ResultScreen = ({ route }) => {
 
   const copyToClipboard = (text) => Clipboard.setString(text);
 
-  const updateProgress = (progress, amount) => setProgress(progress + amount);
+  const updateProgress = (amount) => {
+    setProgress((currentProgress) => {
+      const updatedProgress = Math.min(currentProgress + amount, 1.0);
+      console.log("Current: " + currentProgress + " New: " + updatedProgress);
+      return updatedProgress;
+    });
+  };
 
   useEffect(() => {
     const checkData = async () => {
+      setProgress(0);
       const result = await CheckDatabase(query);
+      updateProgress(0.25);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
-        setProgress(progress => progress + 0.25);
+        updateProgress(0.125);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        setProgress(progress => progress + 0.25);
+        updateProgress(0.125);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
-        setProgress(progress => progress + 0.5);
+        updateProgress(0.25);
       }
     };
     checkData();
-    console.log('p', progress);
-  }, [query, hokkienTranslation]);
+  }, [query]);
 
   if (progress < 1.0) {
     return <LoadingScreen progress={progress} />;
@@ -342,7 +350,14 @@ const ResultScreen = ({ route }) => {
                 >
                   Context
                 </Text>
-                <TextToImage m={2} prompt={query} />
+                <TextToImage
+                  m={2}
+                  prompt={query}
+                  onLoadingComplete={() => {
+                    console.log("TextToImage loading completed");
+                    updateProgress(1.0);
+                  }}
+                />
               </Box>
             )}
           </View>
