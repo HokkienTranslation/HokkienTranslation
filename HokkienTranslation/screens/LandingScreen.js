@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Image, Text, Pressable, ImageBackground } from "react-native";
+import { ImageBackground, Pressable } from "react-native";
+import { Box, Image, Text, VStack } from "native-base";
 
 const LandingPage = ({ navigation }) => {
   return (
@@ -8,24 +9,23 @@ const LandingPage = ({ navigation }) => {
         source={require("../assets/background.png")}
         style={{ flex: 1, justifyContent: "flex-start", alignItems: "center" }}
       >
-        <View
-          style={{
-            margin: "20%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <Box
+          marginX="20%"
+          marginY="5%"
+          justifyContent="center"
+          alignItems="center"
+          width="100%"
         >
-          <Image
-            source={require("../assets/favicon.png")}
-            style={{ width: 150, height: 150 }}
-          />
-          <Text style={{ fontSize: 20, marginTop: 40, color: "gray" }}>
-            Welcome
-          </Text>
-          <Text style={{ fontSize: 14, margin: 5, color: "gray" }}>
-            Click anywhere to continue
-          </Text>
-        </View>
+          <Image source={require("../assets/logo.png")} alt="Logo" size="2xl" />
+          <VStack space={2} alignItems="center">
+            <Text fontSize="xl" color="gray.400">
+              Hokkien Translation & Education Tool
+            </Text>
+            <Text fontSize="md" color="gray.400">
+              Tap anywhere to continue
+            </Text>
+          </VStack>
+        </Box>
       </ImageBackground>
     </Pressable>
   );
