@@ -13,12 +13,27 @@ import {
   Divider,
 } from "native-base";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
-import TextToImage from "./components/TextToImage";
+import { generateImage } from "../backend/API/TextToImageService";
 import TextToSpeech from "./components/TextToSpeech";
 import LoadingScreen from "./LoadingScreen";
 import { CheckDatabase } from "../backend/CheckDatabase";
 import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
+
+const TextToImage = ({ imageUrl }) => {
+  if (!imageUrl) {
+    return <Text>Loading...</Text>;
+  }
+  return (
+    <Box alignItems="center" justifyContent="center" mb={2}>
+      <Image
+        source={{ uri: `data:image/jpeg;base64,${imageUrl}` }}
+        size="2xl"
+        resizeMode="contain"
+      />
+    </Box>
+  );
+};
 
 const ResultScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -30,6 +45,7 @@ const ResultScreen = ({ route }) => {
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
   const { visibilityStates } = useComponentVisibility();
   const [progress, setProgress] = useState(0);
+  const [imageUrl, setImageUrl] = useState(null);
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
@@ -93,6 +109,22 @@ const ResultScreen = ({ route }) => {
       }
     };
     checkData();
+  }, [hokkienTranslation]);
+
+  useEffect(() => {
+    const loadImage = async () => {
+      const { imgBase64, error } = await generateImage(query);
+      if (error) {
+        console.error(error);
+        return;
+      }
+      setImageUrl(imgBase64);
+      updateProgress(1.0);
+    };
+
+    if (query) {
+      loadImage();
+    }
   }, [query]);
 
   if (progress < 1.0) {
@@ -200,7 +232,7 @@ const ResultScreen = ({ route }) => {
                 >
                   Context
                 </Text>
-                <Box alignItems="center" justifyContent="center">
+                <Box alignItems="center" justifyContent="center" mb={2}>
                   <Image
                     source={{ uri: dataFromDatabase.sentence.imageURL }}
                     size="2xl"
@@ -350,14 +382,7 @@ const ResultScreen = ({ route }) => {
                 >
                   Context
                 </Text>
-                <TextToImage
-                  m={2}
-                  prompt={query}
-                  onLoadingComplete={() => {
-                    console.log("TextToImage loading completed");
-                    updateProgress(1.0);
-                  }}
-                />
+                <TextToImage m={2} imageUrl={imageUrl} />
               </Box>
             )}
           </View>
