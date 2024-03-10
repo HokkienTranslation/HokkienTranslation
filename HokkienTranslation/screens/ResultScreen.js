@@ -85,7 +85,7 @@ const ResultScreen = ({ route }) => {
   const updateProgress = (amount) => {
     setProgress((currentProgress) => {
       const updatedProgress = Math.min(currentProgress + amount, 1.0);
-      console.log("Current: " + currentProgress + " New: " + updatedProgress);
+      // console.log("Current: " + currentProgress + " New: " + updatedProgress);
       return updatedProgress;
     });
   };
@@ -194,7 +194,8 @@ const ResultScreen = ({ route }) => {
               <TextToSpeech prompt={hokkienRomanized} />
             )}
             {/* Definition */}
-            {visibilityStates.definition && (
+            {(visibilityStates.definition ||
+              visibilityStates.englishDefinition) && (
               <Box
                 backgroundColor={colors.primaryContainer}
                 p={3}
@@ -203,12 +204,34 @@ const ResultScreen = ({ route }) => {
                 w="100%"
                 alignSelf="center"
               >
-                <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
-                  Definition
-                </Text>
-                <Text fontSize="md" my={2} color={colors.onSurface}>
-                  {dataFromDatabase.translation.definitions}
-                </Text>
+                {visibilityStates.definition && (
+                  <VStack>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={colors.onSurface}
+                    >
+                      Definition
+                    </Text>
+                    <Text fontSize="md" my={2} color={colors.onSurface}>
+                      {dataFromDatabase.translation.definitions}
+                    </Text>
+                  </VStack>
+                )}
+                {visibilityStates.englishDefinition && (
+                  <VStack>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={colors.onSurface}
+                    >
+                      English Definition
+                    </Text>
+                    <Text fontSize="md" my={2} color={colors.onSurface}>
+                      {dataFromDatabase.translation.englishDefinitions}
+                    </Text>
+                  </VStack>
+                )}
               </Box>
             )}
             {/* Image */}
@@ -239,109 +262,117 @@ const ResultScreen = ({ route }) => {
               </Box>
             )}
             {/* Example Sentence */}
-            <Box
-              backgroundColor={colors.primaryContainer}
-              p={3}
-              borderRadius="10"
-              w="100%"
-              alignSelf="center"
-            >
-              {/* Hokkien Sentence */}
-              {visibilityStates.hokkienSentence && (
-                <VStack>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color={colors.onSurface}
-                  >
-                    Hokkien Example Sentence
-                  </Text>
-                  <HStack alignItems={"center"}>
-                    <BoldWordInSentence
-                      sentence={dataFromDatabase.sentence.sentences[0]}
-                      wordToBold={
-                        dataFromDatabase.translation.hokkienTranslation
-                      }
-                    />
-                    <IconButton
-                      icon={
-                        <Ionicons
-                          name="copy-outline"
-                          size={20}
-                          color={colors.onPrimaryContainer}
-                        />
-                      }
-                      onPress={() =>
-                        copyToClipboard(dataFromDatabase.sentence.sentences[0])
-                      }
-                    />
-                  </HStack>
-                  {visibilityStates.textToSpeech && (
-                    <TextToSpeech prompt={hokkienSentenceRomanized} />
-                  )}
-                </VStack>
-              )}
-
-              {/* Chinese Sentence */}
-              {visibilityStates.chineseSentence && (
-                <VStack>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color={colors.onSurface}
-                  >
-                    Chinese Example Sentence
-                  </Text>
-                  <HStack alignItems={"center"}>
-                    <Text fontSize="lg" color={colors.onSurface}>
-                      {dataFromDatabase.sentence.sentences[2]}
+            {(visibilityStates.hokkienSentence ||
+              visibilityStates.chineseSentence ||
+              visibilityStates.englishSentence) && (
+              <Box
+                backgroundColor={colors.primaryContainer}
+                p={3}
+                borderRadius="10"
+                w="100%"
+                alignSelf="center"
+              >
+                {/* Hokkien Sentence */}
+                {visibilityStates.hokkienSentence && (
+                  <VStack>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={colors.onSurface}
+                    >
+                      Hokkien Example Sentence
                     </Text>
-                    <IconButton
-                      icon={
-                        <Ionicons
-                          name="copy-outline"
-                          size={20}
-                          color={colors.onPrimaryContainer}
-                        />
-                      }
-                      onPress={() =>
-                        copyToClipboard(dataFromDatabase.sentence.sentences[2])
-                      }
-                    />
-                  </HStack>
-                </VStack>
-              )}
-
-              {/* English Sentence */}
-              {visibilityStates.englishSentence && (
-                <VStack>
-                  <Text
-                    fontSize="lg"
-                    fontWeight="bold"
-                    color={colors.onSurface}
-                  >
-                    English Example Sentence
-                  </Text>
-                  <HStack alignItems={"center"}>
-                    <Text fontSize="lg" color={colors.onSurface}>
-                      {dataFromDatabase.sentence.sentences[1]}
+                    <HStack alignItems={"center"}>
+                      <BoldWordInSentence
+                        sentence={dataFromDatabase.sentence.sentences[0]}
+                        wordToBold={
+                          dataFromDatabase.translation.hokkienTranslation
+                        }
+                      />
+                      <IconButton
+                        icon={
+                          <Ionicons
+                            name="copy-outline"
+                            size={20}
+                            color={colors.onPrimaryContainer}
+                          />
+                        }
+                        onPress={() =>
+                          copyToClipboard(
+                            dataFromDatabase.sentence.sentences[0]
+                          )
+                        }
+                      />
+                    </HStack>
+                    {visibilityStates.textToSpeech && (
+                      <TextToSpeech prompt={hokkienSentenceRomanized} />
+                    )}
+                  </VStack>
+                )}
+                {/* Chinese Sentence */}
+                {visibilityStates.chineseSentence && (
+                  <VStack>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={colors.onSurface}
+                    >
+                      Chinese Example Sentence
                     </Text>
-                    <IconButton
-                      icon={
-                        <Ionicons
-                          name="copy-outline"
-                          size={20}
-                          color={colors.onPrimaryContainer}
-                        />
-                      }
-                      onPress={() =>
-                        copyToClipboard(dataFromDatabase.sentence.sentences[1])
-                      }
-                    />
-                  </HStack>
-                </VStack>
-              )}
-            </Box>
+                    <HStack alignItems={"center"}>
+                      <Text fontSize="lg" color={colors.onSurface}>
+                        {dataFromDatabase.sentence.sentences[2]}
+                      </Text>
+                      <IconButton
+                        icon={
+                          <Ionicons
+                            name="copy-outline"
+                            size={20}
+                            color={colors.onPrimaryContainer}
+                          />
+                        }
+                        onPress={() =>
+                          copyToClipboard(
+                            dataFromDatabase.sentence.sentences[2]
+                          )
+                        }
+                      />
+                    </HStack>
+                  </VStack>
+                )}
+                {/* English Sentence */}
+                {visibilityStates.englishSentence && (
+                  <VStack>
+                    <Text
+                      fontSize="lg"
+                      fontWeight="bold"
+                      color={colors.onSurface}
+                    >
+                      English Example Sentence
+                    </Text>
+                    <HStack alignItems={"center"}>
+                      <Text fontSize="lg" color={colors.onSurface}>
+                        {dataFromDatabase.sentence.sentences[1]}
+                      </Text>
+                      <IconButton
+                        icon={
+                          <Ionicons
+                            name="copy-outline"
+                            size={20}
+                            color={colors.onPrimaryContainer}
+                          />
+                        }
+                        onPress={() =>
+                          copyToClipboard(
+                            dataFromDatabase.sentence.sentences[1]
+                          )
+                        }
+                      />
+                    </HStack>
+                  </VStack>
+                )}
+              </Box>
+            )}
           </View>
         ) : (
           <View justifyContent="center" width="100%">

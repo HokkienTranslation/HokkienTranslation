@@ -31,6 +31,7 @@ export async function addTranslation(data) {
     chineseInput: data.chineseInput,
     hokkienTranslation: data.hokkienTranslation,
     definitions: data.definitions,
+    englishDefinitions: data.englishDefinitions,
     sentence: "",
   });
   return docRef.id;
