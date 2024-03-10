@@ -3,6 +3,7 @@ import { Box, Text } from "native-base";
 import * as Progress from "react-native-progress";
 import { Animated } from "react-native";
 import { useTheme } from "./context/ThemeProvider";
+import { useWindowDimensions } from 'react-native';
 
 const LoadingScreen = ({ progress }) => {
   const texts = [
@@ -43,8 +44,11 @@ const LoadingScreen = ({ progress }) => {
     return () => clearInterval(intervalId);
   }, [fadeAnim]);
 
-  let width = Dimensions.get('window').width;
-  width = Math.min(width, 500);
+  
+  const window = useWindowDimensions();
+
+  let width = window.width;
+  width = Math.min(width * 0.7, 500);
 
   return (
     <Box
