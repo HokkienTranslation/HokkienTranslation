@@ -19,6 +19,7 @@ export async function formatedData(row) {
   let hokkienSentence = row.sentence;
   let englishSentence = row.english_sentence;
   let definitions = row.definition;
+  let englishDefinitions = row.eng_def;
   let imagePath = await uploadImage(row.gpt4_image_path);
 
   let threeTranslations = await translateToThree(word);
@@ -28,8 +29,6 @@ export async function formatedData(row) {
     threeTranslations.englishInput,
     threeTranslations.chineseInput
   );
-  // console.log("-------------------------------");
-  // console.log(exist);
 
   if (!exist) {
     console.log("Adding new Translation and Sentence");
@@ -38,6 +37,7 @@ export async function formatedData(row) {
       chineseInput: threeTranslations.chineseInput,
       hokkienTranslation: word,
       definitions: definitions,
+      englishDefinitions: englishDefinitions,
       sentence: "",
     };
 
