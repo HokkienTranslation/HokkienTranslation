@@ -43,6 +43,9 @@ const LoadingScreen = ({ progress }) => {
     return () => clearInterval(intervalId);
   }, [fadeAnim]);
 
+  let width = Dimensions.get('window').width;
+  width = Math.min(width, 500);
+
   return (
     <Box
       flex={1}
@@ -52,7 +55,7 @@ const LoadingScreen = ({ progress }) => {
     >
       <Progress.Bar
         progress={progress}
-        width={500}
+        width={width}
         color={colors.primaryContainer}
       />
       <Animated.View style={{ opacity: fadeAnim }}>
