@@ -95,29 +95,27 @@ const SettingsScreen = () => {
               color: colors.onSurface,
             }}
           >
-            Display
+            Display Options
           </Text>
-          <VisibilityToggle label="Image Visibility" stateKey="image" />
+          <VisibilityToggle label="Image" stateKey="image" />
+          <VisibilityToggle label="Definition" stateKey="definition" />
           <VisibilityToggle
-            label="Definition Visibility"
-            stateKey="definition"
+            label="English Definition"
+            stateKey="englishDefinition"
           />
           <VisibilityToggle
-            label="Hokkien Sentence Visibility"
+            label="Hokkien Sentence"
             stateKey="hokkienSentence"
           />
           <VisibilityToggle
-            label="Chinese Sentence Visibility"
+            label="Chinese Sentence"
             stateKey="chineseSentence"
           />
           <VisibilityToggle
-            label="English Sentence Visibility"
+            label="English Sentence"
             stateKey="englishSentence"
           />
-          <VisibilityToggle
-            label="TextToSpeech Visibility"
-            stateKey="textToSpeech"
-          />
+          <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
         </VStack>
       </VStack>
     </VStack>
