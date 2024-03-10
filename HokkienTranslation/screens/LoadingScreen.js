@@ -53,13 +53,16 @@ const LoadingScreen = ({ progress }) => {
   return (
     <Box
       flex={1}
-      justifyContent="center"
+      paddingTop={'35vh'}
       alignItems="center"
       bg={colors.surface}
+      position={'relative'}
     >
       <Progress.Bar
         progress={progress}
         width={width}
+        borderRadius={24}
+        height={24}
         color={colors.primaryContainer}
       />
       <Animated.View style={{ opacity: fadeAnim }}>
