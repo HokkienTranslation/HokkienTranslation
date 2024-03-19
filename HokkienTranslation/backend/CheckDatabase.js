@@ -8,7 +8,10 @@ async function CheckDatabase(query) {
   if (!query) return null;
 
   try {
-    const threeTranslations = await translateToThree(query);
+    let threeTranslations = await translateToThree(query);
+    threeTranslations.englishInput = threeTranslations.englishInput
+      .toLowerCase()
+      .replace(/[^a-z\s]/gi, "");
     const translation = await checkIfTranslationExists(
       threeTranslations.englishInput,
       threeTranslations.chineseInput
