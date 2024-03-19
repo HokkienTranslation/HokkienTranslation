@@ -78,11 +78,18 @@ export async function translateToThree(query) {
 
   if (inputLanguage === "ZH") {
     englishInput = await fetchTranslation(query, "EN");
+    englishInput = englishInput
+      .toLowerCase()
+      .replace(/[^a-z0-9\s,.!?_:"\-]/gi, "");
   } else if (inputLanguage === "EN") {
     englishInput = query;
   }
   chineseInput = await fetchTranslation(query, "ZH");
-  const hokkienTranslation = await fetchTranslation(query, "HAN");
+  chineseInput.toLowerCase().replace(/[^a-z0-9\s,.!?_:"\-]/gi, "");
+  let hokkienTranslation = await fetchTranslation(query, "HAN");
+  hokkienTranslation = hokkienTranslation
+    .toLowerCase()
+    .replace(/[^a-z0-9\s,.!?_:"\-]/gi, "");
   // console.log(englishInput, chineseInput, hokkienTranslation);
 
   return { englishInput, chineseInput, hokkienTranslation };

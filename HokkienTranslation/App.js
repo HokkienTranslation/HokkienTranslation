@@ -8,6 +8,7 @@ import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
+import FeedbackButton from "./screens/components/FeedbackButton";
 
 const Stack = createNativeStackNavigator();
 
@@ -31,6 +32,7 @@ const AppContent = () => {
             },
             headerTitleAlign: "center",
             headerTintColor: colors.onSurface,
+            headerRight: () => <FeedbackButton />,
           })}
         >
           <Stack.Screen name="Landing" component={LandingPage} />

@@ -32,6 +32,9 @@ export async function formatedData(row) {
 
   if (!exist) {
     console.log("Adding new Translation and Sentence");
+    threeTranslations.englishInput = translateToThree.englishInput
+      .toLowerCase()
+      .replace(/[^a-z\s]/gi, "");
     let TranslationData = {
       englishInput: threeTranslations.englishInput,
       chineseInput: threeTranslations.chineseInput,
