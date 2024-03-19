@@ -38,7 +38,8 @@ const TextToImage = ({ imageUrl }) => {
 const ResultScreen = ({ route }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
-  const { query } = route.params;
+  let { query } = route.params;
+  query = query.toLowerCase().replace(/[^a-z0-9\s,.!?_:"\-]/gi, "");
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
