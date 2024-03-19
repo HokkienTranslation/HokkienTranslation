@@ -38,8 +38,7 @@ const TextToImage = ({ imageUrl }) => {
 const ResultScreen = ({ route }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
-  let { query } = route.params;
-  query = query.toLowerCase().replace(/[^a-z0-9\s,.!?_:"\-]/gi, "");
+  const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
@@ -94,7 +93,9 @@ const ResultScreen = ({ route }) => {
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
-      const result = await CheckDatabase(query);
+      const result = await CheckDatabase(
+        query.toLowerCase().replace(/[^a-zA-Z0-9\s,.!?_:"\-]/gi, "")
+      );
       updateProgress(0.25);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
