@@ -93,9 +93,7 @@ const ResultScreen = ({ route }) => {
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
-      const result = await CheckDatabase(
-        query.toLowerCase().replace(/[^a-zA-Z0-9\s,.!?_:"\-]/gi, "")
-      );
+      const result = await CheckDatabase(query);
       updateProgress(0.25);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
