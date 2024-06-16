@@ -11,6 +11,8 @@ import {
   IconButton,
   View,
   Divider,
+  Input,
+  Button,
 } from "native-base";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import { generateImage } from "../backend/API/TextToImageService";
@@ -19,6 +21,8 @@ import LoadingScreen from "./LoadingScreen";
 import { CheckDatabase } from "../backend/CheckDatabase";
 import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../backend/database/Firebase";
 
 const TextToImage = ({ imageUrl }) => {
   if (!imageUrl) {
@@ -46,6 +50,10 @@ const ResultScreen = ({ route }) => {
   const { visibilityStates } = useComponentVisibility();
   const [progress, setProgress] = useState(0);
   const [imageUrl, setImageUrl] = useState(null);
+  const [showFeedbackForm, setShowFeedbackForm] = useState(false);
+  const [feedback, setFeedback] = useState("");
+  const [rate, setRate] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
@@ -90,6 +98,22 @@ const ResultScreen = ({ route }) => {
     });
   };
 
+  const handleFeedbackSubmit = async () => {
+    if (feedback && rate !== null) {
+      try {
+        await addDoc(collection(db, "feedback"), {
+          rate,
+          feedback,
+        });
+        setShowFeedbackForm(false);
+        setFeedback("");
+        setRate(null);
+        setSubmitted(true);
+      } catch (error) {
+        console.error("Error submitting feedback: ", error);
+      }
+    }
+  };
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
@@ -414,6 +438,91 @@ const ResultScreen = ({ route }) => {
               </Box>
             )}
           </View>
+        )}
+        {/* Thumbs Up/Down and Feedback */}
+        {!submitted && (
+          <VStack width="100%">
+            <HStack justifyContent="center" mt={4}>
+              <IconButton
+                icon={
+                  <Ionicons
+                    name="thumbs-up"
+                    size={30}
+                    color={colors.onPrimaryContainer}
+                  />
+                }
+                onPress={() => {
+                  setRate(true);
+                  setShowFeedbackForm(true);
+                }}
+              />
+              <IconButton
+                icon={
+                  <Ionicons
+                    name="thumbs-down"
+                    size={30}
+                    color={colors.onPrimaryContainer}
+                  />
+                }
+                onPress={() => {
+                  setRate(false);
+                  setShowFeedbackForm(true);
+                }}
+              />
+            </HStack>
+            {showFeedbackForm && (
+              <VStack space={4} mt={4} width="100%">
+                <Input
+                  variant="outline"
+                  placeholder="Enter your feedback"
+                  value={feedback}
+                  onChangeText={(text) => setFeedback(text)}
+                  multiline={true}
+                  h={20}
+                  paddingX={1}
+                  paddingY={2}
+                  style={{
+                    fontSize: 20,
+                    color: colors.onSurface,
+                  }}
+                />
+                <IconButton
+                  icon={
+                    <Ionicons
+                      name="close-outline"
+                      size={30}
+                      color={colors.onSurfaceVariant}
+                    />
+                  }
+                  position="absolute"
+                  top={0}
+                  right={0}
+                  _hover={{ bg: "transparent" }}
+                  _pressed={{ bg: "transparent" }}
+                  onPress={() => setFeedback("")}
+                />
+                <Button
+                  onPress={handleFeedbackSubmit}
+                  borderRadius="full"
+                  backgroundColor={colors.primaryContainer}
+                  _pressed={{
+                    backgroundColor: colors.onPrimaryContainer,
+                    opacity: 0.8,
+                    _text: {
+                      color: colors.primaryContainer,
+                    },
+                  }}
+                  _text={{
+                    color: colors.onPrimaryContainer,
+                    fontSize: "sm",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Submit
+                </Button>
+              </VStack>
+            )}
+          </VStack>
         )}
       </VStack>
     </ScrollView>
