@@ -1,4 +1,4 @@
-# HokkienTranslation Setup Guide
+# HokkienTranslation Setup Guide 
 
 This guide provides instructions on how to set up and deploy the `HokkienTranslation` project.
 
