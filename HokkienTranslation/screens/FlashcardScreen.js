@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Box, Text, Center, VStack } from "native-base";
 import { TouchableOpacity } from "react-native";
 import FlashcardNavigator from "../screens/components/FlashcardNavigator";
-
+import { useTheme } from "./context/ThemeProvider";
 
 const FlashcardScreen = () => {
+  const { theme, toggleTheme, themes } = useTheme();
+  const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
 
   const flashcards = [
@@ -21,13 +23,13 @@ const FlashcardScreen = () => {
   };
 
   return (
-    <Center flex={1} px="3">
+    <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
         <TouchableOpacity onPress={handleFlip}>
           <Box
             width="300px"
             height="200px"
-            bg="primary.500"
+            bg={colors.primaryContainer}
             alignItems="center"
             justifyContent="center"
             borderRadius="10px"
