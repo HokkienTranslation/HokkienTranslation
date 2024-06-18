@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { Box, Text, Button, Center, VStack } from "native-base";
+import { Box, Text, Center, VStack } from "native-base";
 import { TouchableOpacity } from "react-native";
+import FlashcardNavigator from "../screens/components/FlashcardNavigator";
+
 
 const FlashcardScreen = () => {
   const [showTranslation, setShowTranslation] = useState(false);
@@ -16,11 +18,6 @@ const FlashcardScreen = () => {
 
   const handleFlip = () => {
     setShowTranslation(!showTranslation);
-  };
-
-  const handleNext = () => {
-    setShowTranslation(false);
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
   };
 
   return (
@@ -43,7 +40,12 @@ const FlashcardScreen = () => {
             </Text>
           </Box>
         </TouchableOpacity>
-        <Button onPress={handleNext}>Next</Button>
+        <FlashcardNavigator
+          currentCardIndex={currentCardIndex}
+          flashcardsLength={flashcards.length}
+          setCurrentCardIndex={setCurrentCardIndex}
+          setShowTranslation={setShowTranslation}
+        />
       </VStack>
     </Center>
   );
