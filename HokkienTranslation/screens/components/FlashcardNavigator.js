@@ -41,6 +41,7 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
           onPressIn={() => setIsPressedLeft(true)}
           onPressOut={() => setIsPressedLeft(false)}
           onPress={handleBack}
+          disabled={isMin}
           >
             <Ionicons
               name={
@@ -61,6 +62,7 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
           onPressIn={() => setIsPressedRight(true)}
           onPressOut={() => setIsPressedRight(false)}
           onPress={handleNext}
+          disabled={isMax}
           >
             <Ionicons
               name={
