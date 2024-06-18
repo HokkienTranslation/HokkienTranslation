@@ -48,10 +48,17 @@ const FlashcardScreen = () => {
   };
 
   const handleNext = () => {
-    setShowTranslation(false);
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+    Animated.timing(position, {
+      toValue: { x: 500, y: -500 },
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {
+      setShowTranslation(false);
+      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+      position.setValue({ x: 0, y: 0 });
+    });
   };
-
+  
   return (
     <Center flex={1} px="3">
       <VStack space={4} alignItems="center">
