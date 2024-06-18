@@ -1,8 +1,12 @@
 import React, { useState } from "react";
-import { Box, Text, Button, Center, VStack } from "native-base";
+import { Box, Text, Center, VStack } from "native-base";
 import { TouchableOpacity } from "react-native";
+import FlashcardNavigator from "../screens/components/FlashcardNavigator";
+import { useTheme } from "./context/ThemeProvider";
 
 const FlashcardScreen = () => {
+  const { theme, toggleTheme, themes } = useTheme();
+  const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
 
   const flashcards = [
@@ -18,32 +22,32 @@ const FlashcardScreen = () => {
     setShowTranslation(!showTranslation);
   };
 
-  const handleNext = () => {
-    setShowTranslation(false);
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
-  };
-
   return (
-    <Center flex={1} px="3">
+    <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
         <TouchableOpacity onPress={handleFlip}>
           <Box
             width="300px"
             height="200px"
-            bg="primary.500"
+            bg={colors.primaryContainer}
             alignItems="center"
             justifyContent="center"
             borderRadius="10px"
             shadow={2}
           >
-            <Text fontSize="2xl" color="white">
+            <Text fontSize="2xl" color={colors.onSurface}>
               {showTranslation
                 ? flashcards[currentCardIndex].translation
                 : flashcards[currentCardIndex].word}
             </Text>
           </Box>
         </TouchableOpacity>
-        <Button onPress={handleNext}>Next</Button>
+          <FlashcardNavigator
+            currentCardIndex={currentCardIndex}
+            flashcardsLength={flashcards.length}
+            setCurrentCardIndex={setCurrentCardIndex}
+            setShowTranslation={setShowTranslation}
+          />
       </VStack>
     </Center>
   );
