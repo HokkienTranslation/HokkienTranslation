@@ -40,12 +40,12 @@ const FlashcardScreen = () => {
             </Text>
           </Box>
         </TouchableOpacity>
-        <FlashcardNavigator
-          currentCardIndex={currentCardIndex}
-          flashcardsLength={flashcards.length}
-          setCurrentCardIndex={setCurrentCardIndex}
-          setShowTranslation={setShowTranslation}
-        />
+          <FlashcardNavigator
+            currentCardIndex={currentCardIndex}
+            flashcardsLength={flashcards.length}
+            setCurrentCardIndex={setCurrentCardIndex}
+            setShowTranslation={setShowTranslation}
+          />
       </VStack>
     </Center>
   );
