@@ -35,7 +35,7 @@ const FlashcardScreen = () => {
             borderRadius="10px"
             shadow={2}
           >
-            <Text fontSize="2xl" color="white">
+            <Text fontSize="2xl" color={colors.onSurface}>
               {showTranslation
                 ? flashcards[currentCardIndex].translation
                 : flashcards[currentCardIndex].word}

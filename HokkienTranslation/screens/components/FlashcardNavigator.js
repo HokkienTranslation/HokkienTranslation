@@ -8,15 +8,30 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
     const colors = themes[theme];
     const [isPressedLeft, setIsPressedLeft] = useState(false);
     const [isPressedRight, setIsPressedRight] = useState(false);
-
-    const handleBack = () => {
-      setShowTranslation(false);
-      setCurrentCardIndex((prevIndex) => (prevIndex - 1 + flashcardsLength) % flashcardsLength);
+    const [isMin, setIsMin] = useState(true);
+    const [isMax, setIsMax] = useState(false);
+    
+    const handleBack = () => { //TODO: Definitely needs optimization
+      if(currentCardIndex > 0){
+        setIsMin(false);
+        setIsMax(false);
+        setShowTranslation(false);
+        setCurrentCardIndex((prevIndex) => (prevIndex - 1 + flashcardsLength) % flashcardsLength);
+      }
+      if(currentCardIndex == 1){
+        setIsMin(true);
+      }
     };
   
-    const handleNext = () => {
-      setShowTranslation(false);
-      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsLength);
+    const handleNext = () => { //TODO: Definitely needs optimization
+      if(currentCardIndex < flashcardsLength - 1){
+        setIsMin(false);
+        setShowTranslation(false);
+        setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcardsLength);
+      }
+      if(currentCardIndex == flashcardsLength - 2){
+        setIsMax(true)
+      }     
     };
 
     return (
@@ -31,6 +46,9 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
                 name={
                     isPressedLeft ? "chevron-back-circle" : "chevron-back-circle-outline"
                     }
+                color={
+                  isMin ? "grey" : ""
+                }
                 size={50}
                 
               />
@@ -48,6 +66,9 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
                 name={
                     isPressedRight ? "chevron-forward-circle" : "chevron-forward-circle-outline"
                     }
+                color={
+                  isMax ? "grey" : ""
+                }
                 size={50}
                 
               />
