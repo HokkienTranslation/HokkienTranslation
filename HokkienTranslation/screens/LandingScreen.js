@@ -1,10 +1,21 @@
 import React from "react";
 import { ImageBackground, Pressable } from "react-native";
 import { Box, Image, Text, VStack } from "native-base";
+import { CommonActions } from "@react-navigation/native";
 
 const LandingPage = ({ navigation }) => {
   return (
-    <Pressable style={{ flex: 1 }} onPress={() => navigation.navigate("Home")}>
+    <Pressable
+      style={{ flex: 1 }}
+      onPress={() =>
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          })
+        )
+      }
+    >
       <ImageBackground
         source={require("../assets/background.png")}
         style={{ flex: 1, justifyContent: "flex-start", alignItems: "center" }}
