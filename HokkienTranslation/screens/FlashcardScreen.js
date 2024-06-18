@@ -22,16 +22,9 @@ const FlashcardScreen = () => {
         position.setValue({ x: gestureState.dx, y: gestureState.dy });
       },
       onPanResponderRelease: (event, gestureState) => {
-        if (gestureState.dx > 120 || gestureState.dx < -120 || gestureState.dy > 120 || gestureState.dy < -120) {
-          Animated.timing(position, {
-            toValue: { x: gestureState.dx > 0 ? 500 : -500, y: gestureState.dy > 0 ? 500 : -500 },
-            duration: 500,
-            useNativeDriver: true,
-          }).start(() => {
-            setShowTranslation(false);
-            setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
-            position.setValue({ x: 0, y: 0 });
-          });
+        if (gestureState.dx > 120 || gestureState.dx < -120 || 
+            gestureState.dy > 120 || gestureState.dy < -120) {
+          handleNext(gestureState);
         } else {
           Animated.spring(position, {
             toValue: { x: 0, y: 0 },
@@ -47,9 +40,10 @@ const FlashcardScreen = () => {
     setShowTranslation(!showTranslation);
   };
 
-  const handleNext = () => {
+  const handleNext = (gestureState = null) => {
+    const value = { x: gestureState.dx > 0 ? 500 : -500, y: gestureState.dy > 0 ? 500 : -500 };
     Animated.timing(position, {
-      toValue: { x: 500, y: -500 },
+      toValue: value,
       duration: 500,
       useNativeDriver: true,
     }).start(() => {
