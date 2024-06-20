@@ -9,6 +9,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
+import CreateFlashcardScreen from "./screens/CreateFlashcardScreen";
+import UpdateFlashcardScreen from "./screens/UpdateFlashcardScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
@@ -44,6 +46,46 @@ const HomeStack = () => {
   );
 };
 
+const FlashcardStackNavigator = () => {
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+
+  return (
+    <Stack.Navigator
+      initialRouteName="Flashcard"
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: colors.header,
+        },
+        headerTitleStyle: {
+          fontSize: 25,
+          color: colors.onSurface,
+        },
+        headerTitleAlign: "center",
+        headerTintColor: colors.onSurface,
+        headerRight: () => <FeedbackButton />,
+        headerLeft: () => {return null;}, // removing back arrow
+      }}
+    >
+      <Stack.Screen 
+        name="Flashcard" 
+        component={FlashcardScreen} 
+        options={{ title: "" }}
+        />
+      <Stack.Screen
+        name="CreateFlashcard"
+        component={CreateFlashcardScreen}
+        options={{ title: "" }}
+      />
+      <Stack.Screen
+        name="UpdateFlashcard"
+        component={UpdateFlashcardScreen}
+        options={{ title: "" }}
+      />
+    </Stack.Navigator>
+  );
+};
+
 const MainTabNavigator = () => {
   const { themes, theme } = useTheme();
   const colors = themes[theme];
@@ -74,7 +116,7 @@ const MainTabNavigator = () => {
         component={HomeStack}
         options={{ title: "Home" }}
       />
-      <Tab.Screen name="Flashcard" component={FlashcardScreen} />
+      <Tab.Screen name="Flashcard" component={FlashcardStackNavigator} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
