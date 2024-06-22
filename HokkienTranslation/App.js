@@ -12,6 +12,8 @@ import FlashcardScreen from "./screens/FlashcardScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
+import FlashcardNavigator from "./screens/components/FlashcardNavigator";
+import FlashcardCategory from "./screens/FlashcardCategory";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -74,7 +76,7 @@ const MainTabNavigator = () => {
         component={HomeStack}
         options={{ title: "Home" }}
       />
-      <Tab.Screen name="Flashcard" component={FlashcardScreen} />
+      <Tab.Screen name="Flashcard" component={FlashcardCategory} />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
