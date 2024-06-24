@@ -51,7 +51,6 @@ const FlashcardNavigator = ({ currentCardIndex, flashcardsLength, setCurrentCard
                 isMin ? "grey" : ""
               }
               size={50}
-              
             />
         </Pressable>
         <Text fontSize="lg" color={colors.onSurface}>
