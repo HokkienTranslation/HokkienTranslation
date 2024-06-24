@@ -1,8 +1,11 @@
 import axios from "axios";
-import { IMAGE_API_URL, API_KEY } from "@env";
+// import { IMAGE_API_URL, API_KEY } from "@env";
 
-const apiUrl = IMAGE_API_URL;
-const apiKey = API_KEY;
+// const apiUrl = IMAGE_API_URL;
+// const apiKey = API_KEY;
+
+const apiUrl = process.env.IMAGE_API_URL;
+const apiKey = process.env.API_KEY;
 
 const generateImage = async (prompt) => {
   if (!prompt) return { imgBase64: null, error: null };
