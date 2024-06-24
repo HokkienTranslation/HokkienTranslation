@@ -123,9 +123,11 @@ const ResultScreen = ({ route }) => {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
-        updateProgress(0.125);
+        // updateProgress(0.125);
+        updateProgress(0.25);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        updateProgress(0.125);
+        // updateProgress(0.125);
+        updateProgress(0.25);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
@@ -143,7 +145,7 @@ const ResultScreen = ({ route }) => {
         return;
       }
       setImageUrl(imgBase64);
-      updateProgress(1.0);
+      // updateProgress(1.0);
     };
     loadImage();
   }, []);
