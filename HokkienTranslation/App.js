@@ -9,6 +9,7 @@ import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
+import QuizScreen from "./screens/QuizScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
@@ -56,7 +57,7 @@ const MainTabNavigator = () => {
 
           if (route.name === "HomeStack") {
             iconName = focused ? "home" : "home-outline";
-          } else if (route.name === "Flashcard") {
+          } else if (route.name === "FlashcardStack") {
             iconName = focused ? "book" : "book-outline";
           } else if (route.name === "Settings") {
             iconName = focused ? "settings" : "settings-outline";
@@ -74,7 +75,11 @@ const MainTabNavigator = () => {
         component={HomeStack}
         options={{ title: "Home" }}
       />
-      <Tab.Screen name="Flashcard" component={FlashcardScreen} />
+      <Tab.Screen
+        name="FlashcardStack"
+        component={FlashcardStack}
+        options={{ title: "Flashcard" }}
+      />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
   );
@@ -100,6 +105,28 @@ const AppContent = () => {
     </NativeBaseProvider>
   );
 };
+
+const FlashcardStack = () => {
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+
+  return (
+    <Stack.Navigator
+      initialRouteName="Flashcard"
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.header },
+        headerTitleStyle: { fontSize: 25, color: colors.onSurface },
+        headerTitleAlign: "center",
+        headerTintColor: colors.onSurface,
+        headerRight: () => <FeedbackButton />,
+      }}
+    >
+      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
+      <Stack.Screen name="Quiz" component={QuizScreen} />
+    </Stack.Navigator>
+  );
+};
+
 
 export default function App() {
   return (

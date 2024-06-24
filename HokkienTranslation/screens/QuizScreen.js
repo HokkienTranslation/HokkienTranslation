@@ -1,15 +1,12 @@
 import React, { useState } from "react";
-import { Box, Text, Button, Center, VStack, HStack } from "native-base";
+import { Box, Text, Center, VStack } from "native-base";
 import { TouchableOpacity } from "react-native";
-import FlashcardNavigator from "../screens/components/FlashcardNavigator";
 import { useTheme } from "./context/ThemeProvider";
-import { useNavigation } from '@react-navigation/native';
 
-const FlashcardScreen = () => {
-  const { theme, toggleTheme, themes } = useTheme();
+const QuizScreen = () => {
+  const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
-  const navigation = useNavigation();
 
   const flashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -27,16 +24,6 @@ const FlashcardScreen = () => {
   return (
     <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
-        <HStack width="100%" justifyContent="space-between" alignItems="center">
-          <Box />
-          <Button
-            onPress={() => navigation.navigate('Quiz')}
-            background={colors.primaryContainer}
-            _text={{ color: colors.onSurface }}
-          >
-            Test your abilities
-          </Button>
-        </HStack>
         <TouchableOpacity onPress={handleFlip}>
           <Box
             width="300px"
@@ -54,15 +41,9 @@ const FlashcardScreen = () => {
             </Text>
           </Box>
         </TouchableOpacity>
-          <FlashcardNavigator
-            currentCardIndex={currentCardIndex}
-            flashcardsLength={flashcards.length}
-            setCurrentCardIndex={setCurrentCardIndex}
-            setShowTranslation={setShowTranslation}
-          />
       </VStack>
     </Center>
   );
 };
 
-export default FlashcardScreen;
+export default QuizScreen;
