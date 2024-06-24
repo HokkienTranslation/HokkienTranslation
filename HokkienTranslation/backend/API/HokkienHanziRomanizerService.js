@@ -1,8 +1,10 @@
 import axios from "axios";
-import { ROMANIZER_API_URL, API_KEY } from "@env";
+// import { ROMANIZER_API_URL, API_KEY } from "@env";
 
-const apiUrl = ROMANIZER_API_URL;
-const apiKey = API_KEY;
+// const apiUrl = ROMANIZER_API_URL;
+// const apiKey = API_KEY;
+const apiUrl = process.env.ROMANIZER_API_URL;
+const apiKey = process.env.API_KEY;
 
 const fetchRomanizer = async (hokkien) => {
   if (!hokkien) return null;
