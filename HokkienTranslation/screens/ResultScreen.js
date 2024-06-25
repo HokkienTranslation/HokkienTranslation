@@ -139,7 +139,6 @@ const ResultScreen = ({ route }) => {
 
   useEffect(() => {
     const loadImage = async () => {
-      updateProgress(1.0);
       const { imgBase64, error } = await generateImage(query);
       if (error) {
         console.error(error);
@@ -148,6 +147,7 @@ const ResultScreen = ({ route }) => {
       setImageUrl(imgBase64);
     };
     loadImage();
+    updateProgress(1.0);
   }, []);
 
   if (progress < 1.0) {
