@@ -9,6 +9,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
+import CreateFlashcardScreen from "./screens/CreateFlashcardScreen";
+import UpdateFlashcardScreen from "./screens/UpdateFlashcardScreen";
 import QuizScreen from "./screens/QuizScreen";
 import FlashcardCategory from "./screens/FlashcardCategory";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
@@ -46,6 +48,38 @@ const HomeStack = () => {
   );
 };
 
+const FlashcardStack = () => {
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+
+  return (
+    <Stack.Navigator
+      initialRouteName="Category"
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.header },
+        headerTitleStyle: { fontSize: 25, color: colors.onSurface },
+        headerTitleAlign: "center",
+        headerTintColor: colors.onSurface,
+        headerRight: () => <FeedbackButton />,
+      }}
+    >
+      <Stack.Screen name="Category" component={FlashcardCategory} />
+      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
+      <Stack.Screen
+        name="CreateFlashcard"
+        component={CreateFlashcardScreen}
+        options={{ title: "" }}
+      />
+      <Stack.Screen
+        name="UpdateFlashcard"
+        component={UpdateFlashcardScreen}
+        options={{ title: "" }}
+      />
+      <Stack.Screen name="Quiz" component={QuizScreen} />
+    </Stack.Navigator>
+  );
+};
+
 const MainTabNavigator = () => {
   const { themes, theme } = useTheme();
   const colors = themes[theme];
@@ -79,7 +113,7 @@ const MainTabNavigator = () => {
       <Tab.Screen
         name="FlashcardStack"
         component={FlashcardStack}
-        options={{ title: "Flashcard" }}
+        options={{ title: "Flashcards" }}
       />
       <Tab.Screen name="Settings" component={SettingsScreen} />
     </Tab.Navigator>
@@ -87,9 +121,6 @@ const MainTabNavigator = () => {
 };
 
 const AppContent = () => {
-  const { themes, theme } = useTheme();
-  const colors = themes[theme];
-
   return (
     <NativeBaseProvider>
       <NavigationContainer>
@@ -106,29 +137,6 @@ const AppContent = () => {
     </NativeBaseProvider>
   );
 };
-
-const FlashcardStack = () => {
-  const { themes, theme } = useTheme();
-  const colors = themes[theme];
-
-  return (
-    <Stack.Navigator
-      initialRouteName="Category"
-      screenOptions={{
-        headerStyle: { backgroundColor: colors.header },
-        headerTitleStyle: { fontSize: 25, color: colors.onSurface },
-        headerTitleAlign: "center",
-        headerTintColor: colors.onSurface,
-        headerRight: () => <FeedbackButton />,
-      }}
-    >
-      <Stack.Screen name="Category" component={FlashcardCategory} />
-      <Stack.Screen name="Flashcard" component={FlashcardScreen} />
-      <Stack.Screen name="Quiz" component={QuizScreen} />
-    </Stack.Navigator>
-  );
-};
-
 
 export default function App() {
   return (
