@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Image, Box, Text } from "native-base";
+import { Image, Box, Text, Spinner } from "native-base";
+import { useTheme } from "../context/ThemeProvider";
 
 const TextToImage = ({ prompt }) => {
   const [imageUrl, setImageUrl] = useState();
@@ -23,7 +24,20 @@ const TextToImage = ({ prompt }) => {
   }, [prompt]);
 
   if (!imageUrl && !error) {
-    return <Text>Loading...</Text>;
+    const { themes, theme } = useTheme();
+    const spinnerColor =
+      theme === "light"
+        ? themes.light.primaryContainer
+        : themes.dark.primaryContainer;
+    return (
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Spinner
+          color={spinnerColor}
+          size="lg"
+          accessibilityLabel="Loading images"
+        />
+      </Box>
+    );
   }
 
   return (
