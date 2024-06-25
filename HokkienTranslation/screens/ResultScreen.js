@@ -139,13 +139,13 @@ const ResultScreen = ({ route }) => {
 
   useEffect(() => {
     const loadImage = async () => {
+      updateProgress(1.0);
       const { imgBase64, error } = await generateImage(query);
       if (error) {
         console.error(error);
         return;
       }
       setImageUrl(imgBase64);
-      // updateProgress(1.0);
     };
     loadImage();
   }, []);
