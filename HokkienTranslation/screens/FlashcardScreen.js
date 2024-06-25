@@ -1,7 +1,13 @@
 import React, { useState, useRef } from "react";
+<<<<<<< HEAD
 import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
+=======
+import { Box, Text, Center, VStack } from "native-base";
+import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import FlashcardNavigator from "../screens/components/FlashcardNavigator";
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 
@@ -10,9 +16,12 @@ const FlashcardScreen = ({ navigation }) => {
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+<<<<<<< HEAD
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [isPressedLeft, setIsPressedLeft] = useState(false);
   const [isPressedRight, setIsPressedRight] = useState(false);
+=======
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
 
@@ -34,7 +43,11 @@ const FlashcardScreen = ({ navigation }) => {
       onPanResponderRelease: (event, gestureState) => {
         if (gestureState.dx > 120 || gestureState.dx < -120 || 
             gestureState.dy > 120 || gestureState.dy < -120) {
+<<<<<<< HEAD
           handleNext(gestureState);
+=======
+          swipeGesture(gestureState);
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
         } else {
           Animated.spring(position, {
             toValue: { x: 0, y: 0 },
@@ -45,6 +58,7 @@ const FlashcardScreen = ({ navigation }) => {
     })
   ).current;
 
+<<<<<<< HEAD
   const handleNext = (gestureState = null) => {
     const value = { x: gestureState?.dx > 0 ? 500 : -500, y: gestureState?.dy > 0 ? 500 : -500 };
     Animated.timing(position, {
@@ -80,10 +94,13 @@ const FlashcardScreen = ({ navigation }) => {
       });
   };
 
+=======
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   const handleFlip = () => {
     setShowTranslation(!showTranslation);
   };
 
+<<<<<<< HEAD
   const handleUpdate = () => {
     const currentFlashcard = flashcards[currentCardIndex];
     navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
@@ -94,6 +111,54 @@ const FlashcardScreen = ({ navigation }) => {
     setShowConfirmDelete(false);
   };
 
+=======
+  const handleNext = () => {
+    if (currentCardIndex < flashcards.length - 1) {
+      setCurrentCardIndex((prevIndex) => prevIndex + 1);
+      setIsMin(false);
+      setShowTranslation(false);
+      if (currentCardIndex === flashcards.length - 2) {
+        setIsMax(true);
+      }
+    }
+  };
+
+  const handleBack = () => {
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex((prevIndex) => prevIndex - 1);
+      setIsMax(false);
+      setShowTranslation(false);
+      if (currentCardIndex === 1) {
+        setIsMin(true);
+      }
+    }
+  };
+
+  const swipeGesture = (gestureState = null) => {
+  const value = {
+    x: gestureState.dx > 0 ? 500 : -500,
+    y: gestureState.dy > 0 ? 500 : -500,
+  };
+
+  Animated.timing(position, {
+    toValue: value,
+    duration: 500,
+    useNativeDriver: true,
+  }).start(() => {
+    setShowTranslation(false);
+    position.setValue({ x: 0, y: 0 });
+
+    // TODO: Fix bug, where if currentCardIndex reaches end, stop increment (Crash)
+    if (currentCardIndex < flashcards.length - 1) {
+      handleNext();
+    }
+    else{
+      currentCardIndex = 1
+    }
+  });
+};
+
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons colors={colors} />
@@ -159,6 +224,7 @@ const FlashcardScreen = ({ navigation }) => {
           </Box>
 
           <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
+<<<<<<< HEAD
             <Animated.View
               {...panResponder.panHandlers}
               style={[
@@ -175,6 +241,16 @@ const FlashcardScreen = ({ navigation }) => {
                 },
               ]}
             >
+=======
+            <Animated.View 
+              {...panResponder.panHandlers}
+              style={[position.getLayout(), 
+              { transform: [{ rotate: position.x.interpolate({
+                inputRange: [-500, 0, 500],
+                outputRange: ['-10deg', '0deg', '10deg']
+              }) }] }
+            ]}>
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
               <Box
                 width="300px"
                 height="200px"
@@ -192,6 +268,7 @@ const FlashcardScreen = ({ navigation }) => {
               </Box>
             </Animated.View>
           </TouchableOpacity>
+<<<<<<< HEAD
 
           <HStack space={4} alignItems="center">
             <Pressable
@@ -253,6 +330,17 @@ const FlashcardScreen = ({ navigation }) => {
             </Box>
           </Center>
         </Modal>
+=======
+          <FlashcardNavigator
+            currentCardIndex={currentCardIndex}
+            flashcardsLength={flashcards.length}
+            handleNext={handleNext}
+            handleBack={handleBack}
+            isMin={isMin}
+            isMax={isMax}
+          />
+        </VStack>
+>>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
       </Center>
     </Box>
   );
