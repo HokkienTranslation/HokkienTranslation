@@ -10,6 +10,7 @@ import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
 import QuizScreen from "./screens/QuizScreen";
+import FlashcardCategory from "./screens/FlashcardCategory";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
@@ -112,7 +113,7 @@ const FlashcardStack = () => {
 
   return (
     <Stack.Navigator
-      initialRouteName="Flashcard"
+      initialRouteName="Category"
       screenOptions={{
         headerStyle: { backgroundColor: colors.header },
         headerTitleStyle: { fontSize: 25, color: colors.onSurface },
@@ -121,6 +122,7 @@ const FlashcardStack = () => {
         headerRight: () => <FeedbackButton />,
       }}
     >
+      <Stack.Screen name="Category" component={FlashcardCategory} />
       <Stack.Screen name="Flashcard" component={FlashcardScreen} />
       <Stack.Screen name="Quiz" component={QuizScreen} />
     </Stack.Navigator>

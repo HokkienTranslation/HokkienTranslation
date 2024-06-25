@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Button, HStack, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 
@@ -24,13 +24,12 @@ const ScreenNavigationButtons = ({ colors }) => {
       backgroundColor: colors.primaryContainer,
     },
     categoryBoxPressed: {
-      transform: [{ translateY: 2 }],
-      borderWidth: 2,
+      transform: [{ translateY: -2 }],
       shadowColor: '#000',
-      shadowOffset: { width: 0, height: 2 },
+      shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.2,
       shadowRadius: 8,
-      elevation: -3,
+      elevation: 3,
       opacity: 1,
       backgroundColor: colors.onPrimaryContainer,
     },
