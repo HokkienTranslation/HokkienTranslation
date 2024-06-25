@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { HStack, Text, IconButton } from "native-base";
 import { Feather } from "@expo/vector-icons";
-import { TONE_API_URL, SPEECH_API_URL } from "@env";
+// import { TONE_API_URL, SPEECH_API_URL } from "@env";
 import { useTheme } from "../context/ThemeProvider";
 
 const TextToSpeech = ({ prompt }) => {
@@ -10,8 +10,10 @@ const TextToSpeech = ({ prompt }) => {
   const [error, setError] = useState();
   const [numericTones, setNumericTones] = useState("");
   const [audioUrl, setAudioUrl] = useState("");
-  const NUMERIC_TONES_API = TONE_API_URL;
-  const TEXT_TO_SPEECH_API = SPEECH_API_URL;
+  // const NUMERIC_TONES_API = TONE_API_URL;
+  // const TEXT_TO_SPEECH_API = SPEECH_API_URL;
+  const NUMERIC_TONES_API = process.env.TONE_API_URL;
+  const TEXT_TO_SPEECH_API = process.env.SPEECH_API_URL;
 
   let params = new URLSearchParams({
     text0: prompt,

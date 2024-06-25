@@ -1,7 +1,8 @@
 import axios from "axios";
-import { TRANSLATION_API_URL } from "@env";
+// import { TRANSLATION_API_URL } from "@env";
 
-const apiUrl = TRANSLATION_API_URL;
+// const apiUrl = TRANSLATION_API_URL;
+const apiUrl = process.env.TRANSLATION_API_URL;
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
 const fetchTranslation = async (query, outputLanguage = "HAN") => {
