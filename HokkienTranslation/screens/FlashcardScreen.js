@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
+import { Box, Text, Center, VStack } from "native-base";
+import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import FlashcardNavigator from "../screens/components/FlashcardNavigator";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
@@ -46,28 +46,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowTranslation(!showTranslation);
   };
 
-  const handleNext = () => {
-    if (currentCardIndex < flashcards.length - 1) {
-      setCurrentCardIndex((prevIndex) => prevIndex + 1);
-      setIsMin(false);
-      setShowTranslation(false);
-      if (currentCardIndex === flashcards.length - 2) {
-        setIsMax(true);
-      }
-    }
-  };
-
-  const handleBack = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex((prevIndex) => prevIndex - 1);
-      setIsMax(false);
-      setShowTranslation(false);
-      if (currentCardIndex === 1) {
-        setIsMin(true);
-      }
-    }
-  };
-
   const handleUpdate = () => {
     const currentFlashcard = flashcards[currentCardIndex];
     navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
@@ -78,28 +56,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowConfirmDelete(false);
   };
 
-  useEffect(() => {
-    if (language != "Chinese (Simplified)") {
-      if (showTranslation) {
-        const translateText = async () => {
-          await callOpenAIChat(
-            `Translate ${flashcards[currentCardIndex].translation} to ${language}. 
-            You must respond with only the translation.`)
-          .then((response) => { 
-            console.log("OpenAI Response:", response);
-            setTranslatedText(response)
-          })
-          .catch((error) => console.error("Error:", error));
-        };
-        setTranslatedText("Loading...")
-        translateText();
-      }
-    } else {
-      setTranslatedText(flashcards[currentCardIndex].translation);
-    }
-  }, [showTranslation, currentCardIndex, language]);
-  
-  
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons colors={colors} />
