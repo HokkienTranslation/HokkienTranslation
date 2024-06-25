@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native';
 import { useState } from 'react';
+import { useTheme } from './context/ThemeProvider';
 
 // list of categories use api
 const categories = [
@@ -19,8 +20,11 @@ const categories = [
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+  
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <Center>
         <Container style={styles.container}>
           <Heading style={styles.heading}>Categories</Heading>
@@ -57,7 +61,6 @@ const CategoryBox = ({ category, index, navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
   },
   container: {
