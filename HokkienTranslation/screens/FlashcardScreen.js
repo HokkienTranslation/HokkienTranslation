@@ -1,6 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Box, Text, Button, Center, VStack } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import { View, TouchableOpacity, Animated, PanResponder } from "react-native";
 
 const FlashcardScreen = () => {
   const [showTranslation, setShowTranslation] = useState(false);
@@ -56,6 +56,21 @@ const FlashcardScreen = () => {
   return (
     <Center flex={1} px="3">
       <VStack space={4} alignItems="center">
+        <Box
+              position="absolute"
+              top = "16px"
+              width="300px"
+              height="200px"
+              bg="primary.600"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={2}
+            >
+            <Text fontSize="2xl" color="white">
+                {flashcards[(currentCardIndex + 1) % flashcards.length].word}
+              </Text>
+          </Box>
         <TouchableOpacity onPress={handleFlip}>
           <Animated.View {...panResponder.panHandlers} 
             style={[position.getLayout(), 
