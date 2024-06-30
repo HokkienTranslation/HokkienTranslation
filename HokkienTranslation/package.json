@@ -39,7 +39,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
-    "react-native-dotenv": "^3.4.10"
+    "react-native-dotenv": "^3.4.11"
   },
   "private": true
 }

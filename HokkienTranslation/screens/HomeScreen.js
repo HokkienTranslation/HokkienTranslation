@@ -14,6 +14,7 @@ import {
 import { useTheme } from "./context/ThemeProvider";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
+import QuickInputWords from "./components/QuickInputWords";
 
 export default function HomeScreen({ navigation }) {
   const [queryText, setQueryText] = useState("");
@@ -75,43 +76,11 @@ export default function HomeScreen({ navigation }) {
 
         {/* Random Words and Input Box */}
         <Box w="80%">
-          <Flex direction="row" wrap="wrap">
-            <Text
-              fontSize="md"
-              fontWeight="bold"
-              color={colors.onSurface}
-              mr={2}
-              alignSelf="center"
-            >
-              Try:
-            </Text>
-            {randomInputs.map((input, index) => (
-              <Button
-                key={index}
-                onPress={() => setQueryText(input)}
-                borderRadius="full"
-                backgroundColor={colors.primaryContainer}
-                _pressed={{
-                  backgroundColor: colors.onPrimaryContainer,
-                  opacity: 0.8,
-                  _text: {
-                    color: colors.primaryContainer,
-                  },
-                }}
-                _text={{
-                  color: colors.onPrimaryContainer,
-                  fontSize: "xs",
-                  fontWeight: "bold",
-                }}
-                paddingX={2}
-                marginX={1}
-                marginY={1}
-              >
-                {capitalizeFirstLetter(input)}
-              </Button>
-            ))}
-          </Flex>
-
+          <QuickInputWords
+            label="Try:"
+            words={randomInputs}
+            onWordPress={setQueryText}
+          />
           {/* Input */}
           <Box position="relative" mt={3}>
             <Input
