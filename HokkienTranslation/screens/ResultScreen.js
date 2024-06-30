@@ -58,12 +58,11 @@ const ResultScreen = ({ route }) => {
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
       const romanizedText = await fetchRomanizer(hokkienText);
-      updateProgress(0.125);
       if (romanizedText) {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
-      updateProgress(0.125);
+      updateProgress(0.2);
     } catch (error) {
       console.error(error);
     }
@@ -118,20 +117,18 @@ const ResultScreen = ({ route }) => {
     const checkData = async () => {
       setProgress(0);
       const result = await CheckDatabase(query);
-      updateProgress(0.25);
+      updateProgress(0.4);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
-        // updateProgress(0.125);
-        updateProgress(0.25);
+        updateProgress(0.2);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        // updateProgress(0.125);
-        updateProgress(0.25);
+        updateProgress(0.2);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
-        updateProgress(0.25);
+        updateProgress(0.6);
       }
     };
     checkData();
@@ -147,7 +144,6 @@ const ResultScreen = ({ route }) => {
       setImageUrl(imgBase64);
     };
     loadImage();
-    updateProgress(1.0);
   }, []);
 
   if (progress < 1.0) {
