@@ -47,6 +47,8 @@ const FlashcardScreen = ({ navigation }) => {
               paddingY={2}
               borderRadius="10px"
               onPress={() => navigation.navigate('CreateFlashcard')}
+              _hover={{ bg: colors.darkerPrimaryContainer }}
+              _pressed={{bg: colors.evenDarkerPrimaryContainer}} 
             >
               Create
             </Button>
@@ -58,6 +60,8 @@ const FlashcardScreen = ({ navigation }) => {
               paddingY={2}
               borderRadius="10px"
               onPress={handleUpdate}
+              _hover={{ bg: colors.darkerPrimaryContainer }} 
+              _pressed={{bg: colors.evenDarkerPrimaryContainer}}
             >
               Update
             </Button>
@@ -69,6 +73,8 @@ const FlashcardScreen = ({ navigation }) => {
               paddingY={2}
               borderRadius="10px"
               onPress={() => setShowConfirmDelete(true)}
+              _hover={{ bg: colors.darkerPrimaryContainer }}
+              _pressed={{bg: colors.evenDarkerPrimaryContainer}} 
             >
               Delete
             </Button>

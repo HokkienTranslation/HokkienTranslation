@@ -24,7 +24,7 @@ const FlashcardCategory = () => {
   const colors = themes[theme];
   
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
       <Center>
         <Container style={styles.container}>
           <Heading style={styles.heading}>Categories</Heading>

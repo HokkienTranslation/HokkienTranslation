@@ -70,7 +70,7 @@ const ScreenNavigationButtons = ({ colors }) => {
       >
         <HStack alignItems="center">
         <Text style={{ fontWeight: "bold", marginLeft: 8, marginRight: 1, opacity: 1,color: isPressedQuizButton ? colors.primaryContainer : colors.onPrimaryContainer}}>
-            TEST YOUR ABILITIES
+            QUIZ
           </Text>
           <Ionicons
             name={"arrow-forward-outline"}

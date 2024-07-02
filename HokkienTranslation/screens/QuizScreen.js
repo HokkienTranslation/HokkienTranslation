@@ -39,7 +39,7 @@ const QuizScreen = () => {
               <HStack space={3} width="100%">
                 <Button
                   size="lg"
-                  colorScheme="secondary"
+                  colorScheme={colors.onSurface}
                   variant="outline"
                   flex={1}
                   onPress={handleChoice}
@@ -48,7 +48,7 @@ const QuizScreen = () => {
                 </Button>
                 <Button
                   size="lg"
-                  colorScheme="secondary"
+                  colorScheme={colors.onSurface}
                   variant="outline"
                   flex={1}
                   onPress={handleChoice}
@@ -59,7 +59,7 @@ const QuizScreen = () => {
               <HStack space={3} width="100%">
                 <Button
                   size="lg"
-                  colorScheme="secondary"
+                  colorScheme={colors.onSurface}
                   variant="outline"
                   flex={1}
                   onPress={handleChoice}
@@ -68,7 +68,7 @@ const QuizScreen = () => {
                 </Button>
                 <Button
                   size="lg"
-                  colorScheme="secondary"
+                  colorScheme={colors.onSurface}
                   variant="outline"
                   flex={1}
                   onPress={handleChoice}
