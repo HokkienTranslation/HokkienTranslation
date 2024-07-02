@@ -9,6 +9,8 @@ import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
+import LoginScreen from "./screens/LoginScreen";
+import RegisterScreen from "./screens/RegisterScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
@@ -95,6 +97,8 @@ const AppContent = () => {
         >
           <Stack.Screen name="Landing" component={LandingPage} />
           <Stack.Screen name="Main" component={MainTabNavigator} />
+          <Stack.Screen name="Login" component={LoginScreen} />
+          <Stack.Screen name="Register" component={RegisterScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
