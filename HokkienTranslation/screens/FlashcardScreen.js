@@ -135,6 +135,24 @@ const FlashcardScreen = ({ navigation }) => {
               Delete
             </Button>
           </HStack>
+
+          <Box
+            position="absolute"
+            top="74px"
+            width="300px"
+            height="200px"
+            bg={colors.darkerPrimaryContainer}
+            alignItems="center"
+            justifyContent="center"
+            borderRadius="10px"
+            shadow={2}
+            zIndex={-1}
+          >
+            <Text fontSize="2xl" color={colors.onSurface}>
+              {flashcards[(currentCardIndex + 1) % flashcards.length].word}
+            </Text>
+          </Box>
+
           <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
             <Animated.View
               {...panResponder.panHandlers}
