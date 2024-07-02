@@ -23,6 +23,7 @@ import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
+import QuickInputWords from "./components/QuickInputWords";
 
 const TextToImage = ({ imageUrl }) => {
   if (!imageUrl) {
@@ -55,15 +56,31 @@ const ResultScreen = ({ route }) => {
   const [rate, setRate] = useState(null);
   const [submitted, setSubmitted] = useState(false);
 
+  const feedbackWords = {
+    thumbsUp: [
+      "Natural translation",
+      "Correct context/image",
+      "Polite",
+      "Appropriate language",
+      "Good pronunciation",
+    ],
+    thumbsDown: [
+      "Translation too literal",
+      "Wrong context/image",
+      "Rude",
+      "Bad words",
+      "Bad pronunciation",
+    ],
+  };
+
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
       const romanizedText = await fetchRomanizer(hokkienText);
-      updateProgress(0.125);
       if (romanizedText) {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
-      updateProgress(0.125);
+      updateProgress(0.2);
     } catch (error) {
       console.error(error);
     }
@@ -118,20 +135,18 @@ const ResultScreen = ({ route }) => {
     const checkData = async () => {
       setProgress(0);
       const result = await CheckDatabase(query);
-      updateProgress(0.25);
+      updateProgress(0.4);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
         setHokkienTranslation(result.translation.hokkienTranslation);
         await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
-        // updateProgress(0.125);
-        updateProgress(0.25);
+        updateProgress(0.2);
         await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        // updateProgress(0.125);
-        updateProgress(0.25);
+        updateProgress(0.2);
       } else {
         setHokkienTranslation(result.threeTranslations.hokkienTranslation);
         await fetchAndSetRomanization(hokkienTranslation, 1);
-        updateProgress(0.25);
+        updateProgress(0.6);
       }
     };
     checkData();
@@ -147,7 +162,6 @@ const ResultScreen = ({ route }) => {
       setImageUrl(imgBase64);
     };
     loadImage();
-    updateProgress(1.0);
   }, []);
 
   if (progress < 1.0) {
@@ -473,56 +487,65 @@ const ResultScreen = ({ route }) => {
               />
             </HStack>
             {showFeedbackForm && (
-              <VStack space={4} mt={4} width="100%">
-                <Input
-                  variant="outline"
-                  placeholder="Enter your feedback"
-                  value={feedback}
-                  onChangeText={(text) => setFeedback(text)}
-                  multiline={true}
-                  h={20}
-                  paddingX={1}
-                  paddingY={2}
-                  style={{
-                    fontSize: 20,
-                    color: colors.onSurface,
-                  }}
-                />
-                <IconButton
-                  icon={
-                    <Ionicons
-                      name="close-outline"
-                      size={30}
-                      color={colors.onSurfaceVariant}
-                    />
+              <>
+                <QuickInputWords
+                  label="Feedback:"
+                  words={
+                    rate ? feedbackWords.thumbsUp : feedbackWords.thumbsDown
                   }
-                  position="absolute"
-                  top={0}
-                  right={0}
-                  _hover={{ bg: "transparent" }}
-                  _pressed={{ bg: "transparent" }}
-                  onPress={() => setFeedback("")}
+                  onWordPress={(word) => setFeedback(word)}
                 />
-                <Button
-                  onPress={handleFeedbackSubmit}
-                  borderRadius="full"
-                  backgroundColor={colors.primaryContainer}
-                  _pressed={{
-                    backgroundColor: colors.onPrimaryContainer,
-                    opacity: 0.8,
-                    _text: {
-                      color: colors.primaryContainer,
-                    },
-                  }}
-                  _text={{
-                    color: colors.onPrimaryContainer,
-                    fontSize: "sm",
-                    fontWeight: "bold",
-                  }}
-                >
-                  Submit
-                </Button>
-              </VStack>
+                <VStack space={4} mt={4} width="100%">
+                  <Input
+                    variant="outline"
+                    placeholder="Enter your feedback"
+                    value={feedback}
+                    onChangeText={(text) => setFeedback(text)}
+                    multiline={true}
+                    h={20}
+                    paddingX={1}
+                    paddingY={2}
+                    style={{
+                      fontSize: 20,
+                      color: colors.onSurface,
+                    }}
+                  />
+                  <IconButton
+                    icon={
+                      <Ionicons
+                        name="close-outline"
+                        size={30}
+                        color={colors.onSurfaceVariant}
+                      />
+                    }
+                    position="absolute"
+                    top={0}
+                    right={0}
+                    _hover={{ bg: "transparent" }}
+                    _pressed={{ bg: "transparent" }}
+                    onPress={() => setFeedback("")}
+                  />
+                  <Button
+                    onPress={handleFeedbackSubmit}
+                    borderRadius="full"
+                    backgroundColor={colors.primaryContainer}
+                    _pressed={{
+                      backgroundColor: colors.onPrimaryContainer,
+                      opacity: 0.8,
+                      _text: {
+                        color: colors.primaryContainer,
+                      },
+                    }}
+                    _text={{
+                      color: colors.onPrimaryContainer,
+                      fontSize: "sm",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    Submit
+                  </Button>
+                </VStack>
+              </>
             )}
           </VStack>
         )}
