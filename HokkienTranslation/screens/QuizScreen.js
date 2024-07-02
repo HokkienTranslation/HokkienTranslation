@@ -6,8 +6,9 @@ const QuizScreen = () => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  
-  //TODO: Change the positions of answers to be random
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+
+  // TODO: Change the positions of answers to be random
   const flashcards = [
     { word: "Apple", choices: ["Banana", "Orange", "Apple", "Grape"], answer: 2 },
     { word: "Banana", choices: ["Peach", "Banana", "Berry", "Melon"], answer: 1 },
@@ -15,8 +16,34 @@ const QuizScreen = () => {
     { word: "Dog", choices: ["Cat", "Dog", "Rabbit", "Horse"], answer: 1 },
   ];
 
-  const handleChoice = () => {
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+  const handleChoice = (index) => {
+    setSelectedAnswer(index);
+    setTimeout(() => {
+      setSelectedAnswer(null);
+      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+    }, 1000);
+  };
+
+  const getButtonStyle = (index) => {
+    const correctAnswerIndex = flashcards[currentCardIndex].answer;
+
+    if (selectedAnswer === null) {
+      return {
+        bg: colors.primaryContainer,
+        borderColor: colors.buttonBorder
+      };
+    } else if (selectedAnswer === index) {
+      return correctAnswerIndex === index
+        ? { bg: 'rgba(39, 201, 36, 0.6)', borderColor: '#27c924' }
+        : { bg: 'rgba(186, 34, 39, 0.6)', borderColor: '#ba2227' };
+    } else if (selectedAnswer !== correctAnswerIndex && index === correctAnswerIndex) {
+      return { bg: 'rgba(39, 201, 36, 0.6)', borderColor: '#27c924' };
+    } else {
+      return {
+        bg: colors.primaryContainer,
+        borderColor: colors.buttonBorder
+      };
+    }
   };
 
   return (
@@ -41,19 +68,37 @@ const QuizScreen = () => {
                   size="lg"
                   colorScheme={colors.onSurface}
                   variant="outline"
+                  {...getButtonStyle(0)}
+                  _hover={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
+                  _pressed={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
                   flex={1}
-                  onPress={handleChoice}
+                  onPress={() => handleChoice(0)}
                 >
-                  {flashcards[currentCardIndex].choices[0]}
+                  <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[0]}</Text>
                 </Button>
                 <Button
                   size="lg"
                   colorScheme={colors.onSurface}
                   variant="outline"
+                  {...getButtonStyle(1)}
+                  _hover={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
+                  _pressed={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
                   flex={1}
-                  onPress={handleChoice}
+                  onPress={() => handleChoice(1)}
                 >
-                  {flashcards[currentCardIndex].choices[1]}
+                  <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[1]}</Text>
                 </Button>
               </HStack>
               <HStack space={3} width="100%">
@@ -61,19 +106,37 @@ const QuizScreen = () => {
                   size="lg"
                   colorScheme={colors.onSurface}
                   variant="outline"
+                  {...getButtonStyle(2)}
+                  _hover={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
+                  _pressed={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
                   flex={1}
-                  onPress={handleChoice}
+                  onPress={() => handleChoice(2)}
                 >
-                  {flashcards[currentCardIndex].choices[2]}
+                  <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[2]}</Text>
                 </Button>
                 <Button
                   size="lg"
                   colorScheme={colors.onSurface}
                   variant="outline"
+                  {...getButtonStyle(3)}
+                  _hover={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
+                  _pressed={{ 
+                    bg: colors.primaryContainer, 
+                    borderColor: colors.highlightButtonBorder,
+                  }}
                   flex={1}
-                  onPress={handleChoice}
+                  onPress={() => handleChoice(3)}
                 >
-                  {flashcards[currentCardIndex].choices[3]}
+                  <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[3]}</Text>
                 </Button>
               </HStack>
             </VStack>

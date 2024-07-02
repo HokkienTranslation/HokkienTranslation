@@ -51,10 +51,10 @@ const ScreenNavigationButtons = ({ colors }) => {
           <Ionicons
             name={"arrow-back-outline"}
             size={17}
-            color={ isPressedCatButton ? colors.primaryContainer : colors.onPrimaryContainer }
+            color={ isPressedCatButton ? colors.primaryContainer : colors.onSurface }
           />
-          <Text style={{ fontWeight: "bold", marginLeft: 1, opacity: 1,color: isPressedCatButton ? colors.primaryContainer : colors.onPrimaryContainer}}>
-            CATEGORIES
+          <Text style={{ fontWeight: "bold", marginLeft: 1, opacity: 1,color: isPressedCatButton ? colors.primaryContainer : colors.onSurface}}>
+            Categories
           </Text>
         </HStack>
       </Button>
@@ -69,13 +69,13 @@ const ScreenNavigationButtons = ({ colors }) => {
         style={isPressedQuizButton ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox}
       >
         <HStack alignItems="center">
-        <Text style={{ fontWeight: "bold", marginLeft: 8, marginRight: 1, opacity: 1,color: isPressedQuizButton ? colors.primaryContainer : colors.onPrimaryContainer}}>
-            QUIZ
+        <Text style={{ fontWeight: "bold", marginLeft: 8, marginRight: 1, opacity: 1,color: isPressedQuizButton ? colors.primaryContainer : colors.onSurface}}>
+            Quiz
           </Text>
           <Ionicons
             name={"arrow-forward-outline"}
             size={17}
-            color={ isPressedQuizButton ? colors.primaryContainer : colors.onPrimaryContainer }
+            color={ isPressedQuizButton ? colors.primaryContainer : colors.onSurface }
           />
         </HStack>
       </Button>

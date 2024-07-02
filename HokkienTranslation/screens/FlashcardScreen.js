@@ -74,7 +74,7 @@ const FlashcardScreen = ({ navigation }) => {
               borderRadius="10px"
               onPress={() => setShowConfirmDelete(true)}
               _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{bg: colors.evenDarkerPrimaryContainer}} 
+              _pressed={{bg: colors.evenDarkerPrimaryContainer, }} 
             >
               Delete
             </Button>
