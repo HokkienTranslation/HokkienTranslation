@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Button, Center, VStack, HStack, Text } from "native-base";
+import { Box, Button, Center, VStack, HStack, Text, Progress } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 
 const QuizScreen = () => {
@@ -49,21 +49,30 @@ const QuizScreen = () => {
   return (
     <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
+        <Text fontSize="lg" color={colors.onSurface}>
+          Question {currentCardIndex + 1} of {flashcards.length}
+        </Text>
+        <Progress 
+          value={(currentCardIndex + 1) / flashcards.length * 100} 
+          width="90%" 
+          colorScheme="green" 
+          mb={4}
+        />
         <Box
-          width="350px"
+          width="490px"
           height="250px"
           bg={colors.primaryContainer}
           borderRadius="10px"
           shadow={2}
-          p={4}
+          p={6}
           justifyContent="center"
         >
-          <VStack space={4} alignItems="center" flex={1} justifyContent="center">
-            <Text fontSize="2xl" color={colors.onSurface} mb={4}>
+          <VStack space={10} alignItems="center" flex={1} justifyContent="center">
+            <Text fontSize="2xl" color={colors.onSurface} mb={0}>
               {flashcards[currentCardIndex].word}
             </Text>
-            <VStack space={3} width="100%">
-              <HStack space={3} width="100%">
+            <VStack space={5} width="100%">
+              <HStack space={9} width="100%">
                 <Button
                   size="lg"
                   colorScheme={colors.onSurface}
@@ -101,7 +110,7 @@ const QuizScreen = () => {
                   <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[1]}</Text>
                 </Button>
               </HStack>
-              <HStack space={3} width="100%">
+              <HStack space={9} width="100%">
                 <Button
                   size="lg"
                   colorScheme={colors.onSurface}
