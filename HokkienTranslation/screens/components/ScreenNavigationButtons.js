@@ -14,6 +14,7 @@ const ScreenNavigationButtons = ({ colors }) => {
       alignItems: 'center',
       borderWidth: 1,
       borderRadius: 10,
+      borderColor: colors.buttonBorder,
       padding: 10,
       marginBottom: 10,
       shadowColor: '#000',
