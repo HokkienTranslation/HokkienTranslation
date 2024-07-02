@@ -55,7 +55,7 @@ const FlashcardScreen = ({ navigation }) => {
       setShowTranslation(false);
       setCurrentCardIndex((prevIndex) => {
         const newIndex = (prevIndex + 1) % flashcards.length;
-        setIsMin(false);
+        setIsMin(newIndex === 0);
         setIsMax(newIndex === flashcards.length - 1);
         return newIndex;
       });
