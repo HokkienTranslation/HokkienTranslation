@@ -139,13 +139,13 @@ const FlashcardScreen = ({ navigation }) => {
           <Box
             position="absolute"
             top="74px"
-            width="300px"
-            height="200px"
+            width="299px"
+            height="199px"
             bg={colors.darkerPrimaryContainer}
             alignItems="center"
             justifyContent="center"
             borderRadius="10px"
-            shadow={2}
+            shadow={1}
             zIndex={-1}
           >
             <Text fontSize="2xl" color={colors.onSurface}>

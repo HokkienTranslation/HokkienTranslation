@@ -67,7 +67,7 @@ const QuizScreen = () => {
           mb={4}
         />
         <Box
-          width="490px"
+          width="400px"
           height="250px"
           bg={colors.primaryContainer}
           borderRadius="10px"
