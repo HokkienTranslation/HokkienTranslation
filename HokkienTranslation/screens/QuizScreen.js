@@ -7,6 +7,7 @@ const QuizScreen = () => {
   const colors = themes[theme];
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [score, setScore] = useState(0);
 
   // TODO: Change the positions of answers to be random
   const flashcards = [
@@ -16,8 +17,12 @@ const QuizScreen = () => {
     { word: "Dog", choices: ["Cat", "Dog", "Rabbit", "Horse"], answer: 1 },
   ];
 
+  // Timer to move to next question
   const handleChoice = (index) => {
     setSelectedAnswer(index);
+    if (index === flashcards[currentCardIndex].answer) {
+      setScore((prevScore) => prevScore + 1);
+    }
     setTimeout(() => {
       setSelectedAnswer(null);
       setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
@@ -152,6 +157,9 @@ const QuizScreen = () => {
           </VStack>
         </Box>
       </VStack>
+      <Text fontSize="lg" color={colors.onSurface} mt={4}>
+          Score: {score}
+      </Text>
     </Center>
   );
 };
