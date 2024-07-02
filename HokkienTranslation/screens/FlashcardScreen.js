@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
-import { Box, Text, Button, Center, VStack, HStack } from "native-base";
+import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
-import FlashcardNavigator from "../screens/components/FlashcardNavigator";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 
@@ -11,6 +11,10 @@ const FlashcardScreen = ({ navigation }) => {
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [isPressedLeft, setIsPressedLeft] = useState(false);
+  const [isPressedRight, setIsPressedRight] = useState(false);
+  const [isMin, setIsMin] = useState(true);
+  const [isMax, setIsMax] = useState(false);
 
   const flashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -42,16 +46,33 @@ const FlashcardScreen = ({ navigation }) => {
   ).current;
 
   const handleNext = (gestureState = null) => {
-    const value = { x: gestureState.dx > 0 ? 500 : -500, y: gestureState.dy > 0 ? 500 : -500 };
+    const value = { x: gestureState?.dx > 0 ? 500 : -500, y: gestureState?.dy > 0 ? 500 : -500 };
     Animated.timing(position, {
       toValue: value,
       duration: 500,
       useNativeDriver: true,
     }).start(() => {
       setShowTranslation(false);
-      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+      setCurrentCardIndex((prevIndex) => {
+        const newIndex = (prevIndex + 1) % flashcards.length;
+        setIsMin(false);
+        setIsMax(newIndex === flashcards.length - 1);
+        return newIndex;
+      });
       position.setValue({ x: 0, y: 0 });
     });
+  };
+
+  const handleBack = () => {
+    if (currentCardIndex > 0) {
+      setShowTranslation(false);
+      setCurrentCardIndex((prevIndex) => {
+        const newIndex = (prevIndex - 1 + flashcards.length) % flashcards.length;
+        setIsMin(newIndex === 0);
+        setIsMax(false);
+        return newIndex;
+      });
+    }
   };
 
   const handleFlip = () => {
@@ -83,7 +104,7 @@ const FlashcardScreen = ({ navigation }) => {
               borderRadius="10px"
               onPress={() => navigation.navigate('CreateFlashcard')}
               _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{bg: colors.evenDarkerPrimaryContainer}} 
+              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
               Create
             </Button>
@@ -95,8 +116,8 @@ const FlashcardScreen = ({ navigation }) => {
               paddingY={2}
               borderRadius="10px"
               onPress={handleUpdate}
-              _hover={{ bg: colors.darkerPrimaryContainer }} 
-              _pressed={{bg: colors.evenDarkerPrimaryContainer}}
+              _hover={{ bg: colors.darkerPrimaryContainer }}
+              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
               Update
             </Button>
@@ -109,7 +130,7 @@ const FlashcardScreen = ({ navigation }) => {
               borderRadius="10px"
               onPress={() => setShowConfirmDelete(true)}
               _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{bg: colors.evenDarkerPrimaryContainer, }} 
+              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
               Delete
             </Button>
@@ -148,13 +169,38 @@ const FlashcardScreen = ({ navigation }) => {
               </Box>
             </Animated.View>
           </TouchableOpacity>
-          
-          <FlashcardNavigator
-            currentCardIndex={currentCardIndex}
-            flashcardsLength={flashcards.length}
-            setCurrentCardIndex={setCurrentCardIndex}
-            setShowTranslation={setShowTranslation}
-          />
+
+          <HStack space={4} alignItems="center">
+            <Pressable
+              borderRadius="50"
+              onPressIn={() => setIsPressedLeft(true)}
+              onPressOut={() => setIsPressedLeft(false)}
+              onPress={handleBack}
+              disabled={isMin}
+            >
+              <Ionicons
+                name={isPressedLeft ? "chevron-back-circle" : "chevron-back-circle-outline"}
+                color={isMin ? "grey" : colors.onSurface}
+                size={50}
+              />
+            </Pressable>
+            <Text fontSize="lg" color={colors.onSurface}>
+              {currentCardIndex + 1}/{flashcards.length}
+            </Text>
+            <Pressable
+              borderRadius="50"
+              onPressIn={() => setIsPressedRight(true)}
+              onPressOut={() => setIsPressedRight(false)}
+              onPress={handleNext}
+              disabled={isMax}
+            >
+              <Ionicons
+                name={isPressedRight ? "chevron-forward-circle" : "chevron-forward-circle-outline"}
+                color={isMax ? "grey" : colors.onSurface}
+                size={50}
+              />
+            </Pressable>
+          </HStack>
         </VStack>
 
         <Modal

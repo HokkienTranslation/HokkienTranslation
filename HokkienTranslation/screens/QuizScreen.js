@@ -8,6 +8,7 @@ const QuizScreen = () => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
+  const [isDisabled, setIsDisabled] = useState(false);
 
   // TODO: Change the positions of answers to be random
   const flashcards = [
@@ -20,11 +21,13 @@ const QuizScreen = () => {
   // Timer to move to next question
   const handleChoice = (index) => {
     setSelectedAnswer(index);
+    setIsDisabled(true);
     if (index === flashcards[currentCardIndex].answer) {
       setScore((prevScore) => prevScore + 1);
     }
     setTimeout(() => {
       setSelectedAnswer(null);
+      setIsDisabled(false);
       setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
     }, 1000);
   };
@@ -83,16 +86,18 @@ const QuizScreen = () => {
                   colorScheme={colors.onSurface}
                   variant="outline"
                   {...getButtonStyle(0)}
-                  _hover={{ 
-                    bg: colors.primaryContainer, 
+                  _hover={{
                     borderColor: colors.highlightButtonBorder,
                   }}
-                  _pressed={{ 
-                    bg: colors.primaryContainer, 
+                  _pressed={{
                     borderColor: colors.highlightButtonBorder,
+                  }}
+                  _disabled={{
+                    opacity: 1,
                   }}
                   flex={1}
                   onPress={() => handleChoice(0)}
+                  isDisabled={isDisabled}
                 >
                   <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[0]}</Text>
                 </Button>
@@ -101,16 +106,18 @@ const QuizScreen = () => {
                   colorScheme={colors.onSurface}
                   variant="outline"
                   {...getButtonStyle(1)}
-                  _hover={{ 
-                    bg: colors.primaryContainer, 
+                  _hover={{
                     borderColor: colors.highlightButtonBorder,
                   }}
-                  _pressed={{ 
-                    bg: colors.primaryContainer, 
+                  _pressed={{
                     borderColor: colors.highlightButtonBorder,
+                  }}
+                  _disabled={{
+                    opacity: 1,
                   }}
                   flex={1}
                   onPress={() => handleChoice(1)}
+                  isDisabled={isDisabled}
                 >
                   <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[1]}</Text>
                 </Button>
@@ -121,16 +128,18 @@ const QuizScreen = () => {
                   colorScheme={colors.onSurface}
                   variant="outline"
                   {...getButtonStyle(2)}
-                  _hover={{ 
-                    bg: colors.primaryContainer, 
+                  _hover={{
                     borderColor: colors.highlightButtonBorder,
                   }}
-                  _pressed={{ 
-                    bg: colors.primaryContainer, 
+                  _pressed={{
                     borderColor: colors.highlightButtonBorder,
+                  }}
+                  _disabled={{
+                    opacity: 1,
                   }}
                   flex={1}
                   onPress={() => handleChoice(2)}
+                  isDisabled={isDisabled}
                 >
                   <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[2]}</Text>
                 </Button>
@@ -139,16 +148,18 @@ const QuizScreen = () => {
                   colorScheme={colors.onSurface}
                   variant="outline"
                   {...getButtonStyle(3)}
-                  _hover={{ 
-                    bg: colors.primaryContainer, 
+                  _hover={{
                     borderColor: colors.highlightButtonBorder,
                   }}
                   _pressed={{ 
-                    bg: colors.primaryContainer, 
                     borderColor: colors.highlightButtonBorder,
+                  }}
+                  _disabled={{
+                    opacity: 1,
                   }}
                   flex={1}
                   onPress={() => handleChoice(3)}
+                  isDisabled={isDisabled}
                 >
                   <Text color={colors.onSurface}>{flashcards[currentCardIndex].choices[3]}</Text>
                 </Button>
@@ -159,7 +170,7 @@ const QuizScreen = () => {
       </VStack>
       <Text fontSize="lg" color={colors.onSurface} mt={4}>
           Score: {score}
-      </Text>
+        </Text>
     </Center>
   );
 };
