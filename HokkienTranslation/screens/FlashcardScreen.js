@@ -173,7 +173,6 @@ const FlashcardScreen = ({ navigation }) => {
           <Center flex={1} justifyContent="center" backgroundColor="rgba(0, 0, 0, 0.5)">
             <Box
               width="300px"
-              height="300px"
               bg="white"
               alignItems="center"
               justifyContent="center"

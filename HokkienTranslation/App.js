@@ -9,8 +9,6 @@ import SettingsScreen from "./screens/SettingsScreen";
 import ResultScreen from "./screens/ResultScreen";
 import LandingPage from "./screens/LandingScreen";
 import FlashcardScreen from "./screens/FlashcardScreen";
-import CreateFlashcardScreen from "./screens/CreateFlashcardScreen";
-import UpdateFlashcardScreen from "./screens/UpdateFlashcardScreen";
 import QuizScreen from "./screens/QuizScreen";
 import FlashcardCategory from "./screens/FlashcardCategory";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
@@ -65,16 +63,6 @@ const FlashcardStack = () => {
     >
       <Stack.Screen name="Category" component={FlashcardCategory} />
       <Stack.Screen name="Flashcard" component={FlashcardScreen} />
-      <Stack.Screen
-        name="CreateFlashcard"
-        component={CreateFlashcardScreen}
-        options={{ title: "" }}
-      />
-      <Stack.Screen
-        name="UpdateFlashcard"
-        component={UpdateFlashcardScreen}
-        options={{ title: "" }}
-      />
       <Stack.Screen name="Quiz" component={QuizScreen} />
     </Stack.Navigator>
   );
