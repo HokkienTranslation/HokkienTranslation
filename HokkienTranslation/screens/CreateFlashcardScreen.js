@@ -3,7 +3,7 @@ import { SafeAreaView, StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Center, VStack, HStack, Input, Button, Text } from 'native-base';
 
-const CreateFlashcardScreen = ({ navigation }) => {
+const CreateFlashcardScreen = () => {
   const navigation = useNavigation();
   const { themes, theme } = useTheme();
   const colors = themes[theme];
