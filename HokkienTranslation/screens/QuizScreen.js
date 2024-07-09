@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, Center, VStack, HStack, Text, Progress } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
+import { Animated, Easing } from 'react-native';
 
 const QuizScreen = () => {
   const { theme, themes } = useTheme();
@@ -9,6 +10,7 @@ const QuizScreen = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [isDisabled, setIsDisabled] = useState(false);
+  const slideAnim = useRef(new Animated.Value(0)).current;
 
   // TODO: Change the positions of answers to be random
   const flashcards = [
@@ -26,10 +28,33 @@ const QuizScreen = () => {
       setScore((prevScore) => prevScore + 1);
     }
     setTimeout(() => {
-      setSelectedAnswer(null);
-      setIsDisabled(false);
-      setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+      slideOut();
+      setTimeout(() => {
+        setSelectedAnswer(null);
+        setIsDisabled(false);
+        setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
+        slideIn();
+      }, 300);
     }, 1000);
+  };
+
+  const slideOut = () => {
+    Animated.timing(slideAnim, {
+      toValue: -300,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
+  };
+
+  const slideIn = () => {
+    slideAnim.setValue(300);
+    Animated.timing(slideAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+      easing: Easing.linear,
+    }).start();
   };
 
   const getButtonStyle = (index) => {
@@ -66,6 +91,7 @@ const QuizScreen = () => {
           colorScheme="green" 
           mb={4}
         />
+        <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
         <Box
           width="400px"
           height="250px"
@@ -167,6 +193,7 @@ const QuizScreen = () => {
             </VStack>
           </VStack>
         </Box>
+        </Animated.View>
       </VStack>
       <Text fontSize="lg" color={colors.onSurface} mt={4}>
           Score: {score}
