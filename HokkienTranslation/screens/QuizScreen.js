@@ -11,8 +11,8 @@ const QuizScreen = () => {
   const [score, setScore] = useState(0);
   const [isDisabled, setIsDisabled] = useState(false);
   const slideAnim = useRef(new Animated.Value(0)).current;
+  const opacityAnim = useRef(new Animated.Value(1)).current;
 
-  // TODO: Change the positions of answers to be random
   const flashcards = [
     { word: "Apple", choices: ["Banana", "Orange", "Apple", "Grape"], answer: 2 },
     { word: "Banana", choices: ["Peach", "Banana", "Berry", "Melon"], answer: 1 },
@@ -20,7 +20,6 @@ const QuizScreen = () => {
     { word: "Dog", choices: ["Cat", "Dog", "Rabbit", "Horse"], answer: 1 },
   ];
 
-  // Timer to move to next question
   const handleChoice = (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
@@ -39,22 +38,39 @@ const QuizScreen = () => {
   };
 
   const slideOut = () => {
-    Animated.timing(slideAnim, {
-      toValue: -300,
-      duration: 300,
-      useNativeDriver: true,
-      easing: Easing.linear,
-    }).start();
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: -20,
+        duration: 250,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      })
+    ]).start();
   };
 
   const slideIn = () => {
-    slideAnim.setValue(300);
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-      easing: Easing.linear,
-    }).start();
+    slideAnim.setValue(20);
+    opacityAnim.setValue(0);
+    Animated.parallel([
+      Animated.timing(slideAnim, {
+        toValue: 0,
+        duration: 250,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      }),
+      Animated.timing(opacityAnim, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+        easing: Easing.linear,
+      })
+    ]).start();
   };
 
   const getButtonStyle = (index) => {
@@ -91,7 +107,7 @@ const QuizScreen = () => {
           colorScheme="green" 
           mb={4}
         />
-        <Animated.View style={{ transform: [{ translateY: slideAnim }] }}>
+        <Animated.View style={{ transform: [{ translateY: slideAnim }], opacity: opacityAnim }}>
         <Box
           width="400px"
           height="250px"
