@@ -64,15 +64,20 @@ const FlashcardScreen = ({ navigation }) => {
   };
 
   const handleBack = () => {
-    if (currentCardIndex > 0) {
-      setShowTranslation(false);
-      setCurrentCardIndex((prevIndex) => {
-        const newIndex = (prevIndex - 1 + flashcards.length) % flashcards.length;
-        setIsMin(newIndex === 0);
-        setIsMax(false);
-        return newIndex;
+    setShowTranslation(false);
+    setCurrentCardIndex((prevIndex) => {
+      const newIndex = (prevIndex - 1 + flashcards.length) % flashcards.length;
+      setIsMin(newIndex === 0);
+      setIsMax(false);
+      return newIndex;
+    });
+    position.setValue({ x: -500, y: -500 });
+    Animated.timing(position, {
+      toValue: {x: 0, y: 0},
+      duration: 500,
+      useNativeDriver: true,
+    }).start(() => {;
       });
-    }
   };
 
   const handleFlip = () => {
