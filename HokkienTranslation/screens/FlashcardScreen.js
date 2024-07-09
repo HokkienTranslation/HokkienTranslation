@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Text, Button, Center, VStack, HStack, Input, Icon } from "native-base";
+import { Box, Text, Button, Center, VStack, HStack, Input, Select} from "native-base";
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity, Modal } from "react-native";
 import FlashcardNavigator from "../screens/components/FlashcardNavigator";
@@ -16,6 +16,10 @@ const FlashcardScreen = ({ navigation }) => {
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [type, setType] = useState("");
+  const [tempCat, setTempCat] = useState("");
+  const [privacy, setPrivacy] = useState("");
+
 
   const flashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -139,8 +143,38 @@ const FlashcardScreen = ({ navigation }) => {
                 Create new flashcard:
               </Text>
               <VStack space={4} alignItems="center">
-                <Input placeholder="Word" />
-                <Input placeholder="Translation" />
+                <Input placeholder="Enter word" width={200}/>
+                <Input placeholder="Enter Translation" width={200}/>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={type}
+                      placeholder="Select Type"
+                      onValueChange={(itemValue) => setType(itemValue)}
+                    >
+                      <Select.Item label="Word" value="word" />
+                      <Select.Item label="Sentence" value="sentence" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={tempCat}
+                      placeholder="Select Category"
+                      onValueChange={(itemValue) => setTempCat(itemValue)}
+                    >
+                      <Select.Item label="Shopping" value="shopping" />
+                      <Select.Item label="Other" value="other" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={privacy}
+                      placeholder="Set Privacy"
+                      onValueChange={(itemValue) => setPrivacy(itemValue)}
+                    >
+                      <Select.Item label="Public" value="shopping" />
+                      <Select.Item label="Private" value="other" />
+                    </Select>
+                </Box>
                 <HStack space={4}>
                   <Button 
                    bg={colors.primaryContainer}
@@ -180,10 +214,10 @@ const FlashcardScreen = ({ navigation }) => {
               shadow={2}
               padding={4}
             >
-              <Text fontSize="lg" marginBottom={4}>
-                Edit the {flashcards[currentCardIndex].word} flashcard:
-              </Text>
               <VStack space={4} alignItems="center">
+              <Text fontSize="lg">
+                Edit flashcard:
+              </Text>
                 <Input
                   placeholder="Word"
                   value={flashcards[currentCardIndex].word}
@@ -235,7 +269,7 @@ const FlashcardScreen = ({ navigation }) => {
               padding={4}
             >
               <Text fontSize="lg" marginBottom={4}>
-                Delete the {flashcards[currentCardIndex].word} flashcard?
+                Delete this flashcard?
               </Text>
               <HStack space={4}>
                 <Button onPress={handleDelete}>Yes</Button>
