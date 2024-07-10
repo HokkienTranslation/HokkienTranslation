@@ -15,6 +15,7 @@ import QuizScreen from "./screens/QuizScreen";
 import FlashcardCategory from "./screens/FlashcardCategory";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
+import ForgetPasswordScreen from "./screens/ForgetPasswordScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
@@ -136,6 +137,7 @@ const AppContent = () => {
           <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
+          <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

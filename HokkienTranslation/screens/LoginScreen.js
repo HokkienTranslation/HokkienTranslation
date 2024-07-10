@@ -90,6 +90,9 @@ export default function LoginScreen({ navigation }) {
       <Button mt="2" colorScheme="teal" onPress={loginWithGoogle}>
         Login with Google
       </Button>
+      <Button mt="2" colorScheme="teal" onPress={() => navigation.navigate("ForgetPassword")}>
+        Forget my password
+      </Button>
       {message ? <Text mt="2" color="red.500">{message}</Text> : null}
     </VStack>
   </Box>

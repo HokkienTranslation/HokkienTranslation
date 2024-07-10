@@ -59,7 +59,7 @@ export default function RegisterScreen({ navigation }) {
       <FormControl>
         <FormControl.Label>Password</FormControl.Label>
         <Input
-          type="password confirmation"
+          type="password"
           value={passwordConfirmation}
           onChangeText={setPasswordConfirmation}
           placeholder="Enter your password again"
