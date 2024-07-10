@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Box, Text, Center, VStack } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import React, { useState, useRef } from "react";
+import { Box, Text, Center, VStack, HStack, Button } from "native-base";
+import { TouchableOpacity, Animated, PanResponder } from "react-native-web";
 import FlashcardNavigator from "../screens/components/FlashcardNavigator";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
@@ -66,6 +66,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         setIsMin(true);
       }
     }
+  };
+
+  const handleUpdate = () => {
+    const currentFlashcard = flashcards[currentCardIndex];
+    navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
+  };
+
+  const handleDelete = () => {
+    // Implement delete functionality here
+    setShowConfirmDelete(false);
   };
 
   const swipeGesture = (gestureState = null) => {

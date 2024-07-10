@@ -1,25 +1,20 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native-web';
-import { Box, Center, Container, Heading, HStack, Icon, Text, VStack } from 'native-base';
+import { SafeAreaView, StyleSheet } from 'react-native-web';
+import { Box, Center, Container, Heading, Icon, Text, VStack } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native-web';
 import { useState } from 'react';
 import app, {db} from '../backend/database/Firebase';
-import { Ionicons } from '@expo/vector-icons'; // or 'react-native-vector-icons/Ionicons' if not using Expo
 import { collection, doc, getDocs, getDoc } from 'firebase/firestore';
+// list of categories use api
 
-var index = 0;
-var decks = [];
-var categories = [];
+
+
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
-  const [display, setDisplay] = useState([]);
-
-  
-  const titleList = ['Categories', 'Decks']
-
+  const [categories, setCategories] = useState([]);
 
   useEffect(() => {
 
@@ -33,13 +28,27 @@ const FlashcardCategory = () => {
       return categoryList;
     }
     getCategories(db).then((categoryList) => {
-      categories = categoryList;
-      setDisplay(categories);
+      setCategories(categoryList);
     }).catch((error) => {
       console.error("Error fetching categories: ", error);
     });
 
   }, []
+  );
+
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <Center>
+        <Container style={styles.container}>
+          <Heading style={styles.heading}>Categories</Heading>
+          <VStack style={styles.grid}>
+            {categories.map((category, index) => (
+              <CategoryBox key={index} category={category} navigation={navigation} />
+            ))}
+          </VStack>
+        </Container>
+      </Center>
+    </SafeAreaView>
   );
 
 const handleBackPress = () => {
@@ -98,6 +107,44 @@ const handleCategoryPress = async (category, navigation) => {
       }
     }
   
+  navigation.navigate('Flashcard', { cardList });
+};
+
+const handleCategoryPress = async (category, navigation) => {
+  var cardList = [];
+  console.log(category);
+
+  // update API here
+  var flashcardList = category.flashcardList;
+
+  for (const flashcard of flashcardList) {
+    console.log(flashcard);
+
+    // Reference to the document
+    const docRef = doc(db, 'flashcardList', flashcard);
+
+    // Await the document snapshot
+    const ref = await getDoc(docRef);
+    console.log(ref.data());
+
+    if (ref.exists()) {
+      const flashcardData = ref.data();
+
+      // Assuming the flashcardData has a cardList array
+      for (const card of flashcardData.cardList) {
+        const cardRef = doc(db, 'flashcard', card);
+        const cardDoc = await getDoc(cardRef);
+
+        if (cardDoc.exists()) {
+          const cardData = cardDoc.data();
+          cardList.push({
+            word: cardData.destination,
+            translation: cardData.origin
+          });
+        }
+      }
+    }
+  }
   navigation.navigate('Flashcard', { cardList });
 };
 
