@@ -58,60 +58,10 @@ const FlashcardScreen = ({ navigation }) => {
     })
   ).current;
 
-<<<<<<< HEAD
-  const handleNext = (gestureState = null) => {
-    const value = { x: gestureState?.dx > 0 ? 500 : -500, y: gestureState?.dy > 0 ? 500 : -500 };
-    Animated.timing(position, {
-      toValue: value,
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {
-      setShowTranslation(false);
-      setCurrentCardIndex((prevIndex) => {
-        const newIndex = (prevIndex + 1) % flashcards.length;
-        setIsMin(newIndex === 0);
-        setIsMax(newIndex === flashcards.length - 1);
-        return newIndex;
-      });
-      position.setValue({ x: 0, y: 0 });
-    });
-  };
-
-  const handleBack = () => {
-    setShowTranslation(false);
-    setCurrentCardIndex((prevIndex) => {
-      const newIndex = (prevIndex - 1 + flashcards.length) % flashcards.length;
-      setIsMin(newIndex === 0);
-      setIsMax(false);
-      return newIndex;
-    });
-    position.setValue({ x: -500, y: -500 });
-    Animated.timing(position, {
-      toValue: {x: 0, y: 0},
-      duration: 500,
-      useNativeDriver: true,
-    }).start(() => {;
-      });
-  };
-
-=======
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   const handleFlip = () => {
     setShowTranslation(!showTranslation);
   };
 
-<<<<<<< HEAD
-  const handleUpdate = () => {
-    const currentFlashcard = flashcards[currentCardIndex];
-    navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
-  };
-
-  const handleDelete = () => {
-    // Implement delete functionality here
-    setShowConfirmDelete(false);
-  };
-
-=======
   const handleNext = () => {
     if (currentCardIndex < flashcards.length - 1) {
       setCurrentCardIndex((prevIndex) => prevIndex + 1);
@@ -158,7 +108,6 @@ const FlashcardScreen = ({ navigation }) => {
   });
 };
 
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons colors={colors} />
@@ -224,24 +173,6 @@ const FlashcardScreen = ({ navigation }) => {
           </Box>
 
           <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
-<<<<<<< HEAD
-            <Animated.View
-              {...panResponder.panHandlers}
-              style={[
-                position.getLayout(),
-                {
-                  transform: [
-                    {
-                      rotate: position.x.interpolate({
-                        inputRange: [-500, 0, 500],
-                        outputRange: ["-10deg", "0deg", "10deg"],
-                      }),
-                    },
-                  ],
-                },
-              ]}
-            >
-=======
             <Animated.View 
               {...panResponder.panHandlers}
               style={[position.getLayout(), 
@@ -250,7 +181,6 @@ const FlashcardScreen = ({ navigation }) => {
                 outputRange: ['-10deg', '0deg', '10deg']
               }) }] }
             ]}>
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
               <Box
                 width="300px"
                 height="200px"
@@ -268,69 +198,6 @@ const FlashcardScreen = ({ navigation }) => {
               </Box>
             </Animated.View>
           </TouchableOpacity>
-<<<<<<< HEAD
-
-          <HStack space={4} alignItems="center">
-            <Pressable
-              borderRadius="50"
-              onPressIn={() => setIsPressedLeft(true)}
-              onPressOut={() => setIsPressedLeft(false)}
-              onPress={handleBack}
-              disabled={isMin}
-            >
-              <Ionicons
-                name={isPressedLeft ? "chevron-back-circle" : "chevron-back-circle-outline"}
-                color={isMin ? "grey" : colors.onSurface}
-                size={50}
-              />
-            </Pressable>
-            <Text fontSize="lg" color={colors.onSurface}>
-              {currentCardIndex + 1}/{flashcards.length}
-            </Text>
-            <Pressable
-              borderRadius="50"
-              onPressIn={() => setIsPressedRight(true)}
-              onPressOut={() => setIsPressedRight(false)}
-              onPress={handleNext}
-              disabled={isMax}
-            >
-              <Ionicons
-                name={isPressedRight ? "chevron-forward-circle" : "chevron-forward-circle-outline"}
-                color={isMax ? "grey" : colors.onSurface}
-                size={50}
-              />
-            </Pressable>
-          </HStack>
-        </VStack>
-
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={showConfirmDelete}
-          onRequestClose={() => setShowConfirmDelete(false)}
-        >
-          <Center flex={1} justifyContent="center" backgroundColor="rgba(0, 0, 0, 0.5)">
-            <Box
-              width="300px"
-              height="150px"
-              bg="white"
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="10px"
-              shadow={2}
-              padding={4}
-            >
-              <Text fontSize="lg" marginBottom={4}>
-                Delete the {flashcards[currentCardIndex].word} flashcard?
-              </Text>
-              <HStack space={4}>
-                <Button onPress={handleDelete}>Yes</Button>
-                <Button onPress={() => setShowConfirmDelete(false)}>No</Button>
-              </HStack>
-            </Box>
-          </Center>
-        </Modal>
-=======
           <FlashcardNavigator
             currentCardIndex={currentCardIndex}
             flashcardsLength={flashcards.length}
@@ -340,7 +207,6 @@ const FlashcardScreen = ({ navigation }) => {
             isMax={isMax}
           />
         </VStack>
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
       </Center>
     </Box>
   );
