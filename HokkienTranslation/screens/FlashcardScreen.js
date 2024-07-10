@@ -46,15 +46,51 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowTranslation(!showTranslation);
   };
 
-  const handleUpdate = () => {
-    const currentFlashcard = flashcards[currentCardIndex];
-    navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
+  const handleNext = () => {
+    if (currentCardIndex < flashcards.length - 1) {
+      setCurrentCardIndex((prevIndex) => prevIndex + 1);
+      setIsMin(false);
+      setShowTranslation(false);
+      if (currentCardIndex === flashcards.length - 2) {
+        setIsMax(true);
+      }
+    }
   };
 
-  const handleDelete = () => {
-    // Implement delete functionality here
-    setShowConfirmDelete(false);
+  const handleBack = () => {
+    if (currentCardIndex > 0) {
+      setCurrentCardIndex((prevIndex) => prevIndex - 1);
+      setIsMax(false);
+      setShowTranslation(false);
+      if (currentCardIndex === 1) {
+        setIsMin(true);
+      }
+    }
   };
+
+  const swipeGesture = (gestureState = null) => {
+  const value = {
+    x: gestureState.dx > 0 ? 500 : -500,
+    y: gestureState.dy > 0 ? 500 : -500,
+  };
+
+  Animated.timing(position, {
+    toValue: value,
+    duration: 500,
+    useNativeDriver: true,
+  }).start(() => {
+    setShowTranslation(false);
+    position.setValue({ x: 0, y: 0 });
+
+    // TODO: Fix bug, where if currentCardIndex reaches end, stop increment (Crash)
+    if (currentCardIndex < flashcards.length - 1) {
+      handleNext();
+    }
+    else{
+      currentCardIndex = 1
+    }
+  });
+};
 
   return (
     <Box flex={1} background={colors.surface}>
