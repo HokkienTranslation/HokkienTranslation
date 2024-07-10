@@ -1,9 +1,10 @@
 import React from "react";
 import { Pressable } from "react-native";
-import { Switch, HStack, VStack, Text } from "native-base";
+import { Switch, HStack, VStack, Text, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
+import SignOut from "./signout.js"; // Adjust the path if necessary
 
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
@@ -11,15 +12,10 @@ const SettingsScreen = () => {
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
 
   const ThemeOption = ({ themeName, iconName }) => (
-    <Pressable
-      onPress={toggleTheme}
-      hitSlop={10} //Increase the pressable area
-    >
+    <Pressable onPress={toggleTheme} hitSlop={10}>
       <HStack space={2} alignItems="center">
         <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
-        <Text style={{ fontSize: 16, color: colors.onSurface }}>
-          {themeName}
-        </Text>
+        <Text style={{ fontSize: 16, color: colors.onSurface }}>{themeName}</Text>
       </HStack>
     </Pressable>
   );
@@ -99,24 +95,15 @@ const SettingsScreen = () => {
           </Text>
           <VisibilityToggle label="Image" stateKey="image" />
           <VisibilityToggle label="Definition" stateKey="definition" />
-          <VisibilityToggle
-            label="English Definition"
-            stateKey="englishDefinition"
-          />
-          <VisibilityToggle
-            label="Hokkien Sentence"
-            stateKey="hokkienSentence"
-          />
-          <VisibilityToggle
-            label="Chinese Sentence"
-            stateKey="chineseSentence"
-          />
-          <VisibilityToggle
-            label="English Sentence"
-            stateKey="englishSentence"
-          />
+          <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
+          <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
+          <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
+          <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
           <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
         </VStack>
+
+        {/* Sign Out section */}
+        <SignOut />
       </VStack>
     </VStack>
   );
