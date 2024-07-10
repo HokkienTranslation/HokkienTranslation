@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, Center, VStack, HStack, Text, Progress } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing } from 'react-native-web';
 
 const QuizScreen = () => {
   const { theme, themes } = useTheme();

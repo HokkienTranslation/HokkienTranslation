@@ -1,33 +1,46 @@
-import React from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native';
+import React, { useEffect } from 'react';
+import { SafeAreaView, StyleSheet } from 'react-native-web';
 import { Box, Center, Container, Heading, Icon, Text, VStack } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Pressable } from 'react-native';
+import { Pressable } from 'react-native-web';
 import { useState } from 'react';
-import { useTheme } from './context/ThemeProvider';
-
+import app, {db} from '../backend/database/Firebase';
+import { collection, doc, getDocs, getDoc } from 'firebase/firestore';
 // list of categories use api
-const categories = [
-  { name: 'Family', icon: 'group' },
-  { name: 'Business', icon: 'business' },
-  { name: 'Tax', icon: 'account-balance' },
-  { name: 'Labour', icon: 'build' },
-  { name: 'Labour', icon: 'build' },
-  { name: 'Labour', icon: 'build' },
-  { name: 'Labour', icon: 'build' },
-];
+
+
+
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
-  const { themes, theme } = useTheme();
-  const colors = themes[theme];
-  
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+
+    // update api here
+      async function getCategories(db) {
+      const categoryCol = collection(db, 'category');
+      const categorySnapshot = await getDocs(categoryCol);
+      console.log(categorySnapshot)
+      const categoryList = categorySnapshot.docs.map(doc => doc.data());
+      console.log(categoryList[0])
+      return categoryList;
+    }
+    getCategories(db).then((categoryList) => {
+      setCategories(categoryList);
+    }).catch((error) => {
+      console.error("Error fetching categories: ", error);
+    });
+
+  }, []
+  );
+
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
+    <SafeAreaView style={styles.safeArea}>
       <Center>
-        <Container style={[styles.container, { backgroundColor: colors.categoriesContainer }]}>
-          <Heading style={[styles.heading, { color: colors.onSurface}]}>Categories</Heading>
+        <Container style={styles.container}>
+          <Heading style={styles.heading}>Categories</Heading>
           <VStack style={styles.grid}>
             {categories.map((category, index) => (
               <CategoryBox key={index} category={category} navigation={navigation} />
@@ -39,22 +52,58 @@ const FlashcardCategory = () => {
   );
 };
 
+const handleCategoryPress = async (category, navigation) => {
+  var cardList = [];
+  console.log(category);
+
+  // update API here
+  var flashcardList = category.flashcardList;
+
+  for (const flashcard of flashcardList) {
+    console.log(flashcard);
+
+    // Reference to the document
+    const docRef = doc(db, 'flashcardList', flashcard);
+
+    // Await the document snapshot
+    const ref = await getDoc(docRef);
+    console.log(ref.data());
+
+    if (ref.exists()) {
+      const flashcardData = ref.data();
+
+      // Assuming the flashcardData has a cardList array
+      for (const card of flashcardData.cardList) {
+        const cardRef = doc(db, 'flashcard', card);
+        const cardDoc = await getDoc(cardRef);
+
+        if (cardDoc.exists()) {
+          const cardData = cardDoc.data();
+          cardList.push({
+            word: cardData.destination,
+            translation: cardData.origin
+          });
+        }
+      }
+    }
+  }
+  navigation.navigate('Flashcard', { cardList });
+};
+
 const CategoryBox = ({ category, index, navigation }) => {
     const [isPressed, setIsPressed] = useState(false);
-    const { themes, theme } = useTheme();
-    const colors = themes[theme];
-
+  
     // add additional onClick events to transition to FlashcardScreen with the correct cards.
     return (
       <Pressable
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        onPress={() => navigation.navigate('Flashcard')}
-        style={[isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox, { backgroundColor: colors.categoriesButton }]}
+        onPress={() => handleCategoryPress(category, navigation)}
+        style={isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox}
       >
         <Box key={index} alignItems="center">
-          <Icon as={MaterialIcons} name={category.icon} size="lg" color={colors.onSurface} />
-          <Text style={[styles.categoryText, {color:colors.onSurface}]}>{category.name}</Text>
+          <Icon as={MaterialIcons} name={category.icon} size="lg" color="black" />
+          <Text style={styles.categoryText}>{category.name}</Text>
         </Box>
       </Pressable>
     );
@@ -63,6 +112,7 @@ const CategoryBox = ({ category, index, navigation }) => {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
+    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
   },
   container: {
@@ -84,9 +134,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    minWidth: '100%',
   },
   categoryBox: {
-    width: '48%',
+    minWidth: "48%",
+    width: "48%",
+
     alignItems: 'center',
     backgroundColor: 'white',
     borderColor: '#e0e0e0',

@@ -1,36 +1,20 @@
 import React, { useState, useRef } from "react";
-<<<<<<< HEAD
-import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
-import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
-=======
-import { Box, Text, Center, VStack } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import { Box, Text, Center, VStack, HStack, Button } from "native-base";
+import { TouchableOpacity, Animated, PanResponder } from "react-native-web";
 import FlashcardNavigator from "../screens/components/FlashcardNavigator";
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 
-const FlashcardScreen = ({ navigation }) => {
+const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-<<<<<<< HEAD
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
-  const [isPressedLeft, setIsPressedLeft] = useState(false);
-  const [isPressedRight, setIsPressedRight] = useState(false);
-=======
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
 
-  const flashcards = [
-    { word: "Apple", translation: "苹果 (Píngguǒ)" },
-    { word: "Banana", translation: "香蕉 (Xiāngjiāo)" },
-    { word: "Cat", translation: "猫 (Māo)" },
-    { word: "Dog", translation: "狗 (Gǒu)" },
-  ];
+  const flashcards = route.params.cardList;
+  console.log(flashcards);
 
   const position = useRef(new Animated.ValueXY()).current;
 
@@ -43,11 +27,7 @@ const FlashcardScreen = ({ navigation }) => {
       onPanResponderRelease: (event, gestureState) => {
         if (gestureState.dx > 120 || gestureState.dx < -120 || 
             gestureState.dy > 120 || gestureState.dy < -120) {
-<<<<<<< HEAD
-          handleNext(gestureState);
-=======
           swipeGesture(gestureState);
->>>>>>> 0420809 (feat: made modifications to add in lucie's animations (buggy))
         } else {
           Animated.spring(position, {
             toValue: { x: 0, y: 0 },
@@ -82,6 +62,16 @@ const FlashcardScreen = ({ navigation }) => {
         setIsMin(true);
       }
     }
+  };
+
+  const handleUpdate = () => {
+    const currentFlashcard = flashcards[currentCardIndex];
+    navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
+  };
+
+  const handleDelete = () => {
+    // Implement delete functionality here
+    setShowConfirmDelete(false);
   };
 
   const swipeGesture = (gestureState = null) => {

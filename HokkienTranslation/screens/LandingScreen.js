@@ -1,5 +1,5 @@
 import React from "react";
-import { ImageBackground, Pressable } from "react-native";
+import { ImageBackground, Pressable } from "react-native-web";
 import { Box, Image, Text, VStack } from "native-base";
 import { CommonActions } from "@react-navigation/native";
 

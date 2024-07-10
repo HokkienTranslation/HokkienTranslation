@@ -1,5 +1,5 @@
 import React from "react";
-import { Pressable } from "react-native";
+import { Pressable } from "react-native-web";
 import { Switch, HStack, VStack, Text } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "./context/ThemeProvider";

@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Box, Text } from "native-base";
 import * as Progress from "react-native-progress";
-import { Animated } from "react-native";
+import { Animated } from "react-native-web";
 import { useTheme } from "./context/ThemeProvider";
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from 'react-native-web';
 
 const LoadingScreen = ({ progress }) => {
   const texts = [
