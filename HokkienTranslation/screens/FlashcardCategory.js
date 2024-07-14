@@ -24,10 +24,10 @@ const FlashcardCategory = () => {
   const colors = themes[theme];
   
   return (
-    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
       <Center>
-        <Container style={styles.container}>
-          <Heading style={styles.heading}>Categories</Heading>
+        <Container style={[styles.container, { backgroundColor: colors.categoriesContainer }]}>
+          <Heading style={[styles.heading, { color: colors.onSurface}]}>Categories</Heading>
           <VStack style={styles.grid}>
             {categories.map((category, index) => (
               <CategoryBox key={index} category={category} navigation={navigation} />
@@ -41,18 +41,20 @@ const FlashcardCategory = () => {
 
 const CategoryBox = ({ category, index, navigation }) => {
     const [isPressed, setIsPressed] = useState(false);
-  
+    const { themes, theme } = useTheme();
+    const colors = themes[theme];
+
     // add additional onClick events to transition to FlashcardScreen with the correct cards.
     return (
       <Pressable
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onPress={() => navigation.navigate('Flashcard')}
-        style={isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox}
+        style={[isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox, { backgroundColor: colors.categoriesButton }]}
       >
         <Box key={index} alignItems="center">
-          <Icon as={MaterialIcons} name={category.icon} size="lg" color="black" />
-          <Text style={styles.categoryText}>{category.name}</Text>
+          <Icon as={MaterialIcons} name={category.icon} size="lg" color={colors.onSurface} />
+          <Text style={[styles.categoryText, {color:colors.onSurface}]}>{category.name}</Text>
         </Box>
       </Pressable>
     );
