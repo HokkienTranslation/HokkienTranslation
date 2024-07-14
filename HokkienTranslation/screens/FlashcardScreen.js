@@ -9,15 +9,18 @@ const FlashcardScreen = ({ }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
-  // const [word, setWord] = useState('');
-  // const [translation, setTranslation] = useState('');
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  // const [word, setWord] = useState('');    
+  // const [translation, setTranslation] = useState('');
   const [type, setType] = useState("");
-  const [tempCat, setTempCat] = useState("");
-  const [privacy, setPrivacy] = useState("");
+  const [otherOpt, setOtherOpt] = useState("");
+  const [category, setCategory] = useState("");
+  const [privacy, setPrivacy] = useState(""); // shared
 
   const [isPressedLeft, setIsPressedLeft] = useState(false);
   const [isPressedRight, setIsPressedRight] = useState(false);
@@ -274,6 +277,16 @@ const FlashcardScreen = ({ }) => {
                 <Input placeholder="Enter Translation" width={200}/>
                 <Box space={4} alignItems="center" width={200}>
                     <Select
+                      selectedValue={otherOpt}
+                      placeholder="View Other Options"
+                      onValueChange={(itemValue) => setOtherOpt(itemValue)}
+                    >
+                      <Select.Item label="banana 1" value="word" />
+                      <Select.Item label="banana 2" value="sentence" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
                       selectedValue={type}
                       placeholder="Select Type"
                       onValueChange={(itemValue) => setType(itemValue)}
@@ -284,9 +297,9 @@ const FlashcardScreen = ({ }) => {
                 </Box>
                 <Box space={4} alignItems="center" width={200}>
                     <Select
-                      selectedValue={tempCat}
+                      selectedValue={category}
                       placeholder="Select Category"
-                      onValueChange={(itemValue) => setTempCat(itemValue)}
+                      onValueChange={(itemValue) => setCategory(itemValue)}
                     >
                       <Select.Item label="Shopping" value="shopping" />
                       <Select.Item label="Other" value="other" />
