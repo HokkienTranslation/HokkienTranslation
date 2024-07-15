@@ -49,7 +49,7 @@ const CategoryBox = ({ category, index, navigation }) => {
       <Pressable
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
-        onPress={() => navigation.navigate('Flashcard')}
+        onPress={() => navigation.navigate('FlashcardList')}
         style={[isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox, { backgroundColor: colors.categoriesButton }]}
       >
         <Box key={index} alignItems="center">

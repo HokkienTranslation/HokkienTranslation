@@ -21,6 +21,7 @@ const FlashcardScreen = ({ }) => {
   const [otherOpt, setOtherOpt] = useState("");
   const [category, setCategory] = useState("");
   const [privacy, setPrivacy] = useState(""); // shared
+  const [cardList, setCardlist] = useState(""); 
 
   const [isPressedLeft, setIsPressedLeft] = useState(false);
   const [isPressedRight, setIsPressedRight] = useState(false);
@@ -313,6 +314,16 @@ const FlashcardScreen = ({ }) => {
                     >
                       <Select.Item label="Public" value="shopping" />
                       <Select.Item label="Private" value="other" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={cardList}
+                      placeholder="Select Flashcard List"
+                      onValueChange={(itemValue) => setCardlist(itemValue)}
+                    >
+                      <Select.Item label="list 1" value="shopping" />
+                      <Select.Item label="list 2" value="other" />
                     </Select>
                 </Box>
                 <HStack space={4}>
