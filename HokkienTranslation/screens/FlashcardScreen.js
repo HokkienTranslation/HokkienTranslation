@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react";
-import { Box, Text, Center, VStack, HStack, Button } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native-web";
-import FlashcardNavigator from "../screens/components/FlashcardNavigator";
+import React, { useState, useRef, useEffect } from "react";
+import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
+import { Ionicons } from "@expo/vector-icons";
+import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
+import { useLanguage } from "./context/LanguageProvider";
+import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -12,6 +14,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
+  const { language } = useLanguage();
+  const [translatedText, setTranslatedText] = useState("");
 
   const flashcards = route.params.cardList;
   console.log(flashcards);
@@ -74,30 +78,28 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowConfirmDelete(false);
   };
 
-  const swipeGesture = (gestureState = null) => {
-  const value = {
-    x: gestureState.dx > 0 ? 500 : -500,
-    y: gestureState.dy > 0 ? 500 : -500,
-  };
-
-  Animated.timing(position, {
-    toValue: value,
-    duration: 500,
-    useNativeDriver: true,
-  }).start(() => {
-    setShowTranslation(false);
-    position.setValue({ x: 0, y: 0 });
-
-    // TODO: Fix bug, where if currentCardIndex reaches end, stop increment (Crash)
-    if (currentCardIndex < flashcards.length - 1) {
-      handleNext();
+  useEffect(() => {
+    if (language != "Chinese (Simplified)") {
+      if (showTranslation) {
+        const translateText = async () => {
+          await callOpenAIChat(
+            `Translate ${flashcards[currentCardIndex].translation} to ${language}. 
+            You must respond with only the translation.`)
+          .then((response) => { 
+            console.log("OpenAI Response:", response);
+            setTranslatedText(response)
+          })
+          .catch((error) => console.error("Error:", error));
+        };
+        setTranslatedText("Loading...")
+        translateText();
+      }
+    } else {
+      setTranslatedText(flashcards[currentCardIndex].translation);
     }
-    else{
-      currentCardIndex = 1
-    }
-  });
-};
-
+  }, [showTranslation, currentCardIndex, language]);
+  
+  
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons colors={colors} />
@@ -182,7 +184,7 @@ const FlashcardScreen = ({ route, navigation }) => {
               >
                 <Text fontSize="2xl" color={colors.onSurface}>
                   {showTranslation
-                    ? flashcards[currentCardIndex].translation
+                    ? translatedText
                     : flashcards[currentCardIndex].word}
                 </Text>
               </Box>
