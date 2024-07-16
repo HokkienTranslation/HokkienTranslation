@@ -1,20 +1,25 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet } from 'react-native-web';
-import { Box, Center, Container, Heading, Icon, Text, VStack } from 'native-base';
+import { SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native-web';
+import { Box, Center, Container, Heading, HStack, Icon, Text, VStack } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native-web';
 import { useState } from 'react';
 import app, {db} from '../backend/database/Firebase';
+import { Ionicons } from '@expo/vector-icons'; // or 'react-native-vector-icons/Ionicons' if not using Expo
 import { collection, doc, getDocs, getDoc } from 'firebase/firestore';
-// list of categories use api
 
-
-
+var index = 0;
+var decks = [];
+var categories = [];
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
-  const [categories, setCategories] = useState([]);
+  const [display, setDisplay] = useState([]);
+
+  
+  const titleList = ['Categories', 'Decks']
+
 
   useEffect(() => {
 
@@ -28,7 +33,8 @@ const FlashcardCategory = () => {
       return categoryList;
     }
     getCategories(db).then((categoryList) => {
-      setCategories(categoryList);
+      categories = categoryList;
+      setDisplay(categories);
     }).catch((error) => {
       console.error("Error fetching categories: ", error);
     });
@@ -36,57 +42,62 @@ const FlashcardCategory = () => {
   }, []
   );
 
-  return (
-    <SafeAreaView style={styles.safeArea}>
-      <Center>
-        <Container style={styles.container}>
-          <Heading style={styles.heading}>Categories</Heading>
-          <VStack style={styles.grid}>
-            {categories.map((category, index) => (
-              <CategoryBox key={index} category={category} navigation={navigation} />
-            ))}
-          </VStack>
-        </Container>
-      </Center>
-    </SafeAreaView>
-  );
+const handleBackPress = () => {
+  index = 0;
+  setDisplay(categories);
 };
 
 const handleCategoryPress = async (category, navigation) => {
-  var cardList = [];
-  console.log(category);
 
-  // update API here
-  var flashcardList = category.flashcardList;
+  // for flascard lists/decks
 
+  if (index == 0) {
+    var flashcardList = category.flashcardList;
+    decks = []
   for (const flashcard of flashcardList) {
-    console.log(flashcard);
-
-    // Reference to the document
+    // get flashcardlist
     const docRef = doc(db, 'flashcardList', flashcard);
 
     // Await the document snapshot
     const ref = await getDoc(docRef);
     console.log(ref.data());
+  
+    // populate with flashcardLIst
+    decks.push(ref.data());
 
-    if (ref.exists()) {
-      const flashcardData = ref.data();
+    setDisplay(decks);
+    index = 1;
+  }
+  return;
+  }
 
+
+  console.log(index);
+  var cardList = [];
+  
+
+  // update API here
+  var flashCardList = category.cardList;
+  console.log(flashCardList)
+
+  for (const card of flashCardList) {
+    console.log(card);
+
+    // Reference to the document
       // Assuming the flashcardData has a cardList array
-      for (const card of flashcardData.cardList) {
-        const cardRef = doc(db, 'flashcard', card);
-        const cardDoc = await getDoc(cardRef);
+  
+    const cardRef = doc(db, 'flashcard', card);
+    const cardDoc = await getDoc(cardRef);
 
-        if (cardDoc.exists()) {
-          const cardData = cardDoc.data();
-          cardList.push({
-            word: cardData.destination,
-            translation: cardData.origin
-          });
-        }
+      if (cardDoc.exists()) {
+        const cardData = cardDoc.data();
+        cardList.push({
+          word: cardData.destination,
+          translation: cardData.origin
+        });
       }
     }
-  }
+  
   navigation.navigate('Flashcard', { cardList });
 };
 
@@ -109,6 +120,34 @@ const CategoryBox = ({ category, index, navigation }) => {
     );
   };
 
+  return (
+    <SafeAreaView style={styles.safeArea}>
+      <Center>
+        <Container style={styles.container}>
+          <HStack style={styles.headingBox}>
+          <Heading style={styles.heading}>{titleList[index]}</Heading>
+            {index === 1 && (
+            <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
+            <Icon as={Ionicons} name="arrow-back" size="lg" color="#000000" />
+            </TouchableOpacity>
+              )}
+          </HStack>
+          
+           
+        
+          <VStack style={styles.grid}>
+            {display.map((category, index) => (
+              <CategoryBox key={index} category={category} navigation={navigation} />
+            ))}
+          </VStack>
+        </Container>
+      </Center>
+
+    </SafeAreaView>
+  );
+};
+
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -128,7 +167,6 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   heading: {
-    marginBottom: 20,
   },
   grid: {
     flexDirection: 'row',
@@ -164,6 +202,14 @@ const styles = StyleSheet.create({
   categoryText: {
     color: 'black',
     marginTop: 8,
+  },
+  headingBox: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    marginBottom: 20,
+    paddingVertical: 8,
   },
 });
 
