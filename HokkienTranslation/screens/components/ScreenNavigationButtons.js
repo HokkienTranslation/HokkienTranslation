@@ -38,7 +38,7 @@ const ScreenNavigationButtons = ({ colors }) => {
   
   return (
     <HStack alignItems="center" justifyContent="space-between" p={4}>
-      {/* <Button
+      <Button
         marginRight="auto"
         onPressIn={() => setIsPressedCatButton(true)}
         onPressOut={() => setIsPressedCatButton(false)}
@@ -58,7 +58,7 @@ const ScreenNavigationButtons = ({ colors }) => {
             Categories
           </Text>
         </HStack>
-      </Button> */}
+      </Button>
       <Button
         marginLeft="auto"
         onPressIn={() => setIsPressedQuizButton(true)}
