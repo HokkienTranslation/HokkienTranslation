@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Box, Text, Button, Center, VStack, HStack, Pressable, Input, Select } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
+import { useLanguage } from "./context/LanguageProvider";
+import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
 const FlashcardScreen = ({ }) => {
   const { theme, themes } = useTheme();
@@ -27,6 +29,8 @@ const FlashcardScreen = ({ }) => {
   const [isPressedRight, setIsPressedRight] = useState(false);
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
+  const { language } = useLanguage();
+  const [translatedText, setTranslatedText] = useState("");
 
   const flashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -110,6 +114,28 @@ const FlashcardScreen = ({ }) => {
     setShowConfirmDelete(false);
   };
 
+  useEffect(() => {
+    if (language != "Chinese (Simplified)") {
+      if (showTranslation) {
+        const translateText = async () => {
+          await callOpenAIChat(
+            `Translate ${flashcards[currentCardIndex].translation} to ${language}. 
+            You must respond with only the translation.`)
+          .then((response) => { 
+            console.log("OpenAI Response:", response);
+            setTranslatedText(response)
+          })
+          .catch((error) => console.error("Error:", error));
+        };
+        setTranslatedText("Loading...")
+        translateText();
+      }
+    } else {
+      setTranslatedText(flashcards[currentCardIndex].translation);
+    }
+  }, [showTranslation, currentCardIndex, language]);
+  
+  
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons colors={colors} />
@@ -217,7 +243,7 @@ const FlashcardScreen = ({ }) => {
               >
                 <Text fontSize="2xl" color={colors.onSurface}>
                   {showTranslation
-                    ? flashcards[currentCardIndex].translation
+                    ? translatedText
                     : flashcards[currentCardIndex].word}
                 </Text>
               </Box>

@@ -13,6 +13,7 @@ import FlashcardList from "./screens/FlashcardList";
 import QuizScreen from "./screens/QuizScreen";
 import FlashcardCategory from "./screens/FlashcardCategory";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
+import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 
@@ -131,9 +132,11 @@ const AppContent = () => {
 export default function App() {
   return (
     <ThemeProvider>
-      <ComponentVisibilityProvider>
-        <AppContent />
-      </ComponentVisibilityProvider>
+      <LanguageProvider>
+        <ComponentVisibilityProvider>
+          <AppContent />
+        </ComponentVisibilityProvider>
+      </LanguageProvider>
     </ThemeProvider>
   );
 }
