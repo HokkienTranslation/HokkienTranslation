@@ -3,13 +3,38 @@ import { Pressable } from "react-native";
 import { Switch, HStack, VStack, Text, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "./context/ThemeProvider";
+import { useLanguage } from "./context/LanguageProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
-import SignOut from "./signout.js"; // Adjust the path if necessary
+import { SelectList } from "react-native-dropdown-select-list";
 
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
+  const { language, setLanguage } = useLanguage();
+
+  const languages = [
+    { key: '1', value: "Arabic" },
+    { key: '2', value: "Chinese (Simplified)" },
+    { key: '3', value: "Chinese (Traditional)" },
+    { key: '4', value: "Czech" },
+    { key: '5', value: "Danish" },
+    { key: '6', value: "Dutch" },
+    { key: '7', value: "French" },
+    { key: '8', value: "German" },
+    { key: '9', value: "Greek" },
+    { key: '10', value: "Hindi" },
+    { key: '11', value: "Indonesian" },
+    { key: '12', value: "Italian" },
+    { key: '13', value: "Japanese" },
+    { key: '14', value: "Korean" },
+    { key: '15', value: "Polish" },
+    { key: '16', value: "Portuguese" },
+    { key: '17', value: "Russian" },
+    { key: '18', value: "Spanish" },
+    { key: '19', value: "Turkish" },
+    { key: '20', value: "Vietnamese" }
+  ];
 
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable onPress={toggleTheme} hitSlop={10}>
@@ -80,6 +105,26 @@ const SettingsScreen = () => {
               }
             />
           </VStack>
+        </VStack>
+
+        {/* Language section */}
+        <VStack space={2}>
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "bold",
+              color: colors.onSurface,
+            }}
+          >
+            Language Options
+          </Text>
+          <SelectList
+            setSelected={(val) => setLanguage(val)}
+            data={languages}
+            save="value"
+            // search={false}
+            defaultOption={{ key:'2', value:'Chinese (Simplified)' }}
+          />  
         </VStack>
 
         {/* Models section */}
