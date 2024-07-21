@@ -4,7 +4,7 @@ import axios from "axios";
 async function callOpenAIChat(prompt) {
   const apiKey = process.env.OPEN_AI_KEY;
 
-  console.log("API Key:", apiKey);
+  // console.log("API Key:", apiKey);
 
   if (!apiKey) {
     throw new Error(
@@ -20,7 +20,7 @@ async function callOpenAIChat(prompt) {
   };
 
   const body = {
-    model: "gpt-3.5-turbo",
+    model: "gpt-4o-mini",
     messages: [{ role: "user", content: prompt }],
     temperature: 0.7,
   };
