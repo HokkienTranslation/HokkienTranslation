@@ -11,30 +11,33 @@ const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
-  const { language, setLanguage } = useLanguage();
+  const { languages, setLanguages } = useLanguage();
 
-  const languages = [
+  const languageList = [
     { key: '1', value: "Arabic" },
     { key: '2', value: "Chinese (Simplified)" },
     { key: '3', value: "Chinese (Traditional)" },
     { key: '4', value: "Czech" },
     { key: '5', value: "Danish" },
     { key: '6', value: "Dutch" },
-    { key: '7', value: "French" },
-    { key: '8', value: "German" },
-    { key: '9', value: "Greek" },
-    { key: '10', value: "Hindi" },
-    { key: '11', value: "Indonesian" },
-    { key: '12', value: "Italian" },
-    { key: '13', value: "Japanese" },
-    { key: '14', value: "Korean" },
-    { key: '15', value: "Polish" },
-    { key: '16', value: "Portuguese" },
-    { key: '17', value: "Russian" },
-    { key: '18', value: "Spanish" },
-    { key: '19', value: "Turkish" },
-    { key: '20', value: "Vietnamese" }
+    { key: '7', value: "English" },
+    { key: '8', value: "French" },
+    { key: '9', value: "German" },
+    { key: '10', value: "Greek" },
+    { key: '11', value: "Hindi" },
+    { key: '12', value: "Indonesian" },
+    { key: '13', value: "Italian" },
+    { key: '14', value: "Japanese" },
+    { key: '15', value: "Korean" },
+    { key: '16', value: "Polish" },
+    { key: '17', value: "Portuguese" },
+    { key: '18', value: "Russian" },
+    { key: '19', value: "Spanish" },
+    { key: '20', value: "Turkish" },
+    { key: '21', value: "Vietnamese" }
   ];
+
+  // const secondLanguageList = languages.filter(value => value !== languages[0]);
 
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable
@@ -124,8 +127,15 @@ const SettingsScreen = () => {
             Language Options
           </Text>
           <SelectList
-            setSelected={(val) => setLanguage(val)}
-            data={languages}
+            setSelected={(val) => setLanguages([val, languages[1]])}
+            data={languageList}
+            save="value"
+            // search={false}
+            defaultOption={{ key:'1', value:'English' }}
+          />  
+          <SelectList
+            setSelected={(val) => setLanguages([languages[0], val])}
+            data={languageList}
             save="value"
             // search={false}
             defaultOption={{ key:'2', value:'Chinese (Simplified)' }}

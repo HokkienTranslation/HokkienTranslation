@@ -17,7 +17,7 @@ const FlashcardScreen = ({ navigation }) => {
   const [isPressedRight, setIsPressedRight] = useState(false);
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
-  const { language } = useLanguage();
+  const { languages } = useLanguage();
   
   const baseFlashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -28,7 +28,7 @@ const FlashcardScreen = ({ navigation }) => {
 
   const [flashcards, setFlashcards] = useState(baseFlashcards);
 
-  const translateText = async (text) => {
+  const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(`Translate ${text} to ${language}. You must respond with only the translation.`);
       console.log("OpenAI Response:", response);
@@ -111,17 +111,35 @@ const FlashcardScreen = ({ navigation }) => {
   };
 
   useEffect(() => {
-    const generateFlashcards = async (language) => {
+    const generateFlashcards = async (languages) => {
+      if (languages[0] === 'English' && languages[1] === 'Chinese (Simplified)') {
+        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
+          word: flashcard.word,
+          translation: flashcard.translation,
+        })));
+        return flashcards;
+      } else if (languages[0] === 'English') {
+        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
+          word: flashcard.word,
+          translation: await translateText(flashcard.translation, languages[1]),
+        })));
+        return flashcards;
+      } else if (languages[1] === 'Chinese (Simplified)') {
+        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
+          word: await translateText(flashcard.word, languages[0]),
+          translation: flashcard.translation,
+        })));
+        return flashcards;
+      } else {
       const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-        word: flashcard.word,
-        translation: await translateText(flashcard.translation),
+        word: await translateText(flashcard.word, languages[0]),
+        translation: await translateText(flashcard.translation, languages[1]),
       })));
-      // console.log(flashcards);
-      return flashcards;
-    };
+        return flashcards;
+    }};
 
-    generateFlashcards(language).then(setFlashcards);
-    }, [language]); 
+    generateFlashcards(languages).then(setFlashcards);
+    }, [languages]); 
   
   return (
     <Box flex={1} background={colors.surface}>
