@@ -112,31 +112,28 @@ const FlashcardScreen = ({ navigation }) => {
 
   useEffect(() => {
     const generateFlashcards = async (languages) => {
-      if (languages[0] === 'English' && languages[1] === 'Chinese (Simplified)') {
-        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-          word: flashcard.word,
-          translation: flashcard.translation,
-        })));
-        return flashcards;
-      } else if (languages[0] === 'English') {
-        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-          word: flashcard.word,
-          translation: await translateText(flashcard.translation, languages[1]),
-        })));
-        return flashcards;
-      } else if (languages[1] === 'Chinese (Simplified)') {
-        const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-          word: await translateText(flashcard.word, languages[0]),
-          translation: flashcard.translation,
-        })));
-        return flashcards;
-      } else {
-      const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-        word: await translateText(flashcard.word, languages[0]),
-        translation: await translateText(flashcard.translation, languages[1]),
-      })));
-        return flashcards;
-    }};
+      const [lang1, lang2] = languages;
+
+      return Promise.all(baseFlashcards.map(async (flashcard) => {
+        let word = flashcard.word;
+        let translation = flashcard.translation;
+    
+        // logic to reduce the need of translating to English or Chinese (Simplified)
+        // will need to be changed for Hokkien
+        if (lang1 === 'Chinese (Simplified)') {
+          word = translation;
+        } if (lang2 === 'English') {
+          translation = word;
+        } 
+  
+        if (lang1 !== 'English' && lang1 !== 'Chinese (Simplified)') {
+          word = await translateText(word, lang1);
+        } if (lang2 !== 'English' && lang2 !== 'Chinese (Simplified)') {
+          translation = await translateText(translation, lang2);
+        }
+        return { word, translation };
+      }));
+    };
 
     generateFlashcards(languages).then(setFlashcards);
     }, [languages]); 

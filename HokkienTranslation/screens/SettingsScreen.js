@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Pressable } from "react-native";
 import { Switch, HStack, VStack, Text } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -12,32 +12,41 @@ const SettingsScreen = () => {
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
   const { languages, setLanguages } = useLanguage();
+  const [errorMessage, setErrorMessage] = useState('');
 
+  useEffect(() => {
+    if (languages[0] === languages[1]) {
+      setErrorMessage('The selected languages must be different.');
+    } else {
+      setErrorMessage('');
+    } 
+  }, [languages]);
+  
+  // react-native-dropdown-select-list has a bug where you have to use the key for the 
+  // defaultOption, but value as display
   const languageList = [
-    { key: '1', value: "Arabic" },
-    { key: '2', value: "Chinese (Simplified)" },
-    { key: '3', value: "Chinese (Traditional)" },
-    { key: '4', value: "Czech" },
-    { key: '5', value: "Danish" },
-    { key: '6', value: "Dutch" },
-    { key: '7', value: "English" },
-    { key: '8', value: "French" },
-    { key: '9', value: "German" },
-    { key: '10', value: "Greek" },
-    { key: '11', value: "Hindi" },
-    { key: '12', value: "Indonesian" },
-    { key: '13', value: "Italian" },
-    { key: '14', value: "Japanese" },
-    { key: '15', value: "Korean" },
-    { key: '16', value: "Polish" },
-    { key: '17', value: "Portuguese" },
-    { key: '18', value: "Russian" },
-    { key: '19', value: "Spanish" },
-    { key: '20', value: "Turkish" },
-    { key: '21', value: "Vietnamese" }
+    { key: 'Arabic', value: "Arabic" },
+    { key: 'Chinese (Simplified)', value: "Chinese (Simplified)" },
+    { key: 'Chinese (Traditional)', value: "Chinese (Traditional)" },
+    { key: 'Czech', value: "Czech" },
+    { key: 'Danish', value: "Danish" },
+    { key: 'Dutch', value: "Dutch" },
+    { key: 'English', value: "English" },
+    { key: 'French', value: "French" },
+    { key: 'German', value: "German" },
+    { key: 'Greek', value: "Greek" },
+    { key: 'Hindi', value: "Hindi" },
+    { key: 'Indonesian', value: "Indonesian" },
+    { key: 'Italian', value: "Italian" },
+    { key: 'Japanese', value: "Japanese" },
+    { key: 'Korean', value: "Korean" },
+    { key: 'Polish', value: "Polish" },
+    { key: 'Portuguese', value: "Portuguese" },
+    { key: 'Russian', value: "Russian" },
+    { key: 'Spanish', value: "Spanish" },
+    { key: 'Turkish', value: "Turkish" },
+    { key: 'Vietnamese', value: "Vietnamese" }
   ];
-
-  // const secondLanguageList = languages.filter(value => value !== languages[0]);
 
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable
@@ -126,20 +135,27 @@ const SettingsScreen = () => {
           >
             Language Options
           </Text>
-          <SelectList
-            setSelected={(val) => setLanguages([val, languages[1]])}
-            data={languageList}
-            save="value"
-            // search={false}
-            defaultOption={{ key:'1', value:'English' }}
-          />  
-          <SelectList
-            setSelected={(val) => setLanguages([languages[0], val])}
-            data={languageList}
-            save="value"
-            // search={false}
-            defaultOption={{ key:'2', value:'Chinese (Simplified)' }}
-          />  
+          <HStack space={2} alignItems="center">
+          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+            <SelectList
+              setSelected={(key) => setLanguages([key, languages[1]])}
+              data={languageList}
+              save="key"
+              // search={false}
+              defaultOption={{ key:'English', value:'English' }} 
+            />
+          </HStack>  
+          <HStack space={2} alignItems="center">
+          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+            <SelectList
+              setSelected={(key) => setLanguages([languages[0], key])}
+              data={languageList}
+              save="key"
+              // search={false}
+              defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
+            />  
+          </HStack>
+          {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
         </VStack>
 
         {/* Models section */}
