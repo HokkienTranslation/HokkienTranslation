@@ -146,8 +146,6 @@ const SettingsScreen = () => {
           <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
           <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
         </VStack>
-
-        {/* Sign Out section */}
         <SignOut />
       </VStack>
     </VStack>
