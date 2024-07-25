@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Box, Text, Button, Center, VStack, HStack, Pressable } from "native-base";
+import { Box, Text, Button, Center, VStack, HStack, Pressable, Input, Select } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
@@ -7,12 +7,24 @@ import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
-const FlashcardScreen = ({ navigation }) => {
+const FlashcardScreen = ({ }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+
+  const [showNewFlashcard, setShowNewFlashcard] = useState(false);
+  const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+
+  // const [word, setWord] = useState('');    
+  // const [translation, setTranslation] = useState('');
+  const [type, setType] = useState("");
+  const [otherOpt, setOtherOpt] = useState("");
+  const [category, setCategory] = useState("");
+  const [privacy, setPrivacy] = useState(""); // shared
+  const [cardList, setCardlist] = useState(""); 
+
   const [isPressedLeft, setIsPressedLeft] = useState(false);
   const [isPressedRight, setIsPressedRight] = useState(false);
   const [isMin, setIsMin] = useState(true);
@@ -100,13 +112,17 @@ const FlashcardScreen = ({ navigation }) => {
     setShowTranslation(!showTranslation);
   };
 
+  const handleCreate = () => {
+    setShowNewFlashcard(true);
+  };
+
   const handleUpdate = () => {
-    const currentFlashcard = flashcards[currentCardIndex];
-    navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
+    // const currentFlashcard = flashcards[currentCardIndex];
+    // navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
+    setShowUpdates(true);
   };
 
   const handleDelete = () => {
-    // Implement delete functionality here
     setShowConfirmDelete(false);
   };
 
@@ -151,11 +167,16 @@ const FlashcardScreen = ({ navigation }) => {
               paddingX={4}
               paddingY={2}
               borderRadius="10px"
-              onPress={() => navigation.navigate('CreateFlashcard')}
+              onPress={handleCreate}
               _hover={{ bg: colors.darkerPrimaryContainer }}
               _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
-              Create
+              <Center>
+                <HStack space={2} alignItems="center">
+                  <Ionicons name="add" size={20} color={colors.onPrimary} />
+                  <Text>Create</Text>
+                </HStack>
+              </Center>
             </Button>
             <Button
               bg={colors.primaryContainer}
@@ -168,7 +189,12 @@ const FlashcardScreen = ({ navigation }) => {
               _hover={{ bg: colors.darkerPrimaryContainer }}
               _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
-              Update
+              <Center>
+                <HStack space={2} alignItems="center">
+                  <Ionicons name="pencil" size={20} color={colors.onPrimary} />
+                  <Text>Update</Text>
+                </HStack>
+              </Center>
             </Button>
             <Button
               bg={colors.primaryContainer}
@@ -181,7 +207,12 @@ const FlashcardScreen = ({ navigation }) => {
               _hover={{ bg: colors.darkerPrimaryContainer }}
               _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
-              Delete
+              <Center>
+                <HStack space={2} alignItems="center">
+                  <Ionicons name="trash" size={20} color={colors.onPrimary} />
+                  <Text>Delete</Text>
+                </HStack>
+              </Center>
             </Button>
           </HStack>
 
@@ -231,6 +262,7 @@ const FlashcardScreen = ({ navigation }) => {
                 <Text fontSize="2xl" color={colors.onSurface}>
                   {showTranslation
                     ? flashcards[currentCardIndex].translation
+                    ? flashcards[currentCardIndex].translation
                     : flashcards[currentCardIndex].word}
                 </Text>
               </Box>
@@ -269,7 +301,152 @@ const FlashcardScreen = ({ navigation }) => {
             </Pressable>
           </HStack>
         </VStack>
-
+        {/* create pop up */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showNewFlashcard}
+          onRequestClose={() => setShowNewFlashcard(false)}>
+          <Center flex={1} justifyContent="center" backgroundColor="rgba(0, 0, 0, 0.5)">
+            <Box
+              width="300px"
+              bg="white"
+              alignItems="center"
+              borderRadius="10px"
+              shadow={2}
+              padding={4}>
+              <Text fontSize="lg" marginBottom={4}>
+                Create new flashcard:
+              </Text>
+              <VStack space={4} alignItems="center">
+                <Input placeholder="Enter word" width={200}/>
+                <Input placeholder="Enter Translation" width={200}/>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={otherOpt}
+                      placeholder="View Other Options"
+                      onValueChange={(itemValue) => setOtherOpt(itemValue)}
+                    >
+                      <Select.Item label="banana 1" value="word" />
+                      <Select.Item label="banana 2" value="sentence" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={type}
+                      placeholder="Select Type"
+                      onValueChange={(itemValue) => setType(itemValue)}
+                    >
+                      <Select.Item label="Word" value="word" />
+                      <Select.Item label="Sentence" value="sentence" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={category}
+                      placeholder="Select Category"
+                      onValueChange={(itemValue) => setCategory(itemValue)}
+                    >
+                      <Select.Item label="Shopping" value="shopping" />
+                      <Select.Item label="Other" value="other" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={privacy}
+                      placeholder="Set Privacy"
+                      onValueChange={(itemValue) => setPrivacy(itemValue)}
+                    >
+                      <Select.Item label="Public" value="shopping" />
+                      <Select.Item label="Private" value="other" />
+                    </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                    <Select
+                      selectedValue={cardList}
+                      placeholder="Select Flashcard List"
+                      onValueChange={(itemValue) => setCardlist(itemValue)}
+                    >
+                      <Select.Item label="list 1" value="shopping" />
+                      <Select.Item label="list 2" value="other" />
+                    </Select>
+                </Box>
+                <HStack space={4}>
+                  <Button 
+                   bg={colors.primaryContainer}
+                   _text={{ color: colors.onPrimary }}
+                   shadow={2}
+                   paddingX={4}
+                   paddingY={2}
+                   borderRadius="10px"
+                   onPress={handleCreate}>Save</Button>
+                  <Button 
+                      bg={colors.primaryContainer}
+                      _text={{ color: colors.onPrimary }}
+                      shadow={2}
+                      paddingX={4}
+                      paddingY={2}
+                      borderRadius="10px"
+                    onPress={() => setShowNewFlashcard(false)}>Cancel</Button>
+                </HStack>
+              </VStack>
+            </Box>
+          </Center>
+        </Modal>
+        {/* update pop up */}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={showUpdates}
+          onRequestClose={() => setShowUpdates(false)}
+        >
+          <Center flex={1} justifyContent="center" backgroundColor="rgba(0, 0, 0, 0.5)">
+            <Box
+              width="300px"
+              bg="white"
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={2}
+              padding={4}
+            >
+              <VStack space={4} alignItems="center">
+              <Text fontSize="lg">
+                Edit flashcard:
+              </Text>
+                <Input
+                  placeholder="Word"
+                  value={flashcards[currentCardIndex].word}
+                  // onChangeText={setWord}
+                />
+                <Input
+                  placeholder="Translation"
+                  value={flashcards[currentCardIndex].translation}
+                  // onChangeText={setTranslation}
+                />
+                <HStack space={4}>
+                  <Button 
+                      bg={colors.primaryContainer}
+                      _text={{ color: colors.onPrimary }}
+                      shadow={2}
+                      paddingX={4}
+                      paddingY={2}
+                      borderRadius="10px"
+                    onPress={handleUpdate}>Save</Button>
+                  <Button 
+                      bg={colors.primaryContainer}
+                      _text={{ color: colors.onPrimary }}
+                      shadow={2}
+                      paddingX={4}
+                      paddingY={2}
+                      borderRadius="10px"
+                    onPress={() => setShowUpdates(false)}>Cancel</Button>
+                </HStack>
+              </VStack>
+            </Box>
+          </Center>
+        </Modal>
+        {/* delete pop up */}
         <Modal
           animationType="fade"
           transparent={true}
@@ -288,7 +465,7 @@ const FlashcardScreen = ({ navigation }) => {
               padding={4}
             >
               <Text fontSize="lg" marginBottom={4}>
-                Delete the {flashcards[currentCardIndex].word} flashcard?
+                Delete this flashcard?
               </Text>
               <HStack space={4}>
                 <Button onPress={handleDelete}>Yes</Button>

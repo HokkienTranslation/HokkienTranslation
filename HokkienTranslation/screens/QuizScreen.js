@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Box, Button, Center, VStack, HStack, Text, Progress } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from 'react-native';
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../backend/database/Firebase";
 
 const QuizScreen = () => {
   const { theme, themes } = useTheme();
@@ -10,20 +12,42 @@ const QuizScreen = () => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [score, setScore] = useState(0);
   const [isDisabled, setIsDisabled] = useState(false);
+  const [flashcards, setFlashcards] = useState([]);
+  const [loading, setLoading] = useState(true);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
-  const flashcards = [
-    { word: "Apple", choices: ["Banana", "Orange", "Apple", "Grape"], answer: 2 },
-    { word: "Banana", choices: ["Peach", "Banana", "Berry", "Melon"], answer: 1 },
-    { word: "Cat", choices: ["Dog", "Bird", "Fish", "Cat"], answer: 3 },
-    { word: "Dog", choices: ["Cat", "Dog", "Rabbit", "Horse"], answer: 1 },
-  ];
+  useEffect(() => {
+    const fetchFlashcards = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "flashcard"));
+        const cards = querySnapshot.docs.map(doc => {
+          const data = doc.data();
+          const choices = shuffleArray([data.destination, ...data.otherOptions]);
+          return {
+            id: doc.id,
+            ...data,
+            choices,
+          };
+        });
+        setFlashcards(cards);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching flashcards: ", error);
+      }
+    };
+
+    fetchFlashcards();
+  }, []);
+
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
 
   const handleChoice = (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
-    if (index === flashcards[currentCardIndex].answer) {
+    if (flashcards[currentCardIndex].choices[index] === flashcards[currentCardIndex].destination) {
       setScore((prevScore) => prevScore + 1);
     }
     setTimeout(() => {
@@ -74,26 +98,32 @@ const QuizScreen = () => {
   };
 
   const getButtonStyle = (index) => {
-    const correctAnswerIndex = flashcards[currentCardIndex].answer;
+    const correctAnswer = flashcards[currentCardIndex].destination;
+    const choice = flashcards[currentCardIndex].choices[index];
 
     if (selectedAnswer === null) {
       return {
         bg: colors.primaryContainer,
         borderColor: colors.buttonBorder
       };
-    } else if (selectedAnswer === index) {
-      return correctAnswerIndex === index
+    } else if (choice === correctAnswer) {
+      return index === selectedAnswer
         ? { bg: 'rgba(39, 201, 36, 0.6)', borderColor: '#27c924' }
-        : { bg: 'rgba(186, 34, 39, 0.6)', borderColor: '#ba2227' };
-    } else if (selectedAnswer !== correctAnswerIndex && index === correctAnswerIndex) {
-      return { bg: 'rgba(39, 201, 36, 0.6)', borderColor: '#27c924' };
+        : { bg: 'rgba(39, 201, 36, 0.6)', borderColor: '#27c924' };
     } else {
-      return {
-        bg: colors.primaryContainer,
-        borderColor: colors.buttonBorder
-      };
+      return index === selectedAnswer
+        ? { bg: 'rgba(186, 34, 39, 0.6)', borderColor: '#ba2227' }
+        : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
     }
   };
+
+  if (loading) {
+    return (
+      <Center flex={1} px="3" background={colors.surface}>
+        <Text>Loading...</Text>
+      </Center>
+    );
+  }
 
   return (
     <Center flex={1} px="3" background={colors.surface}>
@@ -119,7 +149,7 @@ const QuizScreen = () => {
         >
           <VStack space={10} alignItems="center" flex={1} justifyContent="center">
             <Text fontSize="2xl" color={colors.onSurface} mb={0}>
-              {flashcards[currentCardIndex].word}
+              {flashcards[currentCardIndex].origin} - {flashcards[currentCardIndex].destination}
             </Text>
             <VStack space={5} width="100%">
               <HStack space={9} width="100%">
