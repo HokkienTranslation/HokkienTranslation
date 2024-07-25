@@ -29,7 +29,7 @@ const FlashcardScreen = ({ }) => {
   const [isPressedRight, setIsPressedRight] = useState(false);
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
-  const { language } = useLanguage();
+  const { languages } = useLanguage();
   
   const baseFlashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
@@ -40,7 +40,7 @@ const FlashcardScreen = ({ }) => {
 
   const [flashcards, setFlashcards] = useState(baseFlashcards);
 
-  const translateText = async (text) => {
+  const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(`Translate ${text} to ${language}. You must respond with only the translation.`);
       console.log("OpenAI Response:", response);
@@ -127,17 +127,32 @@ const FlashcardScreen = ({ }) => {
   };
 
   useEffect(() => {
-    const generateFlashcards = async (language) => {
-      const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
-        word: flashcard.word,
-        translation: await translateText(flashcard.translation),
-      })));
-      // console.log(flashcards);
-      return flashcards;
+    const generateFlashcards = async (languages) => {
+      const [lang1, lang2] = languages;
+
+      return Promise.all(baseFlashcards.map(async (flashcard) => {
+        let word = flashcard.word;
+        let translation = flashcard.translation;
+    
+        // logic to reduce the need of translating to English or Chinese (Simplified)
+        // will need to be changed for Hokkien
+        if (lang1 === 'Chinese (Simplified)') {
+          word = translation;
+        } if (lang2 === 'English') {
+          translation = word;
+        } 
+  
+        if (lang1 !== 'English' && lang1 !== 'Chinese (Simplified)') {
+          word = await translateText(word, lang1);
+        } if (lang2 !== 'English' && lang2 !== 'Chinese (Simplified)') {
+          translation = await translateText(translation, lang2);
+        }
+        return { word, translation };
+      }));
     };
 
-    generateFlashcards(language).then(setFlashcards);
-    }, [language]); 
+    generateFlashcards(languages).then(setFlashcards);
+    }, [languages]); 
   
   return (
     <Box flex={1} background={colors.surface}>
@@ -246,6 +261,7 @@ const FlashcardScreen = ({ }) => {
               >
                 <Text fontSize="2xl" color={colors.onSurface}>
                   {showTranslation
+                    ? flashcards[currentCardIndex].translation
                     ? flashcards[currentCardIndex].translation
                     : flashcards[currentCardIndex].word}
                 </Text>

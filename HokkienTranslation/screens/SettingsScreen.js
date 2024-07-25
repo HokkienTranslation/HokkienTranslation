@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Pressable } from "react-native";
 import { Switch, HStack, VStack, Text } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -11,29 +11,41 @@ const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
-  const { language, setLanguage } = useLanguage();
+  const { languages, setLanguages } = useLanguage();
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const languages = [
-    { key: '1', value: "Arabic" },
-    { key: '2', value: "Chinese (Simplified)" },
-    { key: '3', value: "Chinese (Traditional)" },
-    { key: '4', value: "Czech" },
-    { key: '5', value: "Danish" },
-    { key: '6', value: "Dutch" },
-    { key: '7', value: "French" },
-    { key: '8', value: "German" },
-    { key: '9', value: "Greek" },
-    { key: '10', value: "Hindi" },
-    { key: '11', value: "Indonesian" },
-    { key: '12', value: "Italian" },
-    { key: '13', value: "Japanese" },
-    { key: '14', value: "Korean" },
-    { key: '15', value: "Polish" },
-    { key: '16', value: "Portuguese" },
-    { key: '17', value: "Russian" },
-    { key: '18', value: "Spanish" },
-    { key: '19', value: "Turkish" },
-    { key: '20', value: "Vietnamese" }
+  useEffect(() => {
+    if (languages[0] === languages[1]) {
+      setErrorMessage('The selected languages must be different.');
+    } else {
+      setErrorMessage('');
+    } 
+  }, [languages]);
+  
+  // react-native-dropdown-select-list has a bug where you have to use the key for the 
+  // defaultOption, but value as display
+  const languageList = [
+    { key: 'Arabic', value: "Arabic" },
+    { key: 'Chinese (Simplified)', value: "Chinese (Simplified)" },
+    { key: 'Chinese (Traditional)', value: "Chinese (Traditional)" },
+    { key: 'Czech', value: "Czech" },
+    { key: 'Danish', value: "Danish" },
+    { key: 'Dutch', value: "Dutch" },
+    { key: 'English', value: "English" },
+    { key: 'French', value: "French" },
+    { key: 'German', value: "German" },
+    { key: 'Greek', value: "Greek" },
+    { key: 'Hindi', value: "Hindi" },
+    { key: 'Indonesian', value: "Indonesian" },
+    { key: 'Italian', value: "Italian" },
+    { key: 'Japanese', value: "Japanese" },
+    { key: 'Korean', value: "Korean" },
+    { key: 'Polish', value: "Polish" },
+    { key: 'Portuguese', value: "Portuguese" },
+    { key: 'Russian', value: "Russian" },
+    { key: 'Spanish', value: "Spanish" },
+    { key: 'Turkish', value: "Turkish" },
+    { key: 'Vietnamese', value: "Vietnamese" }
   ];
 
   const ThemeOption = ({ themeName, iconName }) => (
@@ -123,13 +135,27 @@ const SettingsScreen = () => {
           >
             Language Options
           </Text>
-          <SelectList
-            setSelected={(val) => setLanguage(val)}
-            data={languages}
-            save="value"
-            // search={false}
-            defaultOption={{ key:'2', value:'Chinese (Simplified)' }}
-          />  
+          <HStack space={2} alignItems="center">
+          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+            <SelectList
+              setSelected={(key) => setLanguages([key, languages[1]])}
+              data={languageList}
+              save="key"
+              // search={false}
+              defaultOption={{ key:'English', value:'English' }} 
+            />
+          </HStack>  
+          <HStack space={2} alignItems="center">
+          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+            <SelectList
+              setSelected={(key) => setLanguages([languages[0], key])}
+              data={languageList}
+              save="key"
+              // search={false}
+              defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
+            />  
+          </HStack>
+          {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
         </VStack>
 
         {/* Models section */}
