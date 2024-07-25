@@ -30,14 +30,26 @@ const FlashcardScreen = ({ }) => {
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
   const { language } = useLanguage();
-  const [translatedText, setTranslatedText] = useState("");
-
-  const flashcards = [
+  
+  const baseFlashcards = [
     { word: "Apple", translation: "苹果 (Píngguǒ)" },
     { word: "Banana", translation: "香蕉 (Xiāngjiāo)" },
     { word: "Cat", translation: "猫 (Māo)" },
     { word: "Dog", translation: "狗 (Gǒu)" },
   ];
+
+  const [flashcards, setFlashcards] = useState(baseFlashcards);
+
+  const translateText = async (text) => {
+    try {
+      const response = await callOpenAIChat(`Translate ${text} to ${language}. You must respond with only the translation.`);
+      console.log("OpenAI Response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+      return "Error with translation.";
+    }
+  };
 
   const position = useRef(new Animated.ValueXY()).current;
 
@@ -115,26 +127,17 @@ const FlashcardScreen = ({ }) => {
   };
 
   useEffect(() => {
-    if (language != "Chinese (Simplified)") {
-      if (showTranslation) {
-        const translateText = async () => {
-          await callOpenAIChat(
-            `Translate ${flashcards[currentCardIndex].translation} to ${language}. 
-            You must respond with only the translation.`)
-          .then((response) => { 
-            console.log("OpenAI Response:", response);
-            setTranslatedText(response)
-          })
-          .catch((error) => console.error("Error:", error));
-        };
-        setTranslatedText("Loading...")
-        translateText();
-      }
-    } else {
-      setTranslatedText(flashcards[currentCardIndex].translation);
-    }
-  }, [showTranslation, currentCardIndex, language]);
-  
+    const generateFlashcards = async (language) => {
+      const flashcards = await Promise.all(baseFlashcards.map(async flashcard => ({
+        word: flashcard.word,
+        translation: await translateText(flashcard.translation),
+      })));
+      // console.log(flashcards);
+      return flashcards;
+    };
+
+    generateFlashcards(language).then(setFlashcards);
+    }, [language]); 
   
   return (
     <Box flex={1} background={colors.surface}>
@@ -243,7 +246,7 @@ const FlashcardScreen = ({ }) => {
               >
                 <Text fontSize="2xl" color={colors.onSurface}>
                   {showTranslation
-                    ? translatedText
+                    ? flashcards[currentCardIndex].translation
                     : flashcards[currentCardIndex].word}
                 </Text>
               </Box>
