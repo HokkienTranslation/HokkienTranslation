@@ -1,19 +1,26 @@
 import React, { useState } from "react";
-// import { ImageBackground, Pressable } from "react-native";
-import { Box, Image, Text, VStack, FormControl, Input, Button } from "native-base";
+import { Box, Text, VStack, FormControl, Input, Button } from "native-base";
 import { CommonActions } from "@react-navigation/native";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
-import { auth } from "../backend/database/Firebase";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { auth, getCurrentUser } from "../backend/database/Firebase";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState("");
+
+  if (getCurrentUser()) {
+    navigation.dispatch(
+    CommonActions.reset({
+      index: 0,
+      routes: [{ name: "Main" }],
+    })
+  );
+  }
   
   const loginWithEmail = () => {
     signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
-      // Signed in 
       const user = userCredential.user;
       setMessage("Successfully logging you in");
       navigation.dispatch(
@@ -22,10 +29,8 @@ export default function LoginScreen({ navigation }) {
           routes: [{ name: "Main" }],
         })
       );
-      // ...
     })
     .catch((error) => {
-      // const errorCode = error.code;
       const errorMessage = error.message;
       setMessage(errorMessage);
     });
@@ -36,9 +41,8 @@ export default function LoginScreen({ navigation }) {
   const loginWithGoogle = () => {
     signInWithPopup(auth, provider)
     .then((result) => {
-      // This gives you a Google Access Token. You can use it to access the Google API.
       const credential = GoogleAuthProvider.credentialFromResult(result);
-      const token = credential.accessToken;
+      const token = credential.accessToken;  // Google Access Token that can be used to access the Google API.
       // const user = result.user;
       setMessage("Successfully logging you in");
       navigation.dispatch(
@@ -47,10 +51,7 @@ export default function LoginScreen({ navigation }) {
           routes: [{ name: "Main" }],
         })
       );
-      // IdP data available using getAdditionalUserInfo(result)
-      // ...
     }).catch((error) => {
-      // Handle Errors here.
       // const errorCode = error.code;
       const errorMessage = error.message;
       setMessage(errorMessage);
@@ -61,6 +62,20 @@ export default function LoginScreen({ navigation }) {
       // ...
     });
   }
+
+  // onAuthStateChanged(auth, (user) => {
+  //   console.log(user)
+  //   if (user) {
+  //     // navigation.dispatch(
+  //     //   CommonActions.reset({
+  //     //     index: 0,
+  //     //     routes: [{ name: "Main" }],
+  //     //   })
+  //     // );
+  //   } else {
+  //     return null;
+  //   }
+  // });
 
   return <Box safeArea p="2" py="8" w="90%" maxW="290">
     <VStack space={3} mt="5">

@@ -4,7 +4,7 @@ import { Switch, HStack, VStack, Text, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "./context/ThemeProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
-import SignOut from "./signout.js"; // Adjust the path if necessary
+import SignOut from "./Signout"; // Adjust the path if necessary
 
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
