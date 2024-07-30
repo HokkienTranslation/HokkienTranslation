@@ -7,14 +7,15 @@ const LandingPage = ({ navigation }) => {
   return (
     <Pressable
       style={{ flex: 1 }}
-      onPress={() =>
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          })
-        )
-      }
+      onPress={() => navigation.navigate("Login")}
+      // onPress={() =>
+      //   navigation.dispatch(
+      //     CommonActions.reset({
+      //       index: 0,
+      //       routes: [{ name: "Main" }],
+      //     })
+      //   )
+      // }
     >
       <ImageBackground
         source={require("../assets/background.png")}
