@@ -20,6 +20,12 @@ export default function LoginScreen({ navigation }) {
   // }, []);
 
   useEffect(() => {
+    // navigation.dispatch(
+    //   CommonActions.reset({
+    //     index: 0,
+    //     routes: [{ name: "Main" }],
+    //   })
+    // );
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         navigation.dispatch(
