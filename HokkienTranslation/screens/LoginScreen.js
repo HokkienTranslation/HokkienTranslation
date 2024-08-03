@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Text, VStack, FormControl, Input, Button, Pressable, HStack, Image, Divider } from "native-base";
 import { CommonActions } from "@react-navigation/native";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
 import { auth, getCurrentUser } from "../backend/database/Firebase";
 
 export default function LoginScreen({ navigation }) {
@@ -9,19 +9,34 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState("");
 
-  if (getCurrentUser()) {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{ name: "Main" }],
-      })
-    );
-  }
+  // *** Use code below to get the user ***
+  // import { onAuthStateChanged } from "firebase/auth";
+  // const [currentUser, setCurrentUser] = useState(null);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
+  //     setCurrentUser(user)
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{ name: "Main" }],
+          })
+        );
+      }
+    });
+    
+    return () => unsubscribe();
+  }, []);
 
   const loginWithEmail = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
         setMessage("Successfully logging you in");
         navigation.dispatch(
           CommonActions.reset({
@@ -41,9 +56,6 @@ export default function LoginScreen({ navigation }) {
   const loginWithGoogle = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
-        const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;  // Google Access Token that can be used to access the Google API.
-        // const user = result.user;
         setMessage("Successfully logging you in");
         navigation.dispatch(
           CommonActions.reset({
