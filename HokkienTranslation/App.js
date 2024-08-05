@@ -17,6 +17,7 @@ import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
+import FlashcardAdd from "./screens/FlashcardAdd";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +78,7 @@ const FlashcardStack = () => {
         options={{ title: "" }}
       />
       <Stack.Screen name="Quiz" component={QuizScreen} />
+      <Stack.Screen name="FlashcardAdd" component={FlashcardAdd} />
     </Stack.Navigator>
   );
 };

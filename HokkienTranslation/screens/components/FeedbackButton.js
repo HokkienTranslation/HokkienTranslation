@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Button } from "native-base";
-import { Linking } from "react-native";
+import { Linking } from "react-native-web";
 import { useTheme } from "../context/ThemeProvider";
 
 const FeedbackButton = () => {

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native-web';
 import { Button, HStack, Text } from "native-base";
 import { useNavigation } from '@react-navigation/native';
 
