@@ -22,6 +22,8 @@ const FlashcardCategory = () => {
   const navigation = useNavigation();
   const [display, setDisplay] = useState([]);
 
+
+  // check for auth when getting categories
 async function getCategories(db) {
     const categoryCol = collection(db, 'category');
     const categorySnapshot = await getDocs(categoryCol);
@@ -30,6 +32,8 @@ async function getCategories(db) {
     
     return categoryList;
   }
+
+  // check for auth when getting flashcardList
 async function getFlashcardList(db) {
     const flashcardCol = collection(db, 'flashcardList');
     const flashcardSnapshot = await getDocs(flashcardCol);
@@ -130,7 +134,9 @@ async function getFlashcardsforCategory(db, category) {
     
       const cardRef = doc(db, 'flashcard', card);
       const cardDoc = await getDoc(cardRef);
-  
+      
+
+      // TODO: check for auth
         if (cardDoc.exists()) {
           const cardData = cardDoc.data();
           cardList.push({
