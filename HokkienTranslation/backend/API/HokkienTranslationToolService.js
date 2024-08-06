@@ -3,6 +3,8 @@ import axios from "axios";
 
 // const apiUrl = TRANSLATION_API_URL;
 const apiUrl = process.env.TRANSLATION_API_URL;
+// Use for FlashCardConvertToHokkien.js
+// const apiUrl = "https://tw-trans.z12.tw/";
 
 // outputLanguage = "ZH" (Chinese) / "EN" (English) / "HAN" (Hokkien)
 const fetchTranslation = async (query, outputLanguage = "HAN") => {
@@ -37,4 +39,4 @@ const fetchTranslation = async (query, outputLanguage = "HAN") => {
 
 export { fetchTranslation };
 
-// fetchTranslation("Hello, how are you?", "ZH");
+fetchTranslation("Hello, how are you?", "ZH");

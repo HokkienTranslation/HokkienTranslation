@@ -21,6 +21,7 @@
     "@react-navigation/native-stack": "^6.9.17",
     "axios": "^1.6.3",
     "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.5.1",
     "dotenv": "^16.4.5",
     "expo": "~49.0.15",
     "expo-clipboard": "~4.3.1",
