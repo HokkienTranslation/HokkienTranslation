@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { ScrollView } from "react-native"; // Overflow fix
 import { Pressable } from "react-native";
 import { Switch, HStack, VStack, Text, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
@@ -20,11 +21,9 @@ const SettingsScreen = () => {
       setErrorMessage('The selected languages must be different.');
     } else {
       setErrorMessage('');
-    } 
+    }
   }, [languages]);
-  
-  // react-native-dropdown-select-list has a bug where you have to use the key for the 
-  // defaultOption, but value as display
+
   const languageList = [
     { key: 'Arabic', value: "Arabic" },
     { key: 'Chinese (Simplified)', value: "Chinese (Simplified)" },
@@ -81,103 +80,102 @@ const SettingsScreen = () => {
   );
 
   return (
-    <VStack
-      style={{
-        height: "100%",
-        width: "100%",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        backgroundColor: colors.surface,
-        padding: 20,
-      }}
-    >
-      <VStack space={4} w="90%" alignSelf="center">
-        {/* Appearance section */}
-        <VStack space={2}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              color: colors.onSurface,
-            }}
-          >
-            Theme
-          </Text>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+      <VStack
+        style={{
+          flex: 1,
+          width: "100%",
+          alignItems: "flex-start",
+          backgroundColor: colors.surface,
+          padding: 20,
+        }}
+      >
+        <VStack space={4} w="90%" alignSelf="center">
+          {/* Appearance section */}
+          <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
+              Theme
+            </Text>
 
-          <VStack space={2} alignItems="start">
-            <ThemeOption
-              themeName="Light"
-              iconName={
-                theme === "light" ? "radio-button-on" : "radio-button-off"
-              }
-            />
-            <ThemeOption
-              themeName="Dark"
-              iconName={
-                theme === "dark" ? "radio-button-on" : "radio-button-off"
-              }
-            />
+            <VStack space={2} alignItems="start">
+              <ThemeOption
+                themeName="Light"
+                iconName={
+                  theme === "light" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+              <ThemeOption
+                themeName="Dark"
+                iconName={
+                  theme === "dark" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+            </VStack>
           </VStack>
-        </VStack>
 
-        {/* Language section */}
-        <VStack space={2}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              color: colors.onSurface,
-            }}
-          >
-            Language Options
-          </Text>
-          <HStack space={2} alignItems="center">
-          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
-            <SelectList
-              setSelected={(key) => setLanguages([key, languages[1]])}
-              data={languageList}
-              save="key"
-              // search={false}
-              defaultOption={{ key:'English', value:'English' }} 
-            />
-          </HStack>  
-          <HStack space={2} alignItems="center">
-          <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
-            <SelectList
-              setSelected={(key) => setLanguages([languages[0], key])}
-              data={languageList}
-              save="key"
-              // search={false}
-              defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
-            />  
-          </HStack>
-          {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
-        </VStack>
+          {/* Language section */}
+          <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
+              Language Options
+            </Text>
+            <HStack space={2} alignItems="center">
+              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+              <SelectList
+                setSelected={(key) => setLanguages([key, languages[1]])}
+                data={languageList}
+                save="key"
+                defaultOption={{ key:'English', value:'English' }}
+              />
+            </HStack>
+            <HStack space={2} alignItems="center">
+              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+              <SelectList
+                setSelected={(key) => setLanguages([languages[0], key])}
+                data={languageList}
+                save="key"
+                defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
+              />
+            </HStack>
+            {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
+          </VStack>
 
-        {/* Models section */}
-        <VStack space={2}>
-          <Text
-            style={{
-              fontSize: 18,
-              fontWeight: "bold",
-              color: colors.onSurface,
-            }}
-          >
-            Display Options
-          </Text>
-          <VisibilityToggle label="Image" stateKey="image" />
-          <VisibilityToggle label="Definition" stateKey="definition" />
-          <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
-          <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
-          <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
-          <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
-          <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
-        </VStack>
+          {/* Models section */}
+          <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
+              Display Options
+            </Text>
+            <VisibilityToggle label="Image" stateKey="image" />
+            <VisibilityToggle label="Definition" stateKey="definition" />
+            <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
+            <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
+            <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
+            <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
+            <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
+          </VStack>
 
-        {/* Sign Out section */}
-        <SignOut />
+          {/* Sign Out section */}
+          <SignOut />
+        </VStack>
       </VStack>
-    </VStack>
+    </ScrollView>
   );
 };
 
