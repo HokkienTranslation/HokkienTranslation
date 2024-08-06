@@ -15,12 +15,15 @@ import { useTheme } from "./context/ThemeProvider";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
+import getCurrentUser from "../backend/database/GetCurrentUser";
 
 export default function HomeScreen({ navigation }) {
   const [queryText, setQueryText] = useState("");
   const [randomInputs, setRandomInputs] = useState([]);
   const { theme, themes } = useTheme();
   const colors = themes[theme];
+
+  // console.log("Current User: ", getCurrentUser());
 
   const handleTextChange = (text) => {
     const cleanedText = text.replace(/\n/, "");

@@ -1,23 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Box, Text, VStack, FormControl, Input, Button, Pressable, HStack, Image, Divider } from "native-base";
+import {
+  Box,
+  Text,
+  VStack,
+  FormControl,
+  Input,
+  Button,
+  Pressable,
+  HStack,
+  Image,
+  Divider,
+} from "native-base";
 import { CommonActions } from "@react-navigation/native";
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
-import { auth, getCurrentUser } from "../backend/database/Firebase";
+import {
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from "firebase/auth";
+import { auth } from "../backend/database/Firebase";
 
 export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-
-  // *** Use code below to get the user ***
-  // import { onAuthStateChanged } from "firebase/auth";
-  // const [currentUser, setCurrentUser] = useState(null);
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     setCurrentUser(user)
-  //   });
-  //   return () => unsubscribe();
-  // }, []);
 
   useEffect(() => {
     // navigation.dispatch(
@@ -36,7 +42,7 @@ export default function LoginScreen({ navigation }) {
         );
       }
     });
-    
+
     return () => unsubscribe();
   }, []);
 
@@ -55,10 +61,10 @@ export default function LoginScreen({ navigation }) {
         const errorMessage = error.message;
         setMessage(errorMessage);
       });
-  }
+  };
 
   const provider = new GoogleAuthProvider();
-  provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+  provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
   const loginWithGoogle = () => {
     signInWithPopup(auth, provider)
       .then((result) => {
@@ -69,16 +75,32 @@ export default function LoginScreen({ navigation }) {
             routes: [{ name: "Main" }],
           })
         );
-      }).catch((error) => {
+      })
+      .catch((error) => {
         const errorMessage = error.message;
         setMessage(errorMessage);
       });
-  }
+  };
 
   return (
-    <Box safeArea p="2" py="8" w="90%" maxW="290" mx="auto" flex={1} justifyContent="center">
+    <Box
+      safeArea
+      p="2"
+      py="8"
+      w="90%"
+      maxW="290"
+      mx="auto"
+      flex={1}
+      justifyContent="center"
+    >
       <VStack space={3} mt="5" alignItems="center">
-        <Text fontSize="2xl" fontWeight="bold" textAlign="center" mb="5" colorScheme="teal">
+        <Text
+          fontSize="2xl"
+          fontWeight="bold"
+          textAlign="center"
+          mb="5"
+          colorScheme="teal"
+        >
           Welcome Back
         </Text>
         <FormControl>
@@ -109,9 +131,15 @@ export default function LoginScreen({ navigation }) {
           <Divider flex={1} />
         </HStack>
         <Pressable onPress={loginWithGoogle}>
-          <HStack alignItems="center" mt="2" bg="gray.200" p="2" borderRadius="4">
+          <HStack
+            alignItems="center"
+            mt="2"
+            bg="gray.200"
+            p="2"
+            borderRadius="4"
+          >
             <Image
-              source={require('../assets/google-icon.png')} 
+              source={require("../assets/google-icon.png")}
               size="xs"
               mr="2"
               resizeMode="contain"
@@ -135,7 +163,11 @@ export default function LoginScreen({ navigation }) {
             </Text>
           </Pressable>
         </HStack>
-        {message ? <Text mt="2" color="red.500">{message}</Text> : null}
+        {message ? (
+          <Text mt="2" color="red.500">
+            {message}
+          </Text>
+        ) : null}
       </VStack>
     </Box>
   );
