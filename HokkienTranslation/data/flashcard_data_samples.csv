@@ -1,2 +1,111 @@
 origin,destination,otherOptions,type
 你好,Hello,"Goodbye,Thank you,Please",word
+再见,Goodbye,"Hello,Please,Thank you",word
+谢谢,Thank you,"Hello,Goodbye,Please",word
+请,Please,"Hello,Goodbye,Thank you",word
+对不起,Sorry,"Excuse me,Thank you,Please",word
+没关系,It's okay,"Sorry,Thank you,Please",word
+早上好,Good morning,"Good evening,Good night,Hello",word
+晚上好,Good evening,"Good morning,Good night,Hello",word
+晚安,Good night,"Good evening,Good morning,Hello",word
+再见,See you,"Goodbye,Hello,Please",word
+吃饭,Eat,"Drink,Sleep,Run",word
+喝水,Drink,"Eat,Sleep,Run",word
+饱,Full,"Hungry,Thirsty,Sleepy",word
+饿,Hungry,"Full,Thirsty,Sleepy",word
+菜,Vegetable,"Fruit,Meat,Bread",word
+肉,Meat,"Vegetable,Fruit,Bread",word
+水果,Fruit,"Vegetable,Meat,Bread",word
+面包,Bread,"Vegetable,Meat,Fruit",word
+汤,Soup,"Water,Juice,Milk",word
+奶,Milk,"Water,Juice,Soup",word
+机场,Airport,"Bus station,Train station,Hotel",word
+火车,Train,"Bus,Car,Bike",word
+汽车,Car,"Bus,Train,Bike",word
+公共汽车,Bus,"Car,Train,Bike",word
+自行车,Bike,"Car,Train,Bus",word
+船,Boat,"Plane,Car,Bus",word
+飞机,Plane,"Boat,Car,Bus",word
+出租车,Taxi,"Bus,Train,Car",word
+地铁,Subway,"Train,Bus,Car",word
+酒店,Hotel,"Motel,Hostel,Inn",word
+办公室,Office,"Meeting room,Conference room,Cubicle",word
+会议,Meeting,"Conference,Workshop,Summit",word
+报告,Report,"Memo,Summary,Outline",word
+项目,Project,"Task,Assignment,Job",word
+老板,Boss,"Manager,Supervisor,Leader",word
+员工,Employee,"Worker,Staff,Team member",word
+同事,Colleague,"Teammate,Partner,Associate",word
+薪水,Salary,"Wage,Payment,Bonus",word
+合同,Contract,"Agreement,Deal,Arrangement",word
+任务,Task,"Project,Assignment,Job",word
+购物,Shopping,"Buying,Selling,Trading",word
+价格,Price,"Cost,Value,Rate",word
+折扣,Discount,"Sale,Offer,Deal",word
+便宜,Cheap,"Expensive,Affordable,Low-cost",word
+贵,Expensive,"Cheap,Costly,High-priced",word
+质量,Quality,"Condition,Grade,Standard",word
+顾客,Customer,"Client,Buyer,Shopper",word
+服务,Service,"Assistance,Help,Support",word
+商品,Goods,"Products,Merchandise,Items",word
+退款,Refund,"Return,Exchange,Compensation",word
+医生,Doctor,"Nurse,Surgeon,Pharmacist",word
+医院,Hospital,"Clinic,Medical center,Health facility",word
+药,Medicine,"Prescription,Drug,Treatment",word
+疼,Pain,"Ache,Sore,Discomfort",word
+健康,Health,"Wellness,Fitness,Condition",word
+病,Disease,"Illness,Sickness,Condition",word
+药店,Pharmacy,"Drugstore,Medicine shop,Clinic",word
+急救,First aid,"CPR,Treatment,Emergency",word
+预约,Appointment,"Meeting,Consultation,Session",word
+手术,Surgery,"Operation,Procedure,Treatment",word
+家庭,Family,"Relatives,Household,Kin",word
+父亲,Father,"Dad,Mother,Parent",word
+母亲,Mother,"Mom,Father,Parent",word
+兄弟,Brother,"Sister,Sibling,Cousin",word
+姐妹,Sister,"Brother,Sibling,Cousin",word
+夫妻,Spouse,"Partner,Husband,Wife",word
+朋友,Friend,"Buddy,Companion,Pal",word
+孩子,Child,"Kid,Baby,Infant",word
+亲戚,Relative,"Family,Kin,Relation",word
+祖父母,Grandparents,"Grandfather,Grandmother,Great-grandparents",word
+学校,School,"College,University,Academy",word
+老师,Teacher,"Instructor,Professor,Educator",word
+学生,Student,"Pupil,Scholar,Learner",word
+书,Book,"Notebook,Textbook,Journal",word
+课程,Course,"Class,Lesson,Program",word
+考试,Exam,"Test,Quiz,Assessment",word
+作业,Homework,"Assignment,Task,Project",word
+教室,Classroom,"Lecture hall,Study room,Laboratory",word
+成绩,Grade,"Score,Mark,Result",word
+学位,Degree,"Diploma,Certificate,Qualification",word
+运动,Sports,"Game,Exercise,Activity",word
+音乐,Music,"Song,Tune,Melody",word
+电影,Movie,"Film,Show,Picture",word
+书籍,Books,"Novels,Comics,Magazines",word
+绘画,Painting,"Drawing,Sketching,Art",word
+旅行,Travel,"Trip,Journey,Excursion",word
+园艺,Gardening,"Farming,Planting,Landscaping",word
+烹饪,Cooking,"Baking,Frying,Grilling",word
+钓鱼,Fishing,"Boating,Hunting,Swimming",word
+跳舞,Dancing,"Singing,Acting,Performing",word
+救命,Help,"Assist,Rescue,Save",word
+火灾,Fire,"Flame,Blaze,Inferno",word
+警察,Police,"Officer,Detective,Constable",word
+医生,Doctor,"Medic,Nurse,Paramedic",word
+紧急,Emergency,"Urgent,Critical,Immediate",word
+危险,Danger,"Risk,Threat,Hazard",word
+逃跑,Escape,"Run,Flee,Evade",word
+报警,Report,"Notify,Inform,Alert",word
+急救,First aid,"Treatment,CPR,Resuscitation",word
+地震,Earthquake,"Tremor,Quake,Seism",word
+天气,Weather,"Climate,Forecast,Temperature",word
+新闻,News,"Report,Update,Bulletin",word
+事件,Event,"Occasion,Happening,Incident",word
+时间,Time,"Hour,Minute,Second",word
+日期,Date,"Day,Month,Year",word
+颜色,Color,"Hue,Shade,Tint",word
+声音,Sound,"Noise,Tone,Voice",word
+图片,Picture,"Photo,Image,Snapshot",word
+信件,Letter,"Mail,Note,Message",word
+问题,Question,"Query,Inquiry,Issue",word

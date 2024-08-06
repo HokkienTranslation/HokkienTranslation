@@ -1,6 +1,16 @@
 import { parse } from "csv-parse";
 import { promises as fs } from "fs";
-import { collection, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  setDoc,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import { db } from "./Firebase.js";
 
 const categories = [
@@ -21,7 +31,7 @@ const createdBy = "vincenthero16@gmail.com";
 
 const uploadData = async () => {
   try {
-    const path = "../../data/flashcard_data_samples.csv";
+    const path = "../../data/modified_flashcard_data_samples.csv";
     const csvString = await fs.readFile(path, "utf-8");
 
     parse(
@@ -37,56 +47,120 @@ const uploadData = async () => {
         }
 
         for (const category of categories) {
-          const categoryId = category.replace(/\s+/g, "_");
+          let categoryId;
+          let categoryRef;
+
+          const categoryQuery = query(
+            collection(db, "category"),
+            where("name", "==", category)
+          );
+          const categorySnapshot = await getDocs(categoryQuery);
+
+          if (categorySnapshot.empty) {
+            categoryRef = doc(collection(db, "category"));
+            const categoryData = {
+              name: category,
+              description: `${category} description`,
+              createdAt: new Date().toISOString(),
+              flashcardList: [],
+            };
+            await setDoc(categoryRef, categoryData);
+            categoryId = categoryRef.id;
+          } else {
+            const categoryDoc = categorySnapshot.docs[0];
+            categoryRef = categoryDoc.ref;
+            categoryId = categoryDoc.id;
+          }
+          console.log("categoryId: ", categoryId);
+
           const flashcardListName = `${category} Starter`;
-          const flashcardListRef = doc(collection(db, "flashcardList"));
-          const flashcardList = {
-            name: flashcardListName,
-            cardList: [],
-            categoryId,
-            shared: true,
-            createdBy: createdBy,
-            createdAt: new Date().toISOString(),
-          };
 
-          await setDoc(flashcardListRef, flashcardList);
+          // Check for existing flashcard list
+          const flashcardListQuery = query(
+            collection(db, "flashcardList"),
+            where("name", "==", flashcardListName),
+            where("createdBy", "==", createdBy)
+          );
+          const flashcardListSnapshot = await getDocs(flashcardListQuery);
 
-          for (let i = 0; i < 10; i++) {
-            const flashcardData = data.shift();
-            if (!flashcardData) break;
-
-            const flashcardRef = doc(collection(db, "flashcard"));
-            const flashcard = {
-              origin: flashcardData.origin,
-              destination: flashcardData.destination,
-              otherOptions: flashcardData.otherOptions.split(";"),
-              type: flashcardData.type,
-              categoryId,
+          if (flashcardListSnapshot.empty) {
+            const flashcardListRef = doc(collection(db, "flashcardList"));
+            const flashcardList = {
+              name: flashcardListName,
+              cardList: [],
+              categoryId: categoryId,
+              shared: true,
               createdBy: createdBy,
               createdAt: new Date().toISOString(),
             };
 
-            await setDoc(flashcardRef, flashcard);
+            console.log("flashcardList: ", flashcardList);
 
-            flashcardList.cardList.push(flashcardRef.id);
+            await setDoc(flashcardListRef, flashcardList);
+
+            await updateDoc(categoryRef, {
+              flashcardList: arrayUnion(flashcardListRef.id),
+            });
+
+            for (let i = 0; i < 10; i++) {
+              const flashcardData = data.shift();
+              if (!flashcardData) break;
+
+              // Check for existing flashcard
+              const flashcardQuery = query(
+                collection(db, "flashcard"),
+                where("origin", "==", flashcardData.origin),
+                where("destination", "==", flashcardData.destination),
+                where("createdBy", "==", createdBy)
+              );
+              const flashcardSnapshot = await getDocs(flashcardQuery);
+
+              if (flashcardSnapshot.empty) {
+                const flashcardRef = doc(collection(db, "flashcard"));
+                const flashcard = {
+                  origin: flashcardData.origin,
+                  destination: flashcardData.destination,
+                  otherOptions: flashcardData.otherOptions.split(","),
+                  type: flashcardData.type,
+                  categoryId: categoryId,
+                  createdBy: createdBy,
+                  createdAt: new Date().toISOString(),
+                };
+
+                await setDoc(flashcardRef, flashcard);
+
+                flashcardList.cardList.push(flashcardRef.id);
+              }
+            }
+
+            await setDoc(
+              flashcardListRef,
+              { cardList: flashcardList.cardList },
+              { merge: true }
+            );
+
+            // Check for existing flashcard quiz
+            const flashcardQuizQuery = query(
+              collection(db, "flashcardQuiz"),
+              where("flashcardListId", "==", flashcardListRef.id)
+            );
+            const flashcardQuizSnapshot = await getDocs(flashcardQuizQuery);
+
+            if (flashcardQuizSnapshot.empty) {
+              const flashcardQuizRef = doc(collection(db, "flashcardQuiz"));
+              const flashcardQuiz = {
+                flashcardListId: flashcardListRef.id,
+                scores: {
+                  [createdBy]: [],
+                },
+                card_score: {},
+              };
+
+              await setDoc(flashcardQuizRef, flashcardQuiz);
+            }
+
+            console.log("flashcardQuiz flashcardListId: ", flashcardListRef.id);
           }
-
-          await setDoc(
-            flashcardListRef,
-            { cardList: flashcardList.cardList },
-            { merge: true }
-          );
-
-          const flashcardQuizRef = doc(collection(db, "flashcardQuiz"));
-          const flashcardQuiz = {
-            flashcardListId: flashcardListRef.id,
-            scores: {
-              [createdBy]: [],
-            },
-            card_score: {},
-          };
-
-          await setDoc(flashcardQuizRef, flashcardQuiz);
         }
       }
     );
