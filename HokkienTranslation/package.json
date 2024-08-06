@@ -2,7 +2,6 @@
   "name": "hokkientranslation",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
-  "type": "module",
   "scripts": {
     "build": "expo export -p web",
     "start": "expo start",
