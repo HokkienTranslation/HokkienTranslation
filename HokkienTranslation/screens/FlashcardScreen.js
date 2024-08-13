@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Text,
-  Button,
   Center,
   VStack,
   HStack,
@@ -13,6 +12,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
+import CrudButtons from "./components/ScreenCrudButtons";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
@@ -182,60 +182,21 @@ const FlashcardScreen = ({}) => {
       <Center flex={1} px="3">
         <VStack space={4} alignItems="center">
           <HStack space={4}>
-            <Button
-              bg={colors.primaryContainer}
-              _text={{ color: colors.onPrimary }}
-              shadow={2}
-              paddingX={4}
-              paddingY={2}
-              borderRadius="10px"
-              onPress={handleCreate}
-              _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
-            >
-              <Center>
-                <HStack space={2} alignItems="center">
-                  <Ionicons name="add" size={20} color={colors.onPrimary} />
-                  <Text>Create</Text>
-                </HStack>
-              </Center>
-            </Button>
-            <Button
-              bg={colors.primaryContainer}
-              _text={{ color: colors.onPrimary }}
-              shadow={2}
-              paddingX={4}
-              paddingY={2}
-              borderRadius="10px"
-              onPress={handleUpdate}
-              _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
-            >
-              <Center>
-                <HStack space={2} alignItems="center">
-                  <Ionicons name="pencil" size={20} color={colors.onPrimary} />
-                  <Text>Update</Text>
-                </HStack>
-              </Center>
-            </Button>
-            <Button
-              bg={colors.primaryContainer}
-              _text={{ color: colors.onPrimary }}
-              shadow={2}
-              paddingX={4}
-              paddingY={2}
-              borderRadius="10px"
+            <CrudButtons
+              title="Create" 
+              onPress={handleCreate} 
+              iconName="add"
+            />
+            <CrudButtons
+              title="Update" 
+              onPress={handleUpdate} 
+              iconName="pencil"
+            />
+            <CrudButtons
+              title="Delete" 
               onPress={() => setShowConfirmDelete(true)}
-              _hover={{ bg: colors.darkerPrimaryContainer }}
-              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
-            >
-              <Center>
-                <HStack space={2} alignItems="center">
-                  <Ionicons name="trash" size={20} color={colors.onPrimary} />
-                  <Text>Delete</Text>
-                </HStack>
-              </Center>
-            </Button>
+              iconName="trash"
+            />
           </HStack>
 
           <Box
@@ -407,28 +368,16 @@ const FlashcardScreen = ({}) => {
                   </Select>
                 </Box>
                 <HStack space={4}>
-                  <Button
-                    bg={colors.primaryContainer}
-                    _text={{ color: colors.onPrimary }}
-                    shadow={2}
-                    paddingX={4}
-                    paddingY={2}
-                    borderRadius="10px"
-                    onPress={handleCreate}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    bg={colors.primaryContainer}
-                    _text={{ color: colors.onPrimary }}
-                    shadow={2}
-                    paddingX={4}
-                    paddingY={2}
-                    borderRadius="10px"
-                    onPress={() => setShowNewFlashcard(false)}
-                  >
-                    Cancel
-                  </Button>
+                  <CrudButtons
+                      title="Save"
+                      iconName="save"
+                      onPress={handleCreate}
+                    />
+                    <CrudButtons
+                      title="Cancel"
+                      iconName="close"
+                      onPress={() => setShowNewFlashcard(false)}
+                    />
                 </HStack>
               </VStack>
             </Box>
@@ -455,41 +404,75 @@ const FlashcardScreen = ({}) => {
               shadow={2}
               padding={4}
             >
+              <Text fontSize="lg" marginBottom={4}>
+                Edit flashcard:
+              </Text>
               <VStack space={4} alignItems="center">
-                <Text fontSize="lg">Edit flashcard:</Text>
-                <Input
-                  placeholder="Word"
-                  value={flashcards[currentCardIndex].word}
-                  // onChangeText={setWord}
-                />
-                <Input
-                  placeholder="Translation"
-                  value={flashcards[currentCardIndex].translation}
-                  // onChangeText={setTranslation}
-                />
+                <Input placeholder="Enter word" width={200} 
+                 value={flashcards[currentCardIndex].word}/>
+                <Input placeholder="Enter Translation" width={200} 
+                 value={flashcards[currentCardIndex].translation}/>
+                <Box space={4} alignItems="center" width={200}>
+                  <Select
+                    selectedValue={otherOpt}
+                    placeholder="View Other Options"
+                    onValueChange={(itemValue) => setOtherOpt(itemValue)}
+                  >
+                    <Select.Item label="banana 1" value="word" />
+                    <Select.Item label="banana 2" value="sentence" />
+                  </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                  <Select
+                    selectedValue={type}
+                    placeholder="Select Type"
+                    onValueChange={(itemValue) => setType(itemValue)}
+                  >
+                    <Select.Item label="Word" value="word" />
+                    <Select.Item label="Sentence" value="sentence" />
+                  </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                  <Select
+                    selectedValue={category}
+                    placeholder="Select Category"
+                    onValueChange={(itemValue) => setCategory(itemValue)}
+                  >
+                    <Select.Item label="Shopping" value="shopping" />
+                    <Select.Item label="Other" value="other" />
+                  </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                  <Select
+                    selectedValue={privacy}
+                    placeholder="Set Privacy"
+                    onValueChange={(itemValue) => setPrivacy(itemValue)}
+                  >
+                    <Select.Item label="Public" value="shopping" />
+                    <Select.Item label="Private" value="other" />
+                  </Select>
+                </Box>
+                <Box space={4} alignItems="center" width={200}>
+                  <Select
+                    selectedValue={cardList}
+                    placeholder="Select Flashcard List"
+                    onValueChange={(itemValue) => setCardlist(itemValue)}
+                  >
+                    <Select.Item label="list 1" value="shopping" />
+                    <Select.Item label="list 2" value="other" />
+                  </Select>
+                </Box>
                 <HStack space={4}>
-                  <Button
-                    bg={colors.primaryContainer}
-                    _text={{ color: colors.onPrimary }}
-                    shadow={2}
-                    paddingX={4}
-                    paddingY={2}
-                    borderRadius="10px"
+                  <CrudButtons
+                    title="Save"
+                    iconName="save"
                     onPress={handleUpdate}
-                  >
-                    Save
-                  </Button>
-                  <Button
-                    bg={colors.primaryContainer}
-                    _text={{ color: colors.onPrimary }}
-                    shadow={2}
-                    paddingX={4}
-                    paddingY={2}
-                    borderRadius="10px"
+                  />
+                  <CrudButtons
+                    title="Cancel"
+                    iconName="close"
                     onPress={() => setShowUpdates(false)}
-                  >
-                    Cancel
-                  </Button>
+                  />
                 </HStack>
               </VStack>
             </Box>
@@ -521,8 +504,16 @@ const FlashcardScreen = ({}) => {
                 Delete this flashcard?
               </Text>
               <HStack space={4}>
-                <Button onPress={handleDelete}>Yes</Button>
-                <Button onPress={() => setShowConfirmDelete(false)}>No</Button>
+                  <CrudButtons
+                    title="Yes"
+                    iconName="checkmark"
+                    onPress={handleDelete}
+                  />
+                  <CrudButtons
+                    title="No"
+                    iconName="close"
+                    onPress={() => setShowConfirmDelete(false)}
+                  />
               </HStack>
             </Box>
           </Center>

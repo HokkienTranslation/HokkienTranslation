@@ -90,17 +90,23 @@ const MainTabNavigator = () => {
             iconName = focused ? "settings" : "settings-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          return <Ionicons name={iconName} size={size} color={color}/>;
         },
-        tabBarActiveTintColor: colors.primary,
+        tabBarStyle: {
+          backgroundColor: colors.primaryContainer,
+          borderTopWidth: 1,
+          //borderTopColor: colors.onSurface,
+        },
+        tabBarActiveTintColor: colors.onPrimaryContainer,
         tabBarInactiveTintColor: colors.onSurface,
         headerShown: false,
+        
       })}
     >
       <Tab.Screen
         name="HomeStack"
         component={HomeStack}
-        options={{ title: "Home" }}
+        options={{ title: "Home"}}
       />
       <Tab.Screen
         name="FlashcardStack"
