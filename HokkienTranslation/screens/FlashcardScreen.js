@@ -1,15 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Text,
-  Button,
-  Center,
-  VStack,
-  HStack,
-  Pressable,
-  Input,
-  Select,
-} from "native-base";
+import { Box, Text, Button, Center, VStack, HStack, Pressable, Input, Select,} from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
