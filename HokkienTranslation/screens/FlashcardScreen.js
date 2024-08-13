@@ -7,7 +7,7 @@ import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
-const FlashcardScreen = ({}) => {
+const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [showTranslation, setShowTranslation] = useState(false);
@@ -30,13 +30,10 @@ const FlashcardScreen = ({}) => {
   const [isMin, setIsMin] = useState(true);
   const [isMax, setIsMax] = useState(false);
   const { languages } = useLanguage();
+  const [translatedText, setTranslatedText] = useState("");
 
-  const baseFlashcards = [
-    { word: "Apple", translation: "苹果 (Píngguǒ)" },
-    { word: "Banana", translation: "香蕉 (Xiāngjiāo)" },
-    { word: "Cat", translation: "猫 (Māo)" },
-    { word: "Dog", translation: "狗 (Gǒu)" },
-  ];
+  const baseFlashcards = route.params.cardList;
+  console.log(baseFlashcards);
 
   const [flashcards, setFlashcards] = useState(baseFlashcards);
 
