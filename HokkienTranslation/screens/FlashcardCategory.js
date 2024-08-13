@@ -5,6 +5,7 @@ import { useNavigation } from '@react-navigation/native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable } from 'react-native-web';
 import { useState } from 'react';
+import { useTheme } from './context/ThemeProvider';
 import app, {db} from '../backend/database/Firebase';
 import { collection, doc, getDocs, getDoc, addDoc, deleteDoc } from 'firebase/firestore';
 import { Ionicons } from "@expo/vector-icons";
@@ -20,6 +21,9 @@ var alldecks = [];
 var curCategory = '';
 const FlashcardCategory = () => {
   const navigation = useNavigation();
+  const { themes, theme } = useTheme();
+  const colors = themes[theme];
+  
   const [display, setDisplay] = useState([]);
 
 
@@ -91,7 +95,7 @@ async function getFlashcardsforCategory(db, category) {
   );
   const handleCategoryPress = async (category, navigation) => {
 
-    // for flascard lists/decks
+    // for flashcard lists/decks
   
     if (index == 0) {
       console.log(category)
@@ -152,6 +156,8 @@ async function getFlashcardsforCategory(db, category) {
   const CategoryBox = ({ category, navigation }) => {
     const [isPressed, setIsPressed] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
+    const { themes, theme } = useTheme();
+    const colors = themes[theme];
 
     return (
       <Pressable
@@ -159,10 +165,16 @@ async function getFlashcardsforCategory(db, category) {
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onPress={() => handleCategoryPress(category, navigation)}
+        style={[isPressed ? [styles.categoryBox, styles.categoryBoxPressed] : styles.categoryBox, { backgroundColor: colors.categoriesButton }]}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <Text style={styles.categoryText}>{category.name}</Text>
+      <VStack space={1} alignItems="center">
+      	<Ionicons name={category.icon} size={30} color={colors.onPrimary} />
+      	<Text style={styles.categoryText}>
+  			{category.name}
+		</Text>
+	  </VStack>
         {isHovered && index === 1 && (
           <HStack style={styles.actionButtons}>
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
@@ -190,11 +202,12 @@ async function getFlashcardsforCategory(db, category) {
     
     return (
       <Pressable
-        style={[styles.addBox, isPressed && styles.categoryBoxPressed]}
+        style={[styles.addBox, isPressed && styles.categoryBoxPressed, { backgroundColor: colors.categoriesBox }]}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onPress={() => addFlashcard()}
       >
+        <Ionicons name="add" size={30} color={colors.onPrimary} />
         <Text style={styles.categoryText}>Add</Text>
       </Pressable>
         
@@ -206,11 +219,11 @@ async function getFlashcardsforCategory(db, category) {
  
   
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.surface }]}>
       <Center>
-        <Container style={styles.container}>
+        <Container style={[styles.container, { backgroundColor: colors.categoriesContainer }]}>
           <HStack style={styles.headingBox}>
-          <Heading style={styles.heading}>{titleList[index]}</Heading>
+          <Heading style={[styles.heading, { color: colors.onSurface}]}>Categories</Heading>
             {index === 1 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
             <Icon as={Ionicons} name="arrow-back" size="lg" color="#000000" />
@@ -257,6 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '20%',
+    
   },
   modalContainer: {
     flex: 1,
@@ -298,7 +312,6 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
   },
   addBox: {
@@ -307,7 +320,6 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
 
     alignItems: 'center',
-    backgroundColor: 'white',
     borderColor: '#000000',
     borderWidth: 1,
     borderRadius: 10,
@@ -322,7 +334,7 @@ const styles = StyleSheet.create({
 
   container: {
     width: '90%',
-    maxWidth: 400,
+    maxWidth: 480,
     backgroundColor: 'white',
     borderRadius: 10,
     padding: 20,
@@ -343,9 +355,9 @@ const styles = StyleSheet.create({
   categoryBox: {
     minWidth: "48%",
     width: "48%",
-
+    minHeight: 70,
     alignItems: 'center',
-    backgroundColor: 'white',
+    justifyContent: 'center',
     borderColor: '#e0e0e0',
     borderWidth: 1,
     borderRadius: 10,
@@ -357,7 +369,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
     position: 'relative',
-  },
+    textAlignVertical: 'center',
+},
   categoryBoxPressed: {
     transform: [{ translateY: -5 }],
     shadowColor: '#000',
@@ -369,6 +382,12 @@ const styles = StyleSheet.create({
   categoryText: {
     color: 'black',
     marginTop: 8,
+    textAlign: 'center',
+    fontSize: 15,
+    flexShrink: 1,
+    flexWrap: 'wrap',
+    width: '100%',  // Ensure the text takes up the full width of the box
+    lineHeight: 20,
   },
   headingBox: {
     flexDirection: 'row',

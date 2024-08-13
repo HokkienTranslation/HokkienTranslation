@@ -33,7 +33,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [translatedText, setTranslatedText] = useState("");
 
   const baseFlashcards = route.params.cardList;
-  console.log(baseFlashcards);
+  console.log(flashcards);
 
   const [flashcards, setFlashcards] = useState(baseFlashcards);
 
