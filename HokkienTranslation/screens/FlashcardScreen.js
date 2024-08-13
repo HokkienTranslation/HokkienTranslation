@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Text,
-  Button,
   Center,
   VStack,
   HStack,
@@ -186,14 +185,18 @@ const FlashcardScreen = ({ route, navigation }) => {
       <Center flex={1} px="3">
         <VStack space={4} alignItems="center">
           <HStack space={4}>
-            <CrudButtons title="Create" onPress={handleCreate} iconName="add" />
             <CrudButtons
-              title="Update"
-              onPress={handleUpdate}
+              title="Create" 
+              onPress={handleCreate} 
+              iconName="add"
+            />
+            <CrudButtons
+              title="Update" 
+              onPress={handleUpdate} 
               iconName="pencil"
             />
             <CrudButtons
-              title="Delete"
+              title="Delete" 
               onPress={() => setShowConfirmDelete(true)}
               iconName="trash"
             />
@@ -369,15 +372,15 @@ const FlashcardScreen = ({ route, navigation }) => {
                 </Box>
                 <HStack space={4}>
                   <CrudButtons
-                    title="Save"
-                    iconName="save"
-                    onPress={handleCreate}
-                  />
-                  <CrudButtons
-                    title="Cancel"
-                    iconName="close"
-                    onPress={() => setShowNewFlashcard(false)}
-                  />
+                      title="Save"
+                      iconName="save"
+                      onPress={handleCreate}
+                    />
+                    <CrudButtons
+                      title="Cancel"
+                      iconName="close"
+                      onPress={() => setShowNewFlashcard(false)}
+                    />
                 </HStack>
               </VStack>
             </Box>
@@ -407,20 +410,11 @@ const FlashcardScreen = ({ route, navigation }) => {
               <Text fontSize="lg" marginBottom={4}>
                 Edit flashcard:
               </Text>
-              <Text fontSize="lg" marginBottom={4}>
-                Edit flashcard:
-              </Text>
               <VStack space={4} alignItems="center">
-                <Input
-                  placeholder="Enter word"
-                  width={200}
-                  value={flashcards[currentCardIndex].word}
-                />
-                <Input
-                  placeholder="Enter Translation"
-                  width={200}
-                  value={flashcards[currentCardIndex].translation}
-                />
+                <Input placeholder="Enter word" width={200} 
+                 value={flashcards[currentCardIndex].word}/>
+                <Input placeholder="Enter Translation" width={200} 
+                 value={flashcards[currentCardIndex].translation}/>
                 <Box space={4} alignItems="center" width={200}>
                   <Select
                     selectedValue={otherOpt}
@@ -475,22 +469,13 @@ const FlashcardScreen = ({ route, navigation }) => {
                   <CrudButtons
                     title="Save"
                     iconName="save"
-                    />
-                  <CrudButtons
-                    title="Save"
-                    iconName="save"
                     onPress={handleUpdate}
-                  />
-                  <CrudButtons
-                    title="Cancel"
-                    iconName="close"
                   />
                   <CrudButtons
                     title="Cancel"
                     iconName="close"
                     onPress={() => setShowUpdates(false)}
                   />
-                 
                 </HStack>
               </VStack>
             </Box>
@@ -522,16 +507,16 @@ const FlashcardScreen = ({ route, navigation }) => {
                 Delete this flashcard?
               </Text>
               <HStack space={4}>
-                <CrudButtons
-                  title="Yes"
-                  iconName="checkmark"
-                  onPress={handleDelete}
-                />
-                <CrudButtons
-                  title="No"
-                  iconName="close"
-                  onPress={() => setShowConfirmDelete(false)}
-                />
+                  <CrudButtons
+                    title="Yes"
+                    iconName="checkmark"
+                    onPress={handleDelete}
+                  />
+                  <CrudButtons
+                    title="No"
+                    iconName="close"
+                    onPress={() => setShowConfirmDelete(false)}
+                  />
               </HStack>
             </Box>
           </Center>
