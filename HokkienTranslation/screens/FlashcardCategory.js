@@ -7,9 +7,10 @@ import { Pressable } from 'react-native-web';
 import { useState } from 'react';
 import { useTheme } from './context/ThemeProvider';
 import app, {db} from '../backend/database/Firebase';
-import { collection, doc, getDocs, getDoc, addDoc, deleteDoc } from 'firebase/firestore';
+import { collection, doc, getDocs, getDoc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore';
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from './CategoryModal';
+import getCurrentUser from '../backend/database/GetCurrentUser';
 // list of categories use api
 
 
@@ -19,6 +20,8 @@ var decks = []
 var categories = [];
 var alldecks = [];
 var curCategory = '';
+var currentUser = '';
+
 const FlashcardCategory = () => {
   const navigation = useNavigation();
   const { themes, theme } = useTheme();
@@ -42,7 +45,15 @@ async function getFlashcardList(db) {
     const flashcardCol = collection(db, 'flashcardList');
     const flashcardSnapshot = await getDocs(flashcardCol);
 
+
     const flashcardList = flashcardSnapshot.docs.map(doc => doc.data());
+
+    flashcardList.forEach((deck) => {
+      
+      if (deck.createdBy !== currentUser && !deck.shared) {
+        flashcardList.splice(flashcardList.indexOf(deck), 1);
+      }
+    })
 
     return flashcardList;
   }
@@ -69,12 +80,23 @@ async function getFlashcardsforCategory(db, category) {
 
   return flashcards;
 }
-
+const fetchUser = async () => {
+  try {
+    const user = await getCurrentUser();
+    currentUser = user;
+  } catch (error) {
+    console.error("Error fetching user: ", error);
+  }
+};
 
   useEffect(() => {
 
     // update api here
-      
+    // getCurrentUser().then((user) => {
+    //   currentUser = user;
+    // });
+
+  
     getCategories(db).then((categoryList) => {
       categories = categoryList;
       console.log(categories);
@@ -96,7 +118,10 @@ async function getFlashcardsforCategory(db, category) {
   const handleCategoryPress = async (category, navigation) => {
 
     // for flashcard lists/decks
-  
+    if (currentUser === '') {
+    fetchUser();
+    }
+
     if (index == 0) {
       console.log(category)
       var flashcardList = category.flashcardList;
@@ -106,12 +131,19 @@ async function getFlashcardsforCategory(db, category) {
     for (const flashcard of flashcardList) {
       // get flashcardlist
       const docRef = doc(db, 'flashcardList', flashcard);
-  
+    
       // Await the document snapshot
       const ref = await getDoc(docRef);
-    
-      // populate with flashcardLIst
-      decks.push(ref.data());
+      console.log(ref.data())
+
+      //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!      
+      var temp = ref.data();
+      console.log(temp)
+      
+      if (temp.createdBy === currentUser || temp.shared) {
+        decks.push(ref.data());
+      }
+
       
       
       
@@ -159,6 +191,40 @@ async function getFlashcardsforCategory(db, category) {
     const { themes, theme } = useTheme();
     const colors = themes[theme];
 
+
+
+    const handleDeleteDeck = async (category) => {
+      const categoryRef = doc(db, 'flashcardList', category.name);
+      
+      // get category data
+      const categoryDoc = await getDoc(categoryRef);
+      const categoryData = categoryDoc.data();
+      var categoryId = categoryData.categoryID;
+
+      await deleteDoc(categoryRef);
+
+      // remove deck from category
+      const categoryRef2 = doc(db, 'category', categoryId);
+      const categoryDoc2 = await getDoc(categoryRef2);
+      const categoryData2 = categoryDoc2.data();
+      var flashcardList = categoryData2.flashcardList;
+      flashcardList.splice(flashcardList.indexOf(category.name), 1);
+
+      // update caategory
+      await updateDoc(categoryRef2, {
+        flashcardList: flashcardList
+      });
+
+      getCategories(db).then((categoryList) => {
+        categories = categoryList;
+        console.log(categories);
+        setDisplay(categoryList);
+      
+      }).catch((error) => {
+        console.error("Error fetching categories: ", error);
+      });
+      index = 0;
+    }
     return (
       <Pressable
         style={[styles.categoryBox, isPressed && styles.categoryBoxPressed]}
@@ -197,7 +263,7 @@ async function getFlashcardsforCategory(db, category) {
     
     const addFlashcard = () => {
       console.log(curCategory)
-      navigation.navigate('FlashcardAdd', { curCategory });
+      navigation.navigate('FlashcardAdd', { curCategory, currentUser });
     };
     
     return (
