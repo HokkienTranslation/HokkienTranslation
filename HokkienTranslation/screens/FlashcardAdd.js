@@ -4,6 +4,8 @@ import { useState } from "react";
 import { View, TextInput, Button, FlatList, Text, TouchableOpacity } from "react-native";
 import { doc, getDocs, getDoc, setDoc, collection, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
+import { HStack, Switch } from "native-base";
+
 
 var categoryID = "";
 async function getFlashcardsforCategory(db, category) {
@@ -60,7 +62,7 @@ const FlashcardAdd = ({ route }) => {
   const [deckName, setDeckName] = useState('');
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
 const [flashcards, setFlashcards] = useState([]);
-
+    const [shared, setShared] = useState(false);
 
 
 
@@ -91,8 +93,8 @@ const [flashcards, setFlashcards] = useState([]);
         cardList: cardList,
         createdAt: serverTimestamp(),
         categoryID: categoryID,
-        createdBy: "vincent", // TODO: placeholder get from auth
-        shared: true //add a shared setting to this later.
+        createdBy: route.params.currentUser, // TODO: placeholder get from auth
+        shared: shared //add a shared setting to this later.
     });
 
     // have to add a new deck to the category
@@ -131,6 +133,10 @@ const [flashcards, setFlashcards] = useState([]);
         onChangeText={setDeckName}
         style={{ borderWidth: 1, padding: 10, marginBottom: 20 }}
       />
+      <HStack style={{ flex: 1, marginBottom: 20 }}>
+    <Text>Share</Text>
+      <Switch title="Share" isChecked={shared} onToggle={() => {setShared(!shared)}} style={{marginLeft: 10}}/>   
+      </HStack>
       <Button title="Submit" onPress={() => {handleSubmission()}} />
       <FlatList
         data={flashcards}
