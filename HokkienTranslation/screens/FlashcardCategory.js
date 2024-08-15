@@ -135,6 +135,8 @@ const FlashcardCategory = () => {
         console.error("Error fetching flashcardList: ", error);
       });
   }, []);
+
+
   const handleCategoryPress = async (category, navigation) => {
     // for flashcard lists/decks
     if (currentUser === "") {
@@ -202,6 +204,7 @@ const FlashcardCategory = () => {
     console.log("DeckName: ", deckName);
     navigation.navigate("Flashcard", { cardList, deckName });
   };
+  
 
   const CategoryBox = ({ category, navigation }) => {
     const [isPressed, setIsPressed] = useState(false);
@@ -272,11 +275,13 @@ const FlashcardCategory = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <VStack space={1} alignItems="center">
-          <Ionicons name={category.icon} size={30} color={colors.onPrimary} />
-          <Text style={styles.categoryText}>{category.name}</Text>
-        </VStack>
-        {isHovered && index === 1 && (
+      <VStack space={1} alignItems="center">
+      	<Ionicons name={category.icon} size={30} color={colors.onPrimary} />
+      	<Text style={styles.categoryText}>
+  			{category.name}
+		</Text>
+	  </VStack>
+        { index === 1 && (
           <HStack style={styles.actionButtons}>
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
               <Icon as={MaterialIcons} name="edit" size="sm" color="blue" />
