@@ -153,8 +153,8 @@ const FlashcardCategory = () => {
         // get flashcardlist
         const docRef = doc(db, "flashcardList", flashcard);
 
-        // Await the document snapshot
-        const ref = await getDoc(docRef);
+      
+      console.log(ref.data())
 
         deckID = ref.id;
         // console.log(ref.data())
