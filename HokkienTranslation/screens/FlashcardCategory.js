@@ -36,12 +36,52 @@ import {
   query,
   where
 } from "firebase/firestore";
+import React, { useEffect } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native-web";
+import {
+  Box,
+  Center,
+  Container,
+  Heading,
+  Icon,
+  Text,
+  VStack,
+  HStack,
+  Modal,
+  View,
+  ScrollView,
+  Checkbox,
+} from "native-base";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Pressable } from "react-native-web";
+import { useState } from "react";
+import { useTheme } from "./context/ThemeProvider";
+import app, { db } from "../backend/database/Firebase";
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
+import CategoryModal from "./CategoryModal";
+import getCurrentUser from "../backend/database/GetCurrentUser";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
 // list of categories use api
 
 var index = 0;
+var titleList = ["Categories", "Decks"];
+var decks = [];
 var titleList = ["Categories", "Decks"];
 var decks = [];
 var categories = [];
@@ -55,12 +95,18 @@ const FlashcardCategory = () => {
   const { themes, theme } = useTheme();
   const colors = themes[theme];
 
+
   const [display, setDisplay] = useState([]);
 
   // check for auth when getting categories
   async function getCategories(db) {
     const categoryCol = collection(db, "category");
+  async function getCategories(db) {
+    const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
+
+    const categoryList = categorySnapshot.docs.map((doc) => doc.data());
+
 
     const categoryList = categorySnapshot.docs.map((doc) => doc.data());
 
@@ -68,6 +114,7 @@ const FlashcardCategory = () => {
   }
 
   // check for auth when getting flashcardList
+
   async function getFlashcardList(db) {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
@@ -155,9 +202,6 @@ const FlashcardCategory = () => {
 
         // Await the document snapshot
         const ref = await getDoc(docRef);
-
-      
-      console.log(ref.data())
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
