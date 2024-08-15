@@ -1,20 +1,45 @@
-import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native-web';
-import { Box, Center, Container, Heading, Icon, Text, VStack, HStack, Modal, View, ScrollView, Checkbox} from 'native-base';
-import { useNavigation } from '@react-navigation/native';
-import { MaterialIcons } from '@expo/vector-icons';
-import { Pressable } from 'react-native-web';
-import { useState } from 'react';
-import { useTheme } from './context/ThemeProvider';
-import app, {db} from '../backend/database/Firebase';
-import { collection, doc, getDocs, getDoc, addDoc, deleteDoc, updateDoc } from 'firebase/firestore';
+import React, { useEffect } from "react";
+import {
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from "react-native-web";
+import {
+  Box,
+  Center,
+  Container,
+  Heading,
+  Icon,
+  Text,
+  VStack,
+  HStack,
+  Modal,
+  View,
+  ScrollView,
+  Checkbox,
+} from "native-base";
+import { useNavigation } from "@react-navigation/native";
+import { MaterialIcons } from "@expo/vector-icons";
+import { Pressable } from "react-native-web";
+import { useState } from "react";
+import { useTheme } from "./context/ThemeProvider";
+import app, { db } from "../backend/database/Firebase";
+import {
+  collection,
+  doc,
+  getDocs,
+  getDoc,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
+import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
-// list of categories use apiw
+// list of categories use api
 
 var index = 0;
-var titleList = ["Categories", "Decks"];
-var decks = [];
 var titleList = ["Categories", "Decks"];
 var decks = [];
 var categories = [];
@@ -28,11 +53,9 @@ const FlashcardCategory = () => {
   const { themes, theme } = useTheme();
   const colors = themes[theme];
 
-
   const [display, setDisplay] = useState([]);
 
   // check for auth when getting categories
-  
   async function getCategories(db) {
     const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
@@ -43,7 +66,6 @@ const FlashcardCategory = () => {
   }
 
   // check for auth when getting flashcardList
-
   async function getFlashcardList(db) {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
@@ -78,16 +100,16 @@ const FlashcardCategory = () => {
       flashcards.push(flashcardData);
     }
 
-      return flashcards;
+    return flashcards;
+  }
+  const fetchUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      currentUser = user;
+    } catch (error) {
+      console.error("Error fetching user: ", error);
     }
-    const fetchUser = async () => {
-      try {
-        const user = await getCurrentUser();
-        currentUser = user;
-      } catch (error) {
-        console.error("Error fetching user: ", error);
-      }
-    };
+  };
 
   useEffect(() => {
     // update api here
@@ -134,8 +156,8 @@ const FlashcardCategory = () => {
         // Await the document snapshot
         const ref = await getDoc(docRef);
 
-      deckID = ref.id;
-      console.log(ref.data())
+        deckID = ref.id;
+        // console.log(ref.data())
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
@@ -153,6 +175,7 @@ const FlashcardCategory = () => {
 
     // console.log(index);
     var cardList = [];
+
     // update API here
     var flashCardList = category.cardList;
     console.log("List of Flashcards: ", flashCardList);
@@ -167,15 +190,14 @@ const FlashcardCategory = () => {
       const cardDoc = await getDoc(cardRef);
 
       // TODO: check for auth
-        if (cardDoc.exists()) {
-          const cardData = cardDoc.data();
-          cardList.push({
-            word: cardData.destination,
-            translation: cardData.origin
-          });
-        }
+      if (cardDoc.exists()) {
+        const cardData = cardDoc.data();
+        cardList.push({
+          word: cardData.destination,
+          translation: cardData.origin,
+        });
       }
-
+    }
     
     var deckName = category.name;
     console.log("DeckName: ", deckName);
@@ -205,8 +227,8 @@ const FlashcardCategory = () => {
       });
     };
     const handleDeleteDeck = async (category) => {
-      const categoryRef = doc(db, 'flashcardList', category.name);
-      
+      const categoryRef = doc(db, "flashcardList", category.name);
+
       // get category data
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
@@ -226,16 +248,17 @@ const FlashcardCategory = () => {
         flashcardList: flashcardList,
       });
 
-      getCategories(db).then((categoryList) => {
-        categories = categoryList;
-        console.log(categories);
-        setDisplay(categoryList);
-      
-      }).catch((error) => {
-        console.error("Error fetching categories: ", error);
-      });
+      getCategories(db)
+        .then((categoryList) => {
+          categories = categoryList;
+          console.log("Categories: ", categories);
+          setDisplay(categoryList);
+        })
+        .catch((error) => {
+          console.error("Error fetching categories: ", error);
+        });
       index = 0;
-    }
+    };
     return (
       <Pressable
         style={[styles.categoryBox, isPressed && styles.categoryBoxPressed]}
@@ -342,7 +365,6 @@ const FlashcardCategory = () => {
     </SafeAreaView>
   );
 };
-
 
 const styles = StyleSheet.create({
   popupcontainer: {
