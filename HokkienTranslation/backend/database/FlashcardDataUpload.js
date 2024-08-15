@@ -153,7 +153,6 @@ const uploadData = async () => {
                 scores: {
                   [createdBy]: [],
                 },
-                card_score: {},
               };
 
               await setDoc(flashcardQuizRef, flashcardQuiz);

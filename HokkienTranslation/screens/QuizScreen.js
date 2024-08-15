@@ -112,21 +112,36 @@ const QuizScreen = ({ route }) => {
     });
 
     if (currentCardIndex === flashcards.length - 1) {
+      // Last flashcard, update quiz scores and show history
       try {
         const user = await getCurrentUser();
-        const userId = user.uid;
-        const flashcardListId = flashcardListDoc.id;
+        console.log("user: ", user);
 
-        const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
+        const quizDocRef = doc(db, "flashcardQuiz", flashcardListName);
+
+        console.log("quizDocRef", quizDocRef);
+        console.log("time: ", serverTimestamp());
+        console.log(
+          "totalScore: ",
+          (score + (isCorrect ? 1 : 0)) / flashcards.length
+        );
+        console.log("flashcardScores: ", {
+          ...flashcardScores,
+          [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+        });
+
         await updateDoc(quizDocRef, {
-          [`scores.${userId}`]: arrayUnion({
+          [`scores.${user}`]: arrayUnion({
             time: serverTimestamp(),
-            totalScore: score / flashcards.length,
-            flashcardScores: flashcardScores,
+            totalScore: (score + (isCorrect ? 1 : 0)) / flashcards.length,
+            flashcardScores: {
+              ...flashcardScores,
+              [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+            },
           }),
         });
 
-        showScoreHistory(userId, flashcardListId);
+        showScoreHistory(user, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
       }
@@ -143,15 +158,17 @@ const QuizScreen = ({ route }) => {
     }
   };
 
-  const showScoreHistory = async (userId, flashcardListId) => {
+  const showScoreHistory = async (user, flashcardListName) => {
     try {
-      const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
+      const quizDocRef = doc(db, "flashcardQuiz", flashcardListName);
       const quizDoc = await getDoc(quizDocRef);
 
       if (quizDoc.exists()) {
-        const scores = quizDoc.data().scores[userId];
+        const scores = quizDoc.data().scores[user];
         setUserScores(scores);
         setShowHistory(true);
+      } else {
+        console.error("No quiz history found.");
       }
     } catch (error) {
       console.error("Error fetching score history: ", error);
@@ -250,13 +267,11 @@ const QuizScreen = ({ route }) => {
       <Center flex={1} px="3" background={colors.surface}>
         <VStack space={4} alignItems="center">
           {userScores.map((scoreEntry, index) => (
-            <Box
-              key={index}
-              onPress={() => showFlashcardScores(scoreEntry.flashcardScores)}
-            >
-              <Text>{`${formatTimeDifference(scoreEntry.time)} - Score: ${
-                scoreEntry.totalScore
-              }`}</Text>
+            <Box key={index}>
+              <Text>{`${formatTimeDifference(scoreEntry.time)} - Score: ${(
+                scoreEntry.totalScore * 100
+              ).toFixed(2)}%`}</Text>
+              {showFlashcardScores(scoreEntry.flashcardScores)}
             </Box>
           ))}
         </VStack>
