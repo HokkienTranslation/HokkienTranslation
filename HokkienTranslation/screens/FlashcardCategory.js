@@ -198,7 +198,8 @@ const FlashcardCategory = () => {
         });
       }
     }
-    
+
+    console.log("CardList: ", cardList);
     var deckName = category.name;
     console.log("DeckName: ", deckName);
     navigation.navigate("Flashcard", { cardList, deckName });
