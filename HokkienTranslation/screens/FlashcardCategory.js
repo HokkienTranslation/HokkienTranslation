@@ -21,6 +21,7 @@ var categories = [];
 var alldecks = [];
 var curCategory = '';
 var currentUser = '';
+var deckID = '';
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
@@ -134,6 +135,8 @@ const fetchUser = async () => {
     
       // Await the document snapshot
       const ref = await getDoc(docRef);
+
+      deckID = ref.id;
       console.log(ref.data())
 
       //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!      
@@ -198,11 +201,6 @@ const fetchUser = async () => {
       var deckName = category.name;
       var selectedFlashcards = category.cardList;
       var shared = category.shared;
-      
-      console.log(category)
-      console.log(selectedFlashcards)
-      console.log(deckName)
-      console.log(shared)
 
       var update = true
       navigation.navigate('FlashcardAdd', { deckName, selectedFlashcards, shared, curCategory, currentUser, update });
