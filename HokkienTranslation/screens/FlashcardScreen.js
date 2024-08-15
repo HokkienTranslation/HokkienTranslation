@@ -475,6 +475,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                   <CrudButtons
                     title="Save"
                     iconName="save"
+                    />
                   <CrudButtons
                     title="Save"
                     iconName="save"
@@ -489,7 +490,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     iconName="close"
                     onPress={() => setShowUpdates(false)}
                   />
-                  />
+                 
                 </HStack>
               </VStack>
             </Box>
