@@ -21,6 +21,7 @@ var categories = [];
 var alldecks = [];
 var curCategory = '';
 var currentUser = '';
+var deckID = '';
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
@@ -116,7 +117,7 @@ const fetchUser = async () => {
   }, []
   );
   const handleCategoryPress = async (category, navigation) => {
-
+    
     // for flashcard lists/decks
     if (currentUser === '') {
     fetchUser();
@@ -134,6 +135,8 @@ const fetchUser = async () => {
     
       // Await the document snapshot
       const ref = await getDoc(docRef);
+
+      deckID = ref.id;
       console.log(ref.data())
 
       //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!      
@@ -182,6 +185,7 @@ const fetchUser = async () => {
         }
       }
     
+      console.log(cardList)
     navigation.navigate('Flashcard', { cardList });
   };
 
@@ -192,7 +196,15 @@ const fetchUser = async () => {
     const colors = themes[theme];
 
 
+    const handleUpdateDeck = async (category) => {
 
+      var deckName = category.name;
+      var selectedFlashcards = category.cardList;
+      var shared = category.shared;
+
+      var update = true
+      navigation.navigate('FlashcardAdd', { deckName, selectedFlashcards, shared, curCategory, currentUser, update });
+    }
     const handleDeleteDeck = async (category) => {
       const categoryRef = doc(db, 'flashcardList', category.name);
       
@@ -265,6 +277,8 @@ const fetchUser = async () => {
       console.log(curCategory)
       navigation.navigate('FlashcardAdd', { curCategory, currentUser });
     };
+
+
     
     return (
       <Pressable
@@ -289,7 +303,7 @@ const fetchUser = async () => {
       <Center>
         <Container style={[styles.container, { backgroundColor: colors.categoriesContainer }]}>
           <HStack style={styles.headingBox}>
-          <Heading style={[styles.heading, { color: colors.onSurface}]}>Categories</Heading>
+          <Heading style={[styles.heading, { color: colors.onSurface}]}> {titleList[index]} </Heading>
             {index === 1 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
             <Icon as={Ionicons} name="arrow-back" size="lg" color="#000000" />
