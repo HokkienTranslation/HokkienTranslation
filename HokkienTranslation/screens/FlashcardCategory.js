@@ -136,7 +136,7 @@ const fetchUser = async () => {
       // Await the document snapshot
       const ref = await getDoc(docRef);
 
-      deckID = ref.id;
+      
       console.log(ref.data())
 
       //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!      
@@ -253,7 +253,7 @@ const fetchUser = async () => {
   			{category.name}
 		</Text>
 	  </VStack>
-        {isHovered && index === 1 && (
+        { index === 1 && (
           <HStack style={styles.actionButtons}>
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
               <Icon as={MaterialIcons} name="edit" size="sm" color="blue" />
