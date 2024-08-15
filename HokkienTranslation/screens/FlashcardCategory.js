@@ -116,7 +116,7 @@ const fetchUser = async () => {
   }, []
   );
   const handleCategoryPress = async (category, navigation) => {
-
+    
     // for flashcard lists/decks
     if (currentUser === '') {
     fetchUser();
@@ -182,6 +182,7 @@ const fetchUser = async () => {
         }
       }
     
+      console.log(cardList)
     navigation.navigate('Flashcard', { cardList });
   };
 
@@ -192,7 +193,20 @@ const fetchUser = async () => {
     const colors = themes[theme];
 
 
+    const handleUpdateDeck = async (category) => {
 
+      var deckName = category.name;
+      var selectedFlashcards = category.cardList;
+      var shared = category.shared;
+      
+      console.log(category)
+      console.log(selectedFlashcards)
+      console.log(deckName)
+      console.log(shared)
+
+      var update = true
+      navigation.navigate('FlashcardAdd', { deckName, selectedFlashcards, shared, curCategory, currentUser, update });
+    }
     const handleDeleteDeck = async (category) => {
       const categoryRef = doc(db, 'flashcardList', category.name);
       
@@ -265,6 +279,8 @@ const fetchUser = async () => {
       console.log(curCategory)
       navigation.navigate('FlashcardAdd', { curCategory, currentUser });
     };
+
+
     
     return (
       <Pressable
@@ -289,7 +305,7 @@ const fetchUser = async () => {
       <Center>
         <Container style={[styles.container, { backgroundColor: colors.categoriesContainer }]}>
           <HStack style={styles.headingBox}>
-          <Heading style={[styles.heading, { color: colors.onSurface}]}>Categories</Heading>
+          <Heading style={[styles.heading, { color: colors.onSurface}]}> {titleList[index]} </Heading>
             {index === 1 && (
             <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
             <Icon as={Ionicons} name="arrow-back" size="lg" color="#000000" />

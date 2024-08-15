@@ -1,13 +1,14 @@
 import { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { StackActions, useNavigation } from "@react-navigation/native";
 import { useState } from "react";
 import { View, TextInput, Button, FlatList, Text, TouchableOpacity } from "react-native";
-import { doc, getDocs, getDoc, setDoc, collection, query, where, updateDoc, serverTimestamp } from "firebase/firestore";
+import { doc, getDocs, getDoc, setDoc, collection, query, where, updateDoc, serverTimestamp, deleteDoc } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import { HStack, Switch } from "native-base";
 
 
 var categoryID = "";
+var ID = "";
 async function getFlashcardsforCategory(db, category) {
     
     const categoryRef = collection(db, 'category');
@@ -59,10 +60,10 @@ async function getFlashcardsforCategory(db, category) {
 const FlashcardAdd = ({ route }) => {
 
     const navigation = useNavigation();
-  const [deckName, setDeckName] = useState('');
-  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+  const [deckName, setDeckName] = useState(route.params.deckName || '');
+  const [selectedFlashcards, setSelectedFlashcards] = useState(route.params.selectedFlashcards || []);
 const [flashcards, setFlashcards] = useState([]);
-    const [shared, setShared] = useState(false);
+    const [shared, setShared] = useState(route.params.shared || false);
 
 
 
@@ -81,6 +82,7 @@ const [flashcards, setFlashcards] = useState([]);
     } else {
       setSelectedFlashcards([...selectedFlashcards, id]);
     }
+   
   };
 
   const handleSubmission = async () => {
@@ -88,6 +90,40 @@ const [flashcards, setFlashcards] = useState([]);
 
     var cardList = selectedFlashcards;
 
+    console.log(route.params.update)
+
+    if (route.params.update) {
+        var serverTimestamps;
+        await getDoc(doc(db, 'flashcardList', route.params.deckName)).then((doc) => {
+            console.log(doc.data())
+            serverTimestamps = doc.data().createdAt;
+            console.log(serverTimestamps)
+        }
+        )
+        console.log(serverTimestamps)
+        await setDoc(doc(db, 'flashcardList', deckName), {
+            name: deckName,
+            cardList: cardList,
+            createdAt: serverTimestamps,
+            categoryID: categoryID,
+            createdBy: route.params.currentUser, 
+            shared: shared
+        });
+
+        await deleteDoc(doc(db, 'flashcardList', route.params.deckName));
+        const categoryRef2 = doc(db, 'category', categoryID);
+        const categoryDoc2 = await getDoc(categoryRef2);
+        const categoryData2 = categoryDoc2.data();
+        var flashcardList = categoryData2.flashcardList;
+        flashcardList.splice(flashcardList.indexOf(route.params.deckName), 1);
+        flashcardList.push(deckName);
+
+      // update caategory
+      await updateDoc(categoryRef2, {
+        flashcardList: flashcardList
+      });
+    }
+    else {
     setDoc(doc(db, 'flashcardList', deckName), {
         name: deckName,
         cardList: cardList,
@@ -112,16 +148,36 @@ const [flashcards, setFlashcards] = useState([]);
 
     // manipualted selectedFlashcards to get ids
     console.log(selectedFlashcards);
-
+    }
 
     // await setDoc(doc(db, 'flashcardList', deckName), {
     //     name: deckName,
     //     flashcardList: selectedFlashcards
     // });
     
-
-
-    navigation.navigate('Category');
+    var flashcardList = cardList
+    cardList = []
+    for (const card of flashcardList) {
+        console.log(card);
+    
+        // Reference to the document
+          // Assuming the flashcardData has a cardList array
+      
+        const cardRef = doc(db, 'flashcard', card);
+        const cardDoc = await getDoc(cardRef);
+        
+  
+        // TODO: check for auth
+          if (cardDoc.exists()) {
+            const cardData = cardDoc.data();
+            cardList.push({
+              word: cardData.destination,
+              translation: cardData.origin
+            });
+          }
+        }
+    navigation.navigate('Flashcard', { cardList });
+    //navigation.dispatch(StackActions.replace('Category'));
   }
 
 
