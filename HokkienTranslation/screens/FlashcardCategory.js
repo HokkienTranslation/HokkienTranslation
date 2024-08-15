@@ -321,8 +321,8 @@ const FlashcardCategory = () => {
   };
 
   return (
-    <SafeAreaView
-      style={[styles.safeArea, { backgroundColor: colors.surface }]}
+    <ScrollView
+      style={{ backgroundColor: colors.surface }}
     >
       <Center>
         <Container
@@ -363,7 +363,7 @@ const FlashcardCategory = () => {
           </VStack>
         </Container>
       </Center>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
@@ -421,10 +421,10 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
   },
-  safeArea: {
-    flex: 1,
-    justifyContent: "center",
-  },
+  // safeArea: {
+  //   flex: 1,
+  //   justifyContent: "center",
+  // },
   addBox: {
     minWidth: "48%",
     width: "48%",
@@ -454,6 +454,8 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 2,
+    marginTop: 10,
+    marginBottom: 10,
   },
   heading: {},
   grid: {
