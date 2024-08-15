@@ -10,16 +10,6 @@ import {
   Input,
   Select,
 } from "native-base";
-import {
-  Box,
-  Text,
-  Center,
-  VStack,
-  HStack,
-  Pressable,
-  Input,
-  Select,
-} from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
