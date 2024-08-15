@@ -33,6 +33,8 @@ import {
   addDoc,
   deleteDoc,
   updateDoc,
+  query,
+  where
 } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
@@ -226,7 +228,7 @@ const FlashcardCategory = () => {
     };
     const handleDeleteDeck = async (category) => {
       const categoryRef = doc(db, "flashcardList", category.name);
-
+      const flashcardListId = categoryRef.id;
       // get category data
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
@@ -255,7 +257,21 @@ const FlashcardCategory = () => {
         .catch((error) => {
           console.error("Error fetching categories: ", error);
         });
+
+
+
+      // delete flashcardquiz
+      const quizRef = collection(db, "flashcardQuiz");
+      const q = query(quizRef, where("flashcardListId", "==", flashcardListId));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot.size)
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+
+
       index = 0;
+      setDisplay(categories);
     };
     return (
       <Pressable
