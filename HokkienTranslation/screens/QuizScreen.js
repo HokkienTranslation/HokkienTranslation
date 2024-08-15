@@ -10,15 +10,7 @@ import {
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from "react-native";
-import {
-  collection,
-  getDocs,
-  doc,
-  getDoc,
-  updateDoc,
-  arrayUnion,
-  serverTimestamp,
-} from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
 
@@ -62,6 +54,7 @@ const QuizScreen = ({ route }) => {
         const flashcardIds = flashcardListData.cardList;
         const flashcards = [];
 
+        // Fetch each flashcard in the cardList
         for (const flashcardId of flashcardIds) {
           const flashcardDocRef = doc(db, "flashcard", flashcardId);
           const flashcardDoc = await getDoc(flashcardDocRef);
@@ -98,11 +91,10 @@ const QuizScreen = ({ route }) => {
   const handleChoice = async (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
-
-    const isCorrect =
+    if (
       flashcards[currentCardIndex].choices[index] ===
-      flashcards[currentCardIndex].destination;
-    if (isCorrect) {
+      flashcards[currentCardIndex].destination
+    ) {
       setScore((prevScore) => prevScore + 1);
     }
 
