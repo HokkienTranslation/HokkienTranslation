@@ -10,8 +10,17 @@ import {
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from "react-native";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  arrayUnion,
+  serverTimestamp,
+} from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
+import getCurrentUser from "../backend/database/GetCurrentUser";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -21,7 +30,10 @@ const QuizScreen = ({ route }) => {
   const [score, setScore] = useState(0);
   const [isDisabled, setIsDisabled] = useState(false);
   const [flashcards, setFlashcards] = useState([]);
+  const [flashcardScores, setFlashcardScores] = useState({});
   const [loading, setLoading] = useState(true);
+  const [showHistory, setShowHistory] = useState(false);
+  const [userScores, setUserScores] = useState([]);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
 
@@ -50,7 +62,6 @@ const QuizScreen = ({ route }) => {
         const flashcardIds = flashcardListData.cardList;
         const flashcards = [];
 
-        // Fetch each flashcard in the cardList
         for (const flashcardId of flashcardIds) {
           const flashcardDocRef = doc(db, "flashcard", flashcardId);
           const flashcardDoc = await getDoc(flashcardDocRef);
@@ -84,24 +95,90 @@ const QuizScreen = ({ route }) => {
     return array.sort(() => Math.random() - 0.5);
   };
 
-  const handleChoice = (index) => {
+  const handleChoice = async (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
-    if (
+
+    const isCorrect =
       flashcards[currentCardIndex].choices[index] ===
-      flashcards[currentCardIndex].destination
-    ) {
+      flashcards[currentCardIndex].destination;
+    if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
     }
-    setTimeout(() => {
-      slideOut();
+
+    setFlashcardScores({
+      ...flashcardScores,
+      [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+    });
+
+    if (currentCardIndex === flashcards.length - 1) {
+      try {
+        const user = await getCurrentUser();
+        const userId = user.uid;
+        const flashcardListId = flashcardListDoc.id;
+
+        const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
+        await updateDoc(quizDocRef, {
+          [`scores.${userId}`]: arrayUnion({
+            time: serverTimestamp(),
+            totalScore: score / flashcards.length,
+            flashcardScores: flashcardScores,
+          }),
+        });
+
+        showScoreHistory(userId, flashcardListId);
+      } catch (error) {
+        console.error("Error updating quiz scores: ", error);
+      }
+    } else {
       setTimeout(() => {
-        setSelectedAnswer(null);
-        setIsDisabled(false);
-        setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length);
-        slideIn();
-      }, 300);
-    }, 1000);
+        slideOut();
+        setTimeout(() => {
+          setSelectedAnswer(null);
+          setIsDisabled(false);
+          setCurrentCardIndex((prevIndex) => prevIndex + 1);
+          slideIn();
+        }, 300);
+      }, 1000);
+    }
+  };
+
+  const showScoreHistory = async (userId, flashcardListId) => {
+    try {
+      const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
+      const quizDoc = await getDoc(quizDocRef);
+
+      if (quizDoc.exists()) {
+        const scores = quizDoc.data().scores[userId];
+        setUserScores(scores);
+        setShowHistory(true);
+      }
+    } catch (error) {
+      console.error("Error fetching score history: ", error);
+    }
+  };
+
+  const showFlashcardScores = (flashcardScores) => {
+    return (
+      <VStack space={4} alignItems="center">
+        {Object.entries(flashcardScores).map(([flashcardId, score]) => (
+          <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${
+            score ? "Correct" : "Incorrect"
+          }`}</Text>
+        ))}
+      </VStack>
+    );
+  };
+
+  const formatTimeDifference = (timestamp) => {
+    const now = new Date();
+    const time = timestamp.toDate();
+    const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+    if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} days ago`;
   };
 
   const slideOut = () => {
@@ -164,6 +241,25 @@ const QuizScreen = ({ route }) => {
     return (
       <Center flex={1} px="3" background={colors.surface}>
         <Text>Loading...</Text>
+      </Center>
+    );
+  }
+
+  if (showHistory) {
+    return (
+      <Center flex={1} px="3" background={colors.surface}>
+        <VStack space={4} alignItems="center">
+          {userScores.map((scoreEntry, index) => (
+            <Box
+              key={index}
+              onPress={() => showFlashcardScores(scoreEntry.flashcardScores)}
+            >
+              <Text>{`${formatTimeDifference(scoreEntry.time)} - Score: ${
+                scoreEntry.totalScore
+              }`}</Text>
+            </Box>
+          ))}
+        </VStack>
       </Center>
     );
   }
