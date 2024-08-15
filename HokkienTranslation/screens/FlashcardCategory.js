@@ -203,6 +203,8 @@ const FlashcardCategory = () => {
         // Await the document snapshot
         const ref = await getDoc(docRef);
 
+      
+
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
         // console.log(temp)
