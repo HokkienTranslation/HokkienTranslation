@@ -104,23 +104,26 @@ const FlashcardAdd = ({ route }) => {
   };
 
   const handleSubmission = async () => {
-    // add logic
-
     var cardList = selectedFlashcards;
-
-    console.log(route.params.update);
 
     if (route.params.update) {
       var serverTimestamps;
-      await getDoc(doc(db, "flashcardList", route.params.deckName)).then(
-        (doc) => {
-          console.log(doc.data());
+      const oldFlashcardListRef = doc(
+        db,
+        "flashcardList",
+        route.params.deckName
+      );
+
+      await getDoc(oldFlashcardListRef).then((doc) => {
+        if (doc.exists()) {
           serverTimestamps = doc.data().createdAt;
           console.log(serverTimestamps);
         }
-      );
-      console.log(serverTimestamps);
-      await setDoc(doc(db, "flashcardList", deckName), {
+      });
+
+      // Set the new FlashcardList with updated data
+      const newFlashcardListRef = doc(db, "flashcardList", deckName);
+      await setDoc(newFlashcardListRef, {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamps,
@@ -129,7 +132,6 @@ const FlashcardAdd = ({ route }) => {
         shared: shared,
       });
 
-      await deleteDoc(doc(db, "flashcardList", route.params.deckName));
       const categoryRef2 = doc(db, "category", categoryID);
       const categoryDoc2 = await getDoc(categoryRef2);
       const categoryData2 = categoryDoc2.data();
@@ -137,52 +139,48 @@ const FlashcardAdd = ({ route }) => {
       flashcardList.splice(flashcardList.indexOf(route.params.deckName), 1);
       flashcardList.push(deckName);
 
-      // update caategory
       await updateDoc(categoryRef2, {
         flashcardList: flashcardList,
       });
     } else {
-      setDoc(doc(db, "flashcardList", deckName), {
+      // new FlashcardList
+      const flashcardListRef = doc(db, "flashcardList", deckName);
+      await setDoc(flashcardListRef, {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamp(),
         categoryID: categoryID,
-        createdBy: route.params.currentUser, // TODO: placeholder get from auth
-        shared: shared, //add a shared setting to this later.
+        createdBy: route.params.currentUser,
+        shared: shared,
       });
 
-      // have to add a new deck to the category
-
+      // Update the category
       const categoryRef = doc(db, "category", categoryID);
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
       var flashcardList = categoryData.flashcardList;
       flashcardList.push(deckName);
-      updateDoc(categoryRef, {
+      await updateDoc(categoryRef, {
         flashcardList: flashcardList,
       });
 
-      // manipualted selectedFlashcards to get ids
-      console.log(selectedFlashcards);
-    }
+      // new flashcardQuiz
+      const flashcardQuizRef = doc(collection(db, "flashcardQuiz"));
+      await setDoc(flashcardQuizRef, {
+        flashcardListId: flashcardListRef.id,
+        scores: {},
+        flashcardScores: {},
+      });
 
-    // await setDoc(doc(db, 'flashcardList', deckName), {
-    //     name: deckName,
-    //     flashcardList: selectedFlashcards
-    // });
+      console.log("FlashcardQuiz created for", flashcardListRef.id);
+    }
 
     var flashcardList = cardList;
     cardList = [];
     for (const card of flashcardList) {
-      console.log(card);
-
-      // Reference to the document
-      // Assuming the flashcardData has a cardList array
-
       const cardRef = doc(db, "flashcard", card);
       const cardDoc = await getDoc(cardRef);
 
-      // TODO: check for auth
       if (cardDoc.exists()) {
         const cardData = cardDoc.data();
         cardList.push({
@@ -192,7 +190,6 @@ const FlashcardAdd = ({ route }) => {
       }
     }
     navigation.navigate("Flashcard", { cardList });
-    //navigation.dispatch(StackActions.replace('Category'));
   };
 
   return (
