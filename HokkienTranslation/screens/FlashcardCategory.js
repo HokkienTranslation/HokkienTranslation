@@ -198,8 +198,9 @@ const FlashcardCategory = () => {
     }
 
     console.log("CardList: ", cardList);
-    console.log("deckID: ", deckID);
-    navigation.navigate("Flashcard", { cardList });
+    var deckName = category.name;
+    console.log("DeckName: ", deckName);
+    navigation.navigate("Flashcard", { cardList, deckName });
   };
 
   const CategoryBox = ({ category, navigation }) => {
