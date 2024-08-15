@@ -154,8 +154,8 @@ const FlashcardCategory = () => {
         // Await the document snapshot
         const ref = await getDoc(docRef);
 
-        deckID = ref.id;
-        // console.log(ref.data())
+      
+      console.log(ref.data())
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
