@@ -7,6 +7,7 @@ import {
   HStack,
   Text,
   Progress,
+  ScrollView,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from "react-native";
@@ -322,17 +323,55 @@ const QuizScreen = ({ route }) => {
 
   if (showHistory) {
     return (
-      <Center flex={1} px="3" background={colors.surface}>
-        <VStack space={4} alignItems="center">
-          {userScores.map((scoreEntry, index) => (
-            <Box key={index}>
-              <Text>{`${formatTimeDifference(scoreEntry.time)} - Score: ${(
-                scoreEntry.totalScore * 100
-              ).toFixed(2)}%`}</Text>
-              {showFlashcardScores(scoreEntry.flashcardScores)}
-            </Box>
-          ))}
-        </VStack>
+      <Center flex={1} px="3" py="2" background={colors.surface}>
+        <Box width="100%" height="100%">
+          <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+            <VStack space={4} alignItems="stretch" width="90%" mx="auto">
+              {userScores.map((scoreEntry, index) => (
+                <Box
+                  key={index}
+                  bg={colors.primaryContainer}
+                  p={4}
+                  borderRadius="10px"
+                  shadow={2}
+                  mb={4}
+                >
+                  <Text fontSize="md" color={colors.onSurface} bold mb={2}>
+                    {`${formatTimeDifference(scoreEntry.time)} - Score: ${(
+                      scoreEntry.totalScore * 100
+                    ).toFixed(2)}%`}
+                  </Text>
+                  <VStack space={2}>
+                    {Object.entries(scoreEntry.flashcardScores).map(
+                      ([flashcardId, score], idx) => {
+                        const flashcard = flashcards.find(
+                          (card) => card.id === flashcardId
+                        );
+                        return (
+                          <HStack
+                            key={idx}
+                            justifyContent="space-between"
+                            alignItems="center"
+                          >
+                            <Text color={colors.onSurface} fontSize="sm">
+                              {flashcard?.origin} → {flashcard?.destination}
+                            </Text>
+                            <Text
+                              fontSize="sm"
+                              color={score ? "green.500" : "red.500"}
+                            >
+                              {score ? "Correct" : "Incorrect"}
+                            </Text>
+                          </HStack>
+                        );
+                      }
+                    )}
+                  </VStack>
+                </Box>
+              ))}
+            </VStack>
+          </ScrollView>
+        </Box>
       </Center>
     );
   }
