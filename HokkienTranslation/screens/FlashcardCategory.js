@@ -33,6 +33,8 @@ import {
   addDoc,
   deleteDoc,
   updateDoc,
+  where,
+  query,
 } from "firebase/firestore";
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
@@ -227,19 +229,40 @@ const FlashcardCategory = () => {
     };
     const handleDeleteDeck = async (category) => {
       const categoryRef = doc(db, "flashcardList", category.name);
+      console.log("CategoryRef: ", categoryRef);
 
       // get category data
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
-      var categoryId = categoryData.categoryID;
+      const categoryId = categoryData.categoryID;
+      console.log("CategoryID: ", categoryId);
 
+      // Delete the flashcardList document
       await deleteDoc(categoryRef);
+      console.log("Deleted category: ", category.name);
+
+      // Query to find the corresponding document in flashcardQuiz collection
+      const quizQuery = query(
+        collection(db, "flashcardQuiz"),
+        where("flashcardListId", "==", category.name)
+      );
+      const quizQuerySnapshot = await getDocs(quizQuery);
+
+      // Delete the flashcardQuiz document(s)
+      quizQuerySnapshot.forEach(async (quizDoc) => {
+        await deleteDoc(quizDoc.ref);
+        console.log(
+          "Deleted flashcardQuiz document with flashcardListId: ",
+          category.name
+        );
+      });
 
       // remove deck from category
       const categoryRef2 = doc(db, "category", categoryId);
       const categoryDoc2 = await getDoc(categoryRef2);
       const categoryData2 = categoryDoc2.data();
       var flashcardList = categoryData2.flashcardList;
+      console.log("FlashcardList: ", flashcardList);
       flashcardList.splice(flashcardList.indexOf(category.name), 1);
 
       // update caategory
