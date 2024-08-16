@@ -16,8 +16,10 @@ import {
   doc,
   getDoc,
   updateDoc,
-  arrayUnion,
+  setDoc,
   serverTimestamp,
+  where,
+  query,
 } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
@@ -115,33 +117,91 @@ const QuizScreen = ({ route }) => {
       // Last flashcard, update quiz scores and show history
       try {
         const user = await getCurrentUser();
+        const userEmail = user;
         console.log("user: ", user);
 
-        const quizDocRef = doc(db, "flashcardQuiz", flashcardListName);
-
-        console.log("quizDocRef", quizDocRef);
-        console.log("time: ", serverTimestamp());
+        // Query for the flashcardQuiz document where flashcardListId equals flashcardListName
         console.log(
-          "totalScore: ",
-          (score + (isCorrect ? 1 : 0)) / flashcards.length
+          "QuizScreen before getDocs flashcardListName: ",
+          flashcardListName
         );
-        console.log("flashcardScores: ", {
-          ...flashcardScores,
-          [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
-        });
+        const quizQuery = query(
+          collection(db, "flashcardQuiz"),
+          where("flashcardListId", "==", flashcardListName)
+        );
 
-        await updateDoc(quizDocRef, {
-          [`scores.${user}`]: arrayUnion({
-            time: serverTimestamp(),
-            totalScore: (score + (isCorrect ? 1 : 0)) / flashcards.length,
-            flashcardScores: {
-              ...flashcardScores,
-              [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
-            },
-          }),
-        });
+        const quizQuerySnapshot = await getDocs(quizQuery);
 
-        showScoreHistory(user, flashcardListName);
+        if (!quizQuerySnapshot.empty) {
+          // Assuming only one document matches the query
+          const quizDocRef = quizQuerySnapshot.docs[0].ref;
+          console.log("quizDocRef: ", quizDocRef);
+
+          // Generate the server timestamp first
+          const timestamp = new Date().toISOString();
+
+          console.log("timestamp: ", timestamp);
+          console.log(
+            "totalScore: ",
+            (score + (isCorrect ? 1 : 0)) / flashcards.length
+          );
+          console.log("flashcardScores: ", {
+            ...flashcardScores,
+            [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+          });
+
+          // Fetch existing data
+          const quizDoc = await getDoc(quizDocRef);
+          let existingScores = {};
+
+          if (quizDoc.exists()) {
+            existingScores = quizDoc.data().scores || {};
+            // Prepare new score entry
+            const newScoreEntry = {
+              time: timestamp,
+              totalScore: (score + (isCorrect ? 1 : 0)) / flashcards.length,
+              flashcardScores: {
+                ...flashcardScores,
+                [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+              },
+            };
+
+            // Append or create a new entry for the user
+            if (existingScores[userEmail]) {
+              existingScores[userEmail].push(newScoreEntry);
+            } else {
+              existingScores[userEmail] = [newScoreEntry];
+            }
+
+            // Update the document
+            await updateDoc(quizDocRef, {
+              scores: existingScores,
+            });
+          } else {
+            // If the document does not exist, create it
+            await setDoc(quizDocRef, {
+              scores: {
+                [userEmail]: [
+                  {
+                    time: timestamp,
+                    totalScore:
+                      (score + (isCorrect ? 1 : 0)) / flashcards.length,
+                    flashcardScores: {
+                      ...flashcardScores,
+                      [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+                    },
+                  },
+                ],
+              },
+            });
+          }
+        } else {
+          console.error(
+            "No flashcardQuiz document found with the given flashcardListName."
+          );
+        }
+
+        showScoreHistory(userEmail, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
       }
@@ -189,11 +249,14 @@ const QuizScreen = ({ route }) => {
 
   const formatTimeDifference = (timestamp) => {
     const now = new Date();
-    const time = timestamp.toDate();
+    const time = new Date(timestamp);
     const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+
     if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours} hours ago`;
+
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} days ago`;
   };
