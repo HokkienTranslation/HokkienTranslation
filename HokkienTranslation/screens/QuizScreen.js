@@ -131,6 +131,10 @@ const QuizScreen = ({ route }) => {
         );
 
         const quizQuerySnapshot = await getDocs(quizQuery);
+        const scores = quizQuerySnapshot.docs[0].data().scores[userEmail];
+        setUserScores(scores);
+        console.log("scores: ", scores);
+        console.log("userScores: ", userScores);
 
         if (!quizQuerySnapshot.empty) {
           // Assuming only one document matches the query
@@ -220,16 +224,7 @@ const QuizScreen = ({ route }) => {
 
   const showScoreHistory = async (user, flashcardListName) => {
     try {
-      const quizDocRef = doc(db, "flashcardQuiz", flashcardListName);
-      const quizDoc = await getDoc(quizDocRef);
-
-      if (quizDoc.exists()) {
-        const scores = quizDoc.data().scores[user];
-        setUserScores(scores);
-        setShowHistory(true);
-      } else {
-        console.error("No quiz history found.");
-      }
+      setShowHistory(true);
     } catch (error) {
       console.error("Error fetching score history: ", error);
     }
