@@ -169,7 +169,6 @@ const FlashcardAdd = ({ route }) => {
       await setDoc(flashcardQuizRef, {
         flashcardListId: flashcardListRef.id,
         scores: {},
-        card_score: {},
       });
 
       console.log("FlashcardQuiz created for", flashcardListRef.id);

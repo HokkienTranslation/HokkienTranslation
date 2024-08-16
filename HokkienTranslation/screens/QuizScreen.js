@@ -7,6 +7,7 @@ import {
   HStack,
   Text,
   Progress,
+  ScrollView,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from "react-native";
@@ -16,8 +17,10 @@ import {
   doc,
   getDoc,
   updateDoc,
-  arrayUnion,
+  setDoc,
   serverTimestamp,
+  where,
+  query,
 } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
@@ -112,21 +115,98 @@ const QuizScreen = ({ route }) => {
     });
 
     if (currentCardIndex === flashcards.length - 1) {
+      // Last flashcard, update quiz scores and show history
       try {
         const user = await getCurrentUser();
-        const userId = user.uid;
-        const flashcardListId = flashcardListDoc.id;
+        const userEmail = user;
+        console.log("user: ", user);
 
-        const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
-        await updateDoc(quizDocRef, {
-          [`scores.${userId}`]: arrayUnion({
-            time: serverTimestamp(),
-            totalScore: score / flashcards.length,
-            flashcardScores: flashcardScores,
-          }),
-        });
+        // Query for the flashcardQuiz document where flashcardListId equals flashcardListName
+        console.log(
+          "QuizScreen before getDocs flashcardListName: ",
+          flashcardListName
+        );
+        const quizQuery = query(
+          collection(db, "flashcardQuiz"),
+          where("flashcardListId", "==", flashcardListName)
+        );
 
-        showScoreHistory(userId, flashcardListId);
+        const quizQuerySnapshot = await getDocs(quizQuery);
+        const scores = quizQuerySnapshot.docs[0].data().scores[userEmail];
+        setUserScores(scores);
+        console.log("scores: ", scores);
+        console.log("userScores: ", userScores);
+
+        if (!quizQuerySnapshot.empty) {
+          // Assuming only one document matches the query
+          const quizDocRef = quizQuerySnapshot.docs[0].ref;
+          console.log("quizDocRef: ", quizDocRef);
+
+          // Generate the server timestamp first
+          const timestamp = new Date().toISOString();
+
+          console.log("timestamp: ", timestamp);
+          console.log(
+            "totalScore: ",
+            (score + (isCorrect ? 1 : 0)) / flashcards.length
+          );
+          console.log("flashcardScores: ", {
+            ...flashcardScores,
+            [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+          });
+
+          // Fetch existing data
+          const quizDoc = await getDoc(quizDocRef);
+          let existingScores = {};
+
+          if (quizDoc.exists()) {
+            existingScores = quizDoc.data().scores || {};
+            // Prepare new score entry
+            const newScoreEntry = {
+              time: timestamp,
+              totalScore: (score + (isCorrect ? 1 : 0)) / flashcards.length,
+              flashcardScores: {
+                ...flashcardScores,
+                [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+              },
+            };
+
+            // Append or create a new entry for the user
+            if (existingScores[userEmail]) {
+              existingScores[userEmail].push(newScoreEntry);
+            } else {
+              existingScores[userEmail] = [newScoreEntry];
+            }
+
+            // Update the document
+            await updateDoc(quizDocRef, {
+              scores: existingScores,
+            });
+          } else {
+            // If the document does not exist, create it
+            await setDoc(quizDocRef, {
+              scores: {
+                [userEmail]: [
+                  {
+                    time: timestamp,
+                    totalScore:
+                      (score + (isCorrect ? 1 : 0)) / flashcards.length,
+                    flashcardScores: {
+                      ...flashcardScores,
+                      [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+                    },
+                  },
+                ],
+              },
+            });
+          }
+        } else {
+          console.error(
+            "No flashcardQuiz document found with the given flashcardListName."
+          );
+        }
+
+        showScoreHistory(userEmail, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
       }
@@ -143,16 +223,9 @@ const QuizScreen = ({ route }) => {
     }
   };
 
-  const showScoreHistory = async (userId, flashcardListId) => {
+  const showScoreHistory = async (user, flashcardListName) => {
     try {
-      const quizDocRef = doc(db, "flashcardQuiz", flashcardListId);
-      const quizDoc = await getDoc(quizDocRef);
-
-      if (quizDoc.exists()) {
-        const scores = quizDoc.data().scores[userId];
-        setUserScores(scores);
-        setShowHistory(true);
-      }
+      setShowHistory(true);
     } catch (error) {
       console.error("Error fetching score history: ", error);
     }
@@ -172,11 +245,14 @@ const QuizScreen = ({ route }) => {
 
   const formatTimeDifference = (timestamp) => {
     const now = new Date();
-    const time = timestamp.toDate();
+    const time = new Date(timestamp);
     const diffInMinutes = Math.floor((now - time) / (1000 * 60));
+
     if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+
     const diffInHours = Math.floor(diffInMinutes / 60);
     if (diffInHours < 24) return `${diffInHours} hours ago`;
+
     const diffInDays = Math.floor(diffInHours / 24);
     return `${diffInDays} days ago`;
   };
@@ -245,21 +321,71 @@ const QuizScreen = ({ route }) => {
     );
   }
 
-  if (showHistory) {
+  if (!flashcards.length) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
-        <VStack space={4} alignItems="center">
-          {userScores.map((scoreEntry, index) => (
-            <Box
-              key={index}
-              onPress={() => showFlashcardScores(scoreEntry.flashcardScores)}
-            >
-              <Text>{`${formatTimeDifference(scoreEntry.time)} - Score: ${
-                scoreEntry.totalScore
-              }`}</Text>
-            </Box>
-          ))}
-        </VStack>
+        <Text>No flashcards available</Text>
+      </Center>
+    );
+  }
+
+  if (showHistory) {
+    return (
+      <Center flex={1} px="3" py="2" background={colors.surface}>
+        <Box width="100%" height="100%">
+          <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
+            <VStack space={4} alignItems="stretch" width="90%" mx="auto">
+              {userScores && userScores.length > 0 ? (
+                userScores.map((scoreEntry, index) => (
+                  <Box
+                    key={index}
+                    bg={colors.primaryContainer}
+                    p={4}
+                    borderRadius="10px"
+                    shadow={2}
+                    mb={4}
+                  >
+                    <Text fontSize="md" color={colors.onSurface} bold mb={2}>
+                      {`${formatTimeDifference(scoreEntry.time)} - Score: ${(
+                        scoreEntry.totalScore * 100
+                      ).toFixed(2)}%`}
+                    </Text>
+                    <VStack space={2}>
+                      {Object.entries(scoreEntry.flashcardScores).map(
+                        ([flashcardId, score], idx) => {
+                          const flashcard = flashcards.find(
+                            (card) => card.id === flashcardId
+                          );
+                          return (
+                            <HStack
+                              key={idx}
+                              justifyContent="space-between"
+                              alignItems="center"
+                            >
+                              <Text color={colors.onSurface} fontSize="sm">
+                                {flashcard?.origin} → {flashcard?.destination}
+                              </Text>
+                              <Text
+                                fontSize="sm"
+                                color={score ? "green.500" : "red.500"}
+                              >
+                                {score ? "Correct" : "Incorrect"}
+                              </Text>
+                            </HStack>
+                          );
+                        }
+                      )}
+                    </VStack>
+                  </Box>
+                ))
+              ) : (
+                <Text color={colors.onSurface} fontSize="md" textAlign="center">
+                  No quiz history available.
+                </Text>
+              )}
+            </VStack>
+          </ScrollView>
+        </Box>
       </Center>
     );
   }
