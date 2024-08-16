@@ -104,7 +104,7 @@ const MainTabNavigator = () => {
             iconName = focused ? "settings" : "settings-outline";
           }
 
-          return <Ionicons name={iconName} size={size} color={color}/>;
+          return <Ionicons name={iconName} size={size} color={color} />;
         },
         tabBarStyle: {
           backgroundColor: colors.primaryContainer,
@@ -114,13 +114,12 @@ const MainTabNavigator = () => {
         tabBarActiveTintColor: colors.onPrimaryContainer,
         tabBarInactiveTintColor: colors.onSurface,
         headerShown: false,
-        
       })}
     >
       <Tab.Screen
         name="HomeStack"
         component={HomeStack}
-        options={{ title: "Home"}}
+        options={{ title: "Home" }}
       />
       <Tab.Screen
         name="FlashcardStack"
@@ -146,7 +145,10 @@ const AppContent = () => {
           <Stack.Screen name="Main" component={MainTabNavigator} />
           <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Register" component={RegisterScreen} />
-          <Stack.Screen name="ForgetPassword" component={ForgetPasswordScreen} />
+          <Stack.Screen
+            name="ForgetPassword"
+            component={ForgetPasswordScreen}
+          />
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
