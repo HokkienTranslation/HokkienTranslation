@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import {
   SafeAreaView,
   StyleSheet,
@@ -19,7 +19,7 @@ import {
   ScrollView,
   Checkbox,
 } from "native-base";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Pressable } from "react-native-web";
 import { useState } from "react";
@@ -56,6 +56,7 @@ const FlashcardCategory = () => {
   const colors = themes[theme];
 
   const [display, setDisplay] = useState([]);
+  const isFocused = useIsFocused();
 
   // check for auth when getting categories
   async function getCategories(db) {
@@ -113,30 +114,30 @@ const FlashcardCategory = () => {
     }
   };
 
-  useEffect(() => {
-    // update api here
-    // getCurrentUser().then((user) => {
-    //   currentUser = user;
-    // });
 
-    getCategories(db)
-      .then((categoryList) => {
+  
+  useEffect(() => {
+    if (isFocused) {
+       
+       getCategories(db).then((categoryList) => {
         categories = categoryList;
         console.log("Categories: ", categories);
         setDisplay(categoryList);
-      })
-      .catch((error) => {
+       }).catch((error) => {
         console.error("Error fetching categories: ", error);
-      });
-
-    getFlashcardList(db)
+       });
+       getFlashcardList(db)
       .then((flashcardList) => {
         alldecks = flashcardList;
       })
       .catch((error) => {
         console.error("Error fetching flashcardList: ", error);
       });
-  }, []);
+       index = 0
+    }
+  }, [isFocused]);
+
+  
 
   const handleCategoryPress = async (category, navigation) => {
     // for flashcard lists/decks
