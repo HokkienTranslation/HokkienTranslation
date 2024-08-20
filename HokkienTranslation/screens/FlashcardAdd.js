@@ -237,11 +237,29 @@ const FlashcardAdd = ({ route }) => {
               onTrackColor={colors.primary}
             />
           </HStack>
-          <Button
-            title="Submit"
+          <TouchableOpacity
             onPress={handleSubmission}
-            color={colors.primary}
-          />
+            style={{
+              backgroundColor: colors.darkerPrimaryContainer,
+              paddingVertical: 15,
+              paddingHorizontal: 20,
+              borderRadius: 10,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+              alignItems: "center",
+              marginTop: 20,
+              marginBottom: 8,
+            }}
+          >
+            <Text
+              style={{ color: colors.onPrimary, fontSize: 16, fontWeight: "bold" }}
+            >
+              Submit
+            </Text>
+          </TouchableOpacity>
 
           {flashcards.map((item) => (
             <TouchableOpacity onPress={() => toggleSelection(item.id)} key={item.id}>
@@ -276,7 +294,7 @@ const FlashcardAdd = ({ route }) => {
                       ? colors.primary
                       : colors.onSurface,
                     backgroundColor: selectedFlashcards.includes(item.id)
-                      ? colors.primary
+                      ? colors.onSurface
                       : colors.surface,
                   }}
                 />
