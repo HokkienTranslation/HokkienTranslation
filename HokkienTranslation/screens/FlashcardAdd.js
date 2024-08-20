@@ -255,7 +255,7 @@ const FlashcardAdd = ({ route }) => {
             }}
           >
             <Text
-              style={{ color: colors.onPrimary, fontSize: 16, fontWeight: "bold" }}
+              style={{ color: colors.onSurface, fontSize: 16, fontWeight: "bold" }}
             >
               Submit
             </Text>
@@ -269,8 +269,8 @@ const FlashcardAdd = ({ route }) => {
                   padding: 10,
                   alignItems: "center",
                   backgroundColor: selectedFlashcards.includes(item.id)
-                    ? colors.darkerPrimaryContainer
-                    : colors.surface,
+                    ? colors.surface
+                    : colors.darkerPrimaryContainer,
                   borderWidth: 2,
                   borderColor: selectedFlashcards.includes(item.id)
                     ? colors.primary
@@ -294,7 +294,7 @@ const FlashcardAdd = ({ route }) => {
                       ? colors.primary
                       : colors.onSurface,
                     backgroundColor: selectedFlashcards.includes(item.id)
-                      ? colors.onSurface
+                      ? "#00FF00"
                       : colors.surface,
                   }}
                 />

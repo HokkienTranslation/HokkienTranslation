@@ -185,7 +185,11 @@ const FlashcardScreen = ({ route, navigation }) => {
       <Center flex={1} px="3">
         <VStack space={4} alignItems="center">
           <HStack space={4}>
-            <CrudButtons title="Create" onPress={handleCreate} iconName="add" />
+            <CrudButtons 
+              title="Create" 
+              onPress={handleCreate} 
+              iconName="add"
+            />
             <CrudButtons
               title="Update"
               onPress={handleUpdate}
@@ -466,7 +470,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           <Center
             flex={1}
             justifyContent="center"
-            backgroundColor="rgba(0, 0, 0, 0.5)"
+            backgroundColor="rgba(1, 1, 0, 0.5)"
           >
             <Box
               width="300px"

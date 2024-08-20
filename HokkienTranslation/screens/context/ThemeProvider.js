@@ -22,6 +22,7 @@ export const ThemeProvider = ({ children }) => {
       header: "#FBF2FC",
       buttonBorder: "#cbc5d4",
       highlightButtonBorder: "#635d6b",
+      crudModal: "FFFFFF",
     },
     dark: {
       surface: "#37323D",
@@ -37,6 +38,7 @@ export const ThemeProvider = ({ children }) => {
       header: "#646165",
       buttonBorder: "#666a7d",
       highlightButtonBorder: "#989db3",
+      crudModal: "B0B0B0",
     },
   };
 

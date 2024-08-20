@@ -298,8 +298,8 @@ const FlashcardCategory = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <VStack space={1} alignItems="center">
-          <Ionicons name={category.icon} size={30} color={colors.onPrimary} />
-          <Text style={styles.categoryText}>{category.name}</Text>
+          <Ionicons name={category.icon} size={30} color={colors.onSurface} />
+          <Text style={styles.categoryText} color={colors.onSurface}>{category.name}</Text>
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
@@ -327,6 +327,7 @@ const FlashcardCategory = () => {
       <Pressable
         style={[
           styles.addBox,
+          {borderColor: colors.onSurface},
           isPressed && styles.categoryBoxPressed,
           { backgroundColor: colors.categoriesBox },
         ]}
@@ -334,8 +335,8 @@ const FlashcardCategory = () => {
         onPressOut={() => setIsPressed(false)}
         onPress={() => addFlashcard()}
       >
-        <Ionicons name="add" size={30} color={colors.onPrimary} />
-        <Text style={styles.categoryText}>Add</Text>
+        <Ionicons name="add" size={30} color={colors.onSurface} />
+        <Text style={styles.categoryText} color={colors.onSurface}>Add</Text>
       </Pressable>
     );
   };
@@ -449,7 +450,6 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
 
     alignItems: "center",
-    borderColor: "#000000",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
@@ -510,7 +510,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   categoryText: {
-    color: "black",
     marginTop: 8,
     textAlign: "center",
     fontSize: 15,

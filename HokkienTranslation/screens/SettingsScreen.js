@@ -131,7 +131,7 @@ const SettingsScreen = () => {
               Language Options
             </Text>
             <HStack space={2} alignItems="center">
-              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+              <Text style={{ marginRight: 10, fontSize: 16, color: colors.onSurface}}>Language 1 (card front):</Text>
               <SelectList
                 setSelected={(key) => setLanguages([key, languages[1]])}
                 data={languageList}
@@ -140,7 +140,7 @@ const SettingsScreen = () => {
               />
             </HStack>
             <HStack space={2} alignItems="center">
-              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+              <Text style={{ marginRight: 10, fontSize: 16, color: colors.onSurface }}>Language 2 (card back):</Text>
               <SelectList
                 setSelected={(key) => setLanguages([languages[0], key])}
                 data={languageList}
