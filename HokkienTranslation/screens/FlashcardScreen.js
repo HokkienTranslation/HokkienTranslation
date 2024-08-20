@@ -316,16 +316,9 @@ const FlashcardScreen = ({ route, navigation }) => {
               <VStack space={4} alignItems="center">
                 <Input placeholder="Enter word" width={200} />
                 <Input placeholder="Enter Translation" width={200} />
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={otherOpt}
-                    placeholder="View Other Options"
-                    onValueChange={(itemValue) => setOtherOpt(itemValue)}
-                  >
-                    <Select.Item label="banana 1" value="word" />
-                    <Select.Item label="banana 2" value="sentence" />
-                  </Select>
-                </Box>
+                <Input placeholder="Option 1" width={200} />
+                <Input placeholder="Option 2" width={200} />
+                <Input placeholder="Option 3" width={200} />
                 <Box space={4} alignItems="center" width={200}>
                   <Select
                     selectedValue={type}
@@ -338,32 +331,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                 </Box>
                 <Box space={4} alignItems="center" width={200}>
                   <Select
-                    selectedValue={category}
-                    placeholder="Select Category"
-                    onValueChange={(itemValue) => setCategory(itemValue)}
-                  >
-                    <Select.Item label="Shopping" value="shopping" />
-                    <Select.Item label="Other" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
                     selectedValue={privacy}
                     placeholder="Set Privacy"
                     onValueChange={(itemValue) => setPrivacy(itemValue)}
                   >
                     <Select.Item label="Public" value="shopping" />
                     <Select.Item label="Private" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={cardList}
-                    placeholder="Select Flashcard List"
-                    onValueChange={(itemValue) => setCardlist(itemValue)}
-                  >
-                    <Select.Item label="list 1" value="shopping" />
-                    <Select.Item label="list 2" value="other" />
                   </Select>
                 </Box>
                 <HStack space={4}>

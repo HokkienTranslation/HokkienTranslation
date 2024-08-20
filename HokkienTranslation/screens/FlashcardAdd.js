@@ -5,9 +5,9 @@ import {
   View,
   TextInput,
   Button,
-  FlatList,
   Text,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import {
   doc,
@@ -23,6 +23,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import { HStack, Switch } from "native-base";
+import { useTheme } from "./context/ThemeProvider";
 
 var categoryID = "";
 var ID = "";
@@ -82,6 +83,9 @@ const FlashcardAdd = ({ route }) => {
   );
   const [flashcards, setFlashcards] = useState([]);
   const [shared, setShared] = useState(route.params.shared || false);
+
+  const { theme, themes } = useTheme();
+  const colors = themes[theme];
 
   useEffect(() => {
     getFlashcardsforCategory(db, route.params.curCategory)
@@ -192,64 +196,97 @@ const FlashcardAdd = ({ route }) => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <TextInput
-        placeholder="Enter deck name"
-        value={deckName}
-        onChangeText={setDeckName}
-        style={{ borderWidth: 1, padding: 10, marginBottom: 20 }}
-      />
-      <HStack style={{ flex: 1, marginBottom: 20 }}>
-        <Text>Share</Text>
-        <Switch
-          title="Share"
-          isChecked={shared}
-          onToggle={() => {
-            setShared(!shared);
+    <View style={{ flex: 1, backgroundColor: colors.surface }}>
+      <ScrollView contentContainerStyle={{ paddingTop: 10, paddingBottom: 10 }}>
+
+        <View
+          style={{
+            width: '90%',
+            alignSelf: 'center',
+            padding: 20,
+            backgroundColor: colors.primaryContainer,
+            borderRadius: 20,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            elevation: 5,
           }}
-          style={{ marginLeft: 10 }}
-        />
-      </HStack>
-      <Button
-        title="Submit"
-        onPress={() => {
-          handleSubmission();
-        }}
-      />
-      <FlatList
-        data={flashcards}
-        keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => (
-          <TouchableOpacity onPress={() => toggleSelection(item.id)}>
-            <View
-              style={{
-                flexDirection: "row",
-                padding: 10,
-                alignItems: "center",
-                backgroundColor: selectedFlashcards.includes(item.id)
-                  ? "lightblue"
-                  : "white",
-              }}
-            >
-              <Text style={{ flex: 1 }}>{item.word}</Text>
-              <Text style={{ flex: 1 }}>{item.translation}</Text>
+        >
+          <TextInput
+            placeholder="Enter deck name"
+            value={deckName}
+            onChangeText={setDeckName}
+            style={{
+              borderWidth: 1,
+              padding: 10,
+              marginBottom: 20,
+              borderColor: colors.primary,
+              color: colors.onSurface,
+              
+            }}
+            placeholderTextColor={colors.onSurfaceVariant}
+          />
+          <HStack style={{ flex: 1, marginBottom: 20 }}>
+            <Text style={{ color: colors.onSurface }}>Share</Text>
+            <Switch
+              title="Share"
+              isChecked={shared}
+              onToggle={() => setShared(!shared)}
+              style={{ marginLeft: 10 }}
+              onTrackColor={colors.primary}
+            />
+          </HStack>
+          <Button
+            title="Submit"
+            onPress={handleSubmission}
+            color={colors.primary}
+          />
+
+          {flashcards.map((item) => (
+            <TouchableOpacity onPress={() => toggleSelection(item.id)} key={item.id}>
               <View
                 style={{
-                  width: 24,
-                  height: 24,
+                  flexDirection: "row",
+                  padding: 10,
+                  alignItems: "center",
+                  backgroundColor: selectedFlashcards.includes(item.id)
+                    ? colors.darkerPrimaryContainer
+                    : colors.surface,
                   borderWidth: 2,
                   borderColor: selectedFlashcards.includes(item.id)
-                    ? "green"
-                    : "gray",
-                  backgroundColor: selectedFlashcards.includes(item.id)
-                    ? "green"
-                    : "white",
+                    ? colors.primary
+                    : colors.onSurface,
+                  borderRadius: 10,
+                  marginVertical: 3,
                 }}
-              />
-            </View>
-          </TouchableOpacity>
-        )}
-      />
+              >
+                <Text style={{ flex: 1, color: colors.onSurface }}>
+                  {item.word}
+                </Text>
+                <Text style={{ flex: 1, color: colors.onSurface }}>
+                  {item.translation}
+                </Text>
+                <View
+                  style={{
+                    width: 24,
+                    height: 24,
+                    borderWidth: 2,
+                    borderColor: selectedFlashcards.includes(item.id)
+                      ? colors.primary
+                      : colors.onSurface,
+                    backgroundColor: selectedFlashcards.includes(item.id)
+                      ? colors.primary
+                      : colors.surface,
+                  }}
+                />
+              </View>
+            </TouchableOpacity>
+          ))}
+
+        </View>
+        
+      </ScrollView>
     </View>
   );
 };
