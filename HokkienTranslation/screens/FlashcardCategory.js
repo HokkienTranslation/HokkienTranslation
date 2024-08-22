@@ -213,7 +213,6 @@ const FlashcardCategory = () => {
     const categoryIdToPass = category.id || category.categoryId; // Ensure categoryId is defined
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
     navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
-  
   };
 
   const CategoryBox = ({ category, navigation }) => {

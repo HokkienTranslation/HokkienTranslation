@@ -47,6 +47,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
 
   const baseFlashcards = route.params.cardList || [];
+  console.log("BaseFlashcards: ", baseFlashcards);
   const flashcardListName = route.params.deckName || "";
   const currentUser = route.params.currentUser;
   const [flashcards, setFlashcards] = useState(baseFlashcards);
