@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { Box, Text, VStack, FormControl, Input, Button } from "native-base";
 import { CommonActions } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../backend/database/Firebase";
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from "../backend/database/Firebase";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -10,15 +11,21 @@ export default function RegisterScreen({ navigation }) {
   const [passwordConfirmation, setPasswordConfirmation] = useState('');
   const [message, setMessage] = useState("");
   
-  const registerWithEmail = () => {
+  const registerWithEmail = async () => {
     if (password !== passwordConfirmation) {
       setMessage("Passwords don't match!");
       return;
     }
-    createUserWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      // Signed up 
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
+
+      // Set the user role in Firestore (here we assume a default role, e.g., 'user')
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        role: "user",
+      });
+
       setMessage("Successfully registered!");
       navigation.dispatch(
         CommonActions.reset({
@@ -26,14 +33,10 @@ export default function RegisterScreen({ navigation }) {
           routes: [{ name: "Main" }],
         })
       );
-      // ...
-    })
-    .catch((error) => {
-      const errorCode = error.code;
+    } catch (error) {
       const errorMessage = error.message;
       setMessage(errorMessage);
-      // ..
-    });
+    }
   }
 
   return (

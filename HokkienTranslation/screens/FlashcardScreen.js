@@ -17,6 +17,7 @@ import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
+
 const FlashcardScreen = ({}) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
@@ -26,6 +27,8 @@ const FlashcardScreen = ({}) => {
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [userRole, setUserRole] = useState(null); // State to store user's role
+  const [message, setMessage] = useState(""); // State to store error messages
 
   // const [word, setWord] = useState('');
   // const [translation, setTranslation] = useState('');
@@ -141,6 +144,12 @@ const FlashcardScreen = ({}) => {
   };
 
   const handleDelete = () => {
+    if (userRole !== "admin") {
+      setMessage("You are not authorized to modify or delete this flashcard list or flashcard.");
+      setShowConfirmDelete(false);
+      return;
+    }
+    // Proceed with deletion logic here
     setShowConfirmDelete(false);
   };
 
@@ -507,24 +516,31 @@ const FlashcardScreen = ({}) => {
             justifyContent="center"
             backgroundColor="rgba(0, 0, 0, 0.5)"
           >
-            <Box
-              width="300px"
-              height="150px"
-              bg="white"
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="10px"
-              shadow={2}
-              padding={4}
-            >
-              <Text fontSize="lg" marginBottom={4}>
-                Delete this flashcard?
-              </Text>
-              <HStack space={4}>
-                <Button onPress={handleDelete}>Yes</Button>
-                <Button onPress={() => setShowConfirmDelete(false)}>No</Button>
-              </HStack>
-            </Box>
+    <Box
+      width="300px"
+      bg="white"
+      alignItems="center"
+      justifyContent="center"
+      borderRadius="10px"
+      shadow={2}
+      padding={4}
+    >
+      {userRole === "admin" ? (
+        <>
+          <Text fontSize="lg" marginBottom={4}>
+            Delete this flashcard?
+          </Text>
+          <HStack space={4}>
+            <Button onPress={handleDelete}>Yes</Button>
+            <Button onPress={() => setShowConfirmDelete(false)}>No</Button>
+          </HStack>
+        </>
+      ) : (
+        <Text fontSize="lg" color="red.500">
+          You are not authorized to modify or delete this flashcardList or flashcard.
+        </Text>
+      )}
+    </Box>
           </Center>
         </Modal>
       </Center>
