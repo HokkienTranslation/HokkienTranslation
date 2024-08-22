@@ -131,21 +131,27 @@ const SettingsScreen = () => {
               Language Options
             </Text>
             <HStack space={2} alignItems="center">
-              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+              <Text color={colors.onSurface} style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
               <SelectList
                 setSelected={(key) => setLanguages([key, languages[1]])}
                 data={languageList}
                 save="key"
                 defaultOption={{ key:'English', value:'English' }}
+                boxStyles={{ backgroundColor: colors.surface }} 
+                dropdownTextStyles={{ color: colors.onSurface }} 
+                inputStyles={{ color: colors.onSurface }}
               />
             </HStack>
             <HStack space={2} alignItems="center">
-              <Text style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+              <Text color={colors.onSurface} style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
               <SelectList
                 setSelected={(key) => setLanguages([languages[0], key])}
                 data={languageList}
                 save="key"
                 defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
+                boxStyles={{ backgroundColor: colors.surface }} 
+                dropdownTextStyles={{ color: colors.onSurface }} 
+                inputStyles={{ color: colors.onSurface }}
               />
             </HStack>
             {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}

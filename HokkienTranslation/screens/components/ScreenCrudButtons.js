@@ -18,8 +18,8 @@ const CrudButtons = ({title, onPress, iconName}) => {
       _pressed={{ bg: colors.evenDarkerPrimaryContainer }}>
       {/* <Ionicons name={iconName} size={20} color={colors.onPrimary} /> */}
       <HStack space={2} alignItems="center">
-        <Ionicons name={iconName} size={20} color={colors.onPrimary} />
-        <Text color={colors.onPrimary}>{title}</Text>
+        <Ionicons name={iconName} size={20} color={colors.onSurface} />
+        <Text color={colors.onSurface} >{title}</Text>
       </HStack>
     </Button>
   );
