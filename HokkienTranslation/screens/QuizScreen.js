@@ -316,7 +316,7 @@ const QuizScreen = ({ route }) => {
   if (loading) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
-        <Text>Loading...</Text>
+        <Text color={colors.onSurface} >Loading...</Text>
       </Center>
     );
   }
@@ -324,7 +324,7 @@ const QuizScreen = ({ route }) => {
   if (!flashcards.length) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
-        <Text>No flashcards available</Text>
+        <Text color={colors.onSurface}>No flashcards available</Text>
       </Center>
     );
   }

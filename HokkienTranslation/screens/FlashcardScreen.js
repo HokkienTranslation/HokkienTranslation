@@ -304,13 +304,13 @@ const FlashcardScreen = ({ route, navigation }) => {
           >
             <Box
               width="300px"
-              bg="white"
+              bg={colors.surface}
               alignItems="center"
               borderRadius="10px"
               shadow={2}
               padding={4}
             >
-              <Text fontSize="lg" marginBottom={4}>
+              <Text color={colors.onSurface}  fontSize="lg" marginBottom={4}>
                 Create new flashcard:
               </Text>
               <VStack space={4} alignItems="center">
@@ -321,6 +321,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={otherOpt}
                     placeholder="View Other Options"
                     onValueChange={(itemValue) => setOtherOpt(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="banana 1" value="word" />
                     <Select.Item label="banana 2" value="sentence" />
@@ -331,6 +332,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={type}
                     placeholder="Select Type"
                     onValueChange={(itemValue) => setType(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Word" value="word" />
                     <Select.Item label="Sentence" value="sentence" />
@@ -341,6 +343,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={category}
                     placeholder="Select Category"
                     onValueChange={(itemValue) => setCategory(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Shopping" value="shopping" />
                     <Select.Item label="Other" value="other" />
@@ -351,6 +354,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={privacy}
                     placeholder="Set Privacy"
                     onValueChange={(itemValue) => setPrivacy(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Public" value="shopping" />
                     <Select.Item label="Private" value="other" />
@@ -361,6 +365,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={cardList}
                     placeholder="Select Flashcard List"
                     onValueChange={(itemValue) => setCardlist(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="list 1" value="shopping" />
                     <Select.Item label="list 2" value="other" />
@@ -396,14 +401,14 @@ const FlashcardScreen = ({ route, navigation }) => {
           >
             <Box
               width="300px"
-              bg="white"
+              bg={colors.surface}
               alignItems="center"
               justifyContent="center"
               borderRadius="10px"
               shadow={2}
               padding={4}
             >
-              <Text fontSize="lg" marginBottom={4}>
+              <Text color={colors.onSurface} fontSize="lg" marginBottom={4}>
                 Edit flashcard:
               </Text>
               <VStack space={4} alignItems="center">
@@ -411,17 +416,20 @@ const FlashcardScreen = ({ route, navigation }) => {
                   placeholder="Enter word"
                   width={200}
                   value={flashcards[currentCardIndex].word}
+                  color={colors.onSurface}
                 />
                 <Input
                   placeholder="Enter Translation"
                   width={200}
                   value={flashcards[currentCardIndex].translation}
+                  color={colors.onSurface}
                 />
                 <Box space={4} alignItems="center" width={200}>
                   <Select
                     selectedValue={otherOpt}
                     placeholder="View Other Options"
                     onValueChange={(itemValue) => setOtherOpt(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="banana 1" value="word" />
                     <Select.Item label="banana 2" value="sentence" />
@@ -432,6 +440,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={type}
                     placeholder="Select Type"
                     onValueChange={(itemValue) => setType(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Word" value="word" />
                     <Select.Item label="Sentence" value="sentence" />
@@ -442,6 +451,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={category}
                     placeholder="Select Category"
                     onValueChange={(itemValue) => setCategory(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Shopping" value="shopping" />
                     <Select.Item label="Other" value="other" />
@@ -452,6 +462,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={privacy}
                     placeholder="Set Privacy"
                     onValueChange={(itemValue) => setPrivacy(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="Public" value="shopping" />
                     <Select.Item label="Private" value="other" />
@@ -462,6 +473,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     selectedValue={cardList}
                     placeholder="Select Flashcard List"
                     onValueChange={(itemValue) => setCardlist(itemValue)}
+                    color={colors.onSurface}
                   >
                     <Select.Item label="list 1" value="shopping" />
                     <Select.Item label="list 2" value="other" />
@@ -498,14 +510,14 @@ const FlashcardScreen = ({ route, navigation }) => {
             <Box
               width="300px"
               height="150px"
-              bg="white"
+              bg= {colors.surface}
               alignItems="center"
               justifyContent="center"
               borderRadius="10px"
               shadow={2}
               padding={4}
             >
-              <Text fontSize="lg" marginBottom={4}>
+              <Text color={colors.onSurface} fontSize="lg" marginBottom={4}>
                 Delete this flashcard?
               </Text>
               <HStack space={4}>

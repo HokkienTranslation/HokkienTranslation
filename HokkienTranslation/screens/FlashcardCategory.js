@@ -298,16 +298,16 @@ const FlashcardCategory = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         <VStack space={1} alignItems="center">
-          <Ionicons name={category.icon} size={30} color={colors.onPrimary} />
-          <Text style={styles.categoryText}>{category.name}</Text>
+          <Ionicons name={category.icon} size={30} color={colors.onSurface} />
+          <Text style={styles.categoryText} color={colors.onSurface} >{category.name}</Text>
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
-              <Icon as={MaterialIcons} name="edit" size="sm" color="blue" />
+              <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
-              <Icon as={MaterialIcons} name="delete" size="sm" color="red" />
+              <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
           </HStack>
         )}
@@ -334,8 +334,8 @@ const FlashcardCategory = () => {
         onPressOut={() => setIsPressed(false)}
         onPress={() => addFlashcard()}
       >
-        <Ionicons name="add" size={30} color={colors.onPrimary} />
-        <Text style={styles.categoryText}>Add</Text>
+        <Ionicons name="add" size={30} color={colors.onSurface} />
+        <Text color={colors.onSurface} style={styles.categoryText}>Add</Text>
       </Pressable>
     );
   };
@@ -363,7 +363,7 @@ const FlashcardCategory = () => {
                   as={Ionicons}
                   name="arrow-back"
                   size="lg"
-                  color="#000000"
+                  color={colors.onSurface}
                 />
               </TouchableOpacity>
             )}
@@ -449,7 +449,7 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
 
     alignItems: "center",
-    borderColor: "#000000",
+    borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
@@ -510,7 +510,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   categoryText: {
-    color: "black",
     marginTop: 8,
     textAlign: "center",
     fontSize: 15,
