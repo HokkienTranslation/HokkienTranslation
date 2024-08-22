@@ -46,11 +46,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   const categoryId = route.params.categoryId || "";
   console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
 
-  const baseFlashcards = route.params.cardList || [];
-  console.log("BaseFlashcards: ", baseFlashcards);
   const flashcardListName = route.params.deckName || "";
   const currentUser = route.params.currentUser;
-  // const [flashcards, setFlashcards] = useState(baseFlashcards);
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
   console.log("Current deck is ", flashcardListName);
@@ -191,7 +188,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       const [lang1, lang2] = languages;
 
       return Promise.all(
-        baseFlashcards.map(async (flashcard) => {
+        flashcards.map(async (flashcard) => {
           let word = flashcard.destination;
           let translation = flashcard.origin;
 
