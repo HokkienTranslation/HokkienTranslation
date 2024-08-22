@@ -312,10 +312,10 @@ const FlashcardCategory = () => {
         {index === 1 && (
           <HStack style={styles.actionButtons}>
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
-              <Icon as={MaterialIcons} name="edit" size="sm" color="blue" />
+              <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
-              <Icon as={MaterialIcons} name="delete" size="sm" color="red" />
+              <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
           </HStack>
         )}
@@ -344,7 +344,7 @@ const FlashcardCategory = () => {
         onPress={() => addFlashcard()}
       >
         <Ionicons name="add" size={30} color={colors.onSurface} />
-        <Text style={styles.categoryText} color={colors.onSurface}>Add</Text>
+        <Text color={colors.onSurface} style={styles.categoryText}>Add</Text>
       </Pressable>
     );
   };
@@ -372,7 +372,7 @@ const FlashcardCategory = () => {
                   as={Ionicons}
                   name="arrow-back"
                   size="lg"
-                  color="#000000"
+                  color={colors.onSurface}
                 />
               </TouchableOpacity>
             )}
@@ -455,6 +455,7 @@ const styles = StyleSheet.create({
     borderStyle: "dashed",
 
     alignItems: "center",
+    borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
     padding: 10,
