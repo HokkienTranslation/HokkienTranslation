@@ -536,9 +536,12 @@ const FlashcardScreen = ({}) => {
           </HStack>
         </>
       ) : (
+        <>
         <Text fontSize="lg" color="red.500">
           You are not authorized to modify or delete this flashcardList or flashcard.
         </Text>
+        <Button onPress={() => setShowConfirmDelete(false)}>OK</Button>
+        </>
       )}
     </Box>
           </Center>
