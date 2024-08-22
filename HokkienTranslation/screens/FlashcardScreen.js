@@ -50,7 +50,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   console.log("BaseFlashcards: ", baseFlashcards);
   const flashcardListName = route.params.deckName || "";
   const currentUser = route.params.currentUser;
-  const [flashcards, setFlashcards] = useState(baseFlashcards);
+  // const [flashcards, setFlashcards] = useState(baseFlashcards);
+  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
   console.log("Current deck is ", flashcardListName);
   const translateText = async (text, language) => {
@@ -191,8 +192,8 @@ const FlashcardScreen = ({ route, navigation }) => {
 
       return Promise.all(
         baseFlashcards.map(async (flashcard) => {
-          let word = flashcard.word;
-          let translation = flashcard.translation;
+          let word = flashcard.destination;
+          let translation = flashcard.origin;
 
           // logic to reduce the need of translating to English or Chinese (Simplified)
           // will need to be changed for Hokkien

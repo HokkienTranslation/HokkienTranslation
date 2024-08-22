@@ -202,10 +202,7 @@ const FlashcardCategory = () => {
       // TODO: check for auth
       if (cardDoc.exists()) {
         const cardData = cardDoc.data();
-        cardList.push({
-          word: cardData.destination,
-          translation: cardData.origin,
-        });
+        cardList.push(cardData);
       }
     }
 
