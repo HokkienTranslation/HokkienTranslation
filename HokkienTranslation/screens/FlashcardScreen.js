@@ -44,7 +44,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [type, setType] = useState("");
 
   const categoryId = route.params.categoryId || "";
-  console.log("Current category is ", categoryId);
+  console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
 
   const baseFlashcards = route.params.cardList || [];
   const flashcardListName = route.params.deckName || "";
@@ -52,7 +52,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [flashcards, setFlashcards] = useState(baseFlashcards);
   const [translatedText, setTranslatedText] = useState("");
   console.log("Current deck is ", flashcardListName);
-  console.log("Current user is ", currentUser);
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
@@ -139,6 +138,9 @@ const FlashcardScreen = ({ route, navigation }) => {
         alert("Please fill out all required fields");
         return;
       }
+      
+      console.log("Current user is ", currentUser);
+      console.log("Current categoryId is ", categoryId);
 
       const newFlashcardData = {
         origin: enteredWord,
@@ -338,7 +340,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           onClose={() => setShowNewFlashcard(false)}
           size="lg"
         >
-          <Modal.Content>
+          <Modal.Content width="80%" maxWidth="350px">
             <Modal.CloseButton />
             <Modal.Header>Create new flashcard</Modal.Header>
             <Modal.Body>

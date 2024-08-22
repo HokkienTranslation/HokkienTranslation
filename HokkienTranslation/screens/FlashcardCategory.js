@@ -153,9 +153,9 @@ const FlashcardCategory = () => {
 
     if (index == 0) {
       const categoryId = category.id;
-      console.log("Current Category: ", category);
+      console.log("Current Category in FlashcardCategory is: ", category); 
       var flashcardList = category.flashcardList;
-      console.log("categoryId:", categoryId);
+      console.log("categoryId:", categoryId); // TODO: Remove
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
       curCategory = category.name;
@@ -188,7 +188,7 @@ const FlashcardCategory = () => {
 
     // update API here
     var flashCardList = category.cardList;
-    console.log("List of Flashcards: ", flashCardList);
+    console.log("List of Flashcards: ", flashCardList); 
 
     for (const card of flashCardList) {
       // console.log(card);
@@ -209,12 +209,11 @@ const FlashcardCategory = () => {
       }
     }
 
-    console.log("CardList: ", cardList);
-    var deckName = category.name;
-    console.log("DeckName: ", deckName);
-    console.log("Navigating with categoryId: ", categoryId);  
-    const categoryId = category.id; // TODO: Fix this, it comes up as 'undefined'
-    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId });
+    const deckName = category.name;
+    const categoryIdToPass = category.id || category.categoryId; // Ensure categoryId is defined
+    console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
+  
   };
 
   const CategoryBox = ({ category, navigation }) => {
