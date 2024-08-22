@@ -63,7 +63,13 @@ const FlashcardCategory = () => {
     const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
 
-    const categoryList = categorySnapshot.docs.map((doc) => doc.data());
+    const categoryList = categorySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    //TODO: REMOVE THIS
+    console.log("Print: ", categoryList)
 
     return categoryList;
   }
@@ -146,8 +152,10 @@ const FlashcardCategory = () => {
     }
 
     if (index == 0) {
-      console.log("Current Category: ", category);
+      const categoryId = category.id;
+      console.log("Current Category in FlashcardCategory is: ", category); 
       var flashcardList = category.flashcardList;
+      console.log("categoryId:", categoryId); // TODO: Remove
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
       curCategory = category.name;
@@ -180,7 +188,7 @@ const FlashcardCategory = () => {
 
     // update API here
     var flashCardList = category.cardList;
-    console.log("List of Flashcards: ", flashCardList);
+    console.log("List of Flashcards: ", flashCardList); 
 
     for (const card of flashCardList) {
       // console.log(card);
@@ -194,17 +202,14 @@ const FlashcardCategory = () => {
       // TODO: check for auth
       if (cardDoc.exists()) {
         const cardData = cardDoc.data();
-        cardList.push({
-          word: cardData.destination,
-          translation: cardData.origin,
-        });
+        cardList.push(cardData);
       }
     }
 
-    console.log("CardList: ", cardList);
-    var deckName = category.name;
-    console.log("DeckName: ", deckName);
-    navigation.navigate("Flashcard", { cardList, deckName });
+    const deckName = category.name;
+    const categoryIdToPass = category.id || category.categoryId; // Ensure categoryId is defined
+    console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
   };
 
   const CategoryBox = ({ category, navigation }) => {
@@ -299,7 +304,7 @@ const FlashcardCategory = () => {
       >
         <VStack space={1} alignItems="center">
           <Ionicons name={category.icon} size={30} color={colors.onSurface} />
-          <Text style={styles.categoryText} color={colors.onSurface} >{category.name}</Text>
+          <Text style={styles.categoryText} color={colors.onSurface}>{category.name}</Text>
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
@@ -327,6 +332,7 @@ const FlashcardCategory = () => {
       <Pressable
         style={[
           styles.addBox,
+          {borderColor: colors.onSurface},
           isPressed && styles.categoryBoxPressed,
           { backgroundColor: colors.categoriesBox },
         ]}
@@ -385,6 +391,7 @@ const FlashcardCategory = () => {
   );
 };
 
+// might need a bit more work for the dark mode to look fitting
 const styles = StyleSheet.create({
   popupcontainer: {
     flex: 1,
@@ -439,10 +446,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
   },
-  // safeArea: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  // },
   addBox: {
     minWidth: "48%",
     width: "48%",
@@ -515,7 +518,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     flexShrink: 1,
     flexWrap: "wrap",
-    width: "100%", // Ensure the text takes up the full width of the box
+    width: "100%",
     lineHeight: 20,
   },
   headingBox: {

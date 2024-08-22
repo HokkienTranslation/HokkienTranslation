@@ -2,18 +2,21 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   Box,
   Text,
-  Button,
   Center,
   VStack,
   HStack,
   Pressable,
   Input,
   Select,
+  Modal,
+  Button,
 } from "native-base";
+import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { TouchableOpacity, Modal, Animated, PanResponder } from "react-native";
-import NavigationButtons from "../screens/components/ScreenNavigationButtons";
+import { doc, setDoc, collection, serverTimestamp } from "firebase/firestore";
+import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
+import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
@@ -21,35 +24,36 @@ import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
+  const { languages } = useLanguage();
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isMin, setIsMin] = useState(true);
+  const [isMax, setIsMax] = useState(false);
+  const [isPressedLeft, setIsPressedLeft] = useState(false);
+  const [isPressedRight, setIsPressedRight] = useState(false);
 
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
-  // const [word, setWord] = useState('');
-  // const [translation, setTranslation] = useState('');
+  const [enteredWord, setEnteredWord] = useState("");
+  const [enteredTranslation, setEnteredTranslation] = useState("");
+  const [option1, setOption1] = useState("");
+  const [option2, setOption2] = useState("");
+  const [option3, setOption3] = useState("");
   const [type, setType] = useState("");
-  const [otherOpt, setOtherOpt] = useState("");
-  const [category, setCategory] = useState("");
-  const [privacy, setPrivacy] = useState(""); // shared
-  const [cardList, setCardlist] = useState("");
 
-  const [isPressedLeft, setIsPressedLeft] = useState(false);
-  const [isPressedRight, setIsPressedRight] = useState(false);
-  const [isMin, setIsMin] = useState(true);
-  const [isMax, setIsMax] = useState(false);
-  const { languages } = useLanguage();
+  const categoryId = route.params.categoryId || "";
+  console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
+
+  const baseFlashcards = route.params.cardList || [];
+  console.log("BaseFlashcards: ", baseFlashcards);
+  const flashcardListName = route.params.deckName || "";
+  const currentUser = route.params.currentUser;
+  // const [flashcards, setFlashcards] = useState(baseFlashcards);
+  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
-
-  const baseFlashcards = route.params.cardList;
-  const flashcardListName = route.params.deckName;
-
-  const [flashcards, setFlashcards] = useState(baseFlashcards);
-  console.log("FlashcardScreen flashcards:", flashcards);
-  console.log("FlashcardScreen flashcardListName:", flashcardListName);
-
+  console.log("Current deck is ", flashcardListName);
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
@@ -130,8 +134,50 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowTranslation(!showTranslation);
   };
 
-  const handleCreate = () => {
-    setShowNewFlashcard(true);
+  const handleCreate = async () => {
+    try {
+      if (!enteredWord || !enteredTranslation || !type) {
+        alert("Please fill out all required fields");
+        return;
+      }
+      
+      console.log("Current user is ", currentUser);
+      console.log("Current categoryId is ", categoryId);
+
+      const newFlashcardData = {
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        categoryId: categoryId,
+        createdAt: serverTimestamp(),
+        createdBy: currentUser,
+      };
+
+      const flashcardRef = doc(collection(db, "flashcard"));
+      await setDoc(flashcardRef, newFlashcardData);
+
+      console.log("Flashcard created successfully");
+
+      setEnteredWord("");
+      setEnteredTranslation("");
+      setOption1("");
+      setOption2("");
+      setOption3("");
+      setType("");
+      setShowNewFlashcard(false); //close when done
+
+      setFlashcards((prev) => [
+        ...prev,
+        {
+          word: newFlashcardData.origin,
+          translation: newFlashcardData.destination,
+        },
+      ]);
+    } catch (error) {
+      console.error("Error creating flashcard:", error);
+      alert("Failed to create flashcard. Please try again.");
+    }
   };
 
   const handleUpdate = () => {
@@ -140,18 +186,14 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowUpdates(true);
   };
 
-  const handleDelete = () => {
-    setShowConfirmDelete(false);
-  };
-
   useEffect(() => {
     const generateFlashcards = async (languages) => {
       const [lang1, lang2] = languages;
 
       return Promise.all(
         baseFlashcards.map(async (flashcard) => {
-          let word = flashcard.word;
-          let translation = flashcard.translation;
+          let word = flashcard.destination;
+          let translation = flashcard.origin;
 
           // logic to reduce the need of translating to English or Chinese (Simplified)
           // will need to be changed for Hokkien
@@ -183,12 +225,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         flashcardListName={flashcardListName}
       />
       <Center flex={1} px="3">
-        <VStack space={4} alignItems="center">
+      <VStack space={4} alignItems="center">
           <HStack space={4}>
-            <CrudButtons title="Create" onPress={handleCreate} iconName="add" />
+            <CrudButtons 
+              title="Create" 
+              onPress={() => setShowNewFlashcard(true)}
+              iconName="add"
+            />
             <CrudButtons
               title="Update"
-              onPress={handleUpdate}
+              onPress={() => setShowUpdates(true)}
               iconName="pencil"
             />
             <CrudButtons
@@ -292,249 +338,61 @@ const FlashcardScreen = ({ route, navigation }) => {
         </VStack>
         {/* create pop up */}
         <Modal
-          animationType="fade"
-          transparent={true}
-          visible={showNewFlashcard}
-          onRequestClose={() => setShowNewFlashcard(false)}
+          isOpen={showNewFlashcard}
+          onClose={() => setShowNewFlashcard(false)}
+          size="lg"
         >
-          <Center
-            flex={1}
-            justifyContent="center"
-            backgroundColor="rgba(0, 0, 0, 0.5)"
-          >
-            <Box
-              width="300px"
-              bg={colors.surface}
-              alignItems="center"
-              borderRadius="10px"
-              shadow={2}
-              padding={4}
-            >
-              <Text color={colors.onSurface}  fontSize="lg" marginBottom={4}>
-                Create new flashcard:
-              </Text>
-              <VStack space={4} alignItems="center">
-                <Input placeholder="Enter word" width={200} />
-                <Input placeholder="Enter Translation" width={200} />
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={otherOpt}
-                    placeholder="View Other Options"
-                    onValueChange={(itemValue) => setOtherOpt(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="banana 1" value="word" />
-                    <Select.Item label="banana 2" value="sentence" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={type}
-                    placeholder="Select Type"
-                    onValueChange={(itemValue) => setType(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Word" value="word" />
-                    <Select.Item label="Sentence" value="sentence" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={category}
-                    placeholder="Select Category"
-                    onValueChange={(itemValue) => setCategory(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Shopping" value="shopping" />
-                    <Select.Item label="Other" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={privacy}
-                    placeholder="Set Privacy"
-                    onValueChange={(itemValue) => setPrivacy(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Public" value="shopping" />
-                    <Select.Item label="Private" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={cardList}
-                    placeholder="Select Flashcard List"
-                    onValueChange={(itemValue) => setCardlist(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="list 1" value="shopping" />
-                    <Select.Item label="list 2" value="other" />
-                  </Select>
-                </Box>
-                <HStack space={4}>
-                  <CrudButtons
-                    title="Save"
-                    iconName="save"
-                    onPress={handleCreate}
-                  />
-                  <CrudButtons
-                    title="Cancel"
-                    iconName="close"
-                    onPress={() => setShowNewFlashcard(false)}
-                  />
-                </HStack>
-              </VStack>
-            </Box>
-          </Center>
-        </Modal>
-        {/* update pop up */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={showUpdates}
-          onRequestClose={() => setShowUpdates(false)}
-        >
-          <Center
-            flex={1}
-            justifyContent="center"
-            backgroundColor="rgba(0, 0, 0, 0.5)"
-          >
-            <Box
-              width="300px"
-              bg={colors.surface}
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="10px"
-              shadow={2}
-              padding={4}
-            >
-              <Text color={colors.onSurface} fontSize="lg" marginBottom={4}>
-                Edit flashcard:
-              </Text>
-              <VStack space={4} alignItems="center">
+          <Modal.Content width="80%" maxWidth="350px">
+            <Modal.CloseButton />
+            <Modal.Header>Create new flashcard</Modal.Header>
+            <Modal.Body>
+              <VStack space={4}>
                 <Input
                   placeholder="Enter word"
-                  width={200}
-                  value={flashcards[currentCardIndex].word}
-                  color={colors.onSurface}
+                  value={enteredWord}
+                  onChangeText={setEnteredWord}
                 />
                 <Input
                   placeholder="Enter Translation"
-                  width={200}
-                  value={flashcards[currentCardIndex].translation}
-                  color={colors.onSurface}
+                  value={enteredTranslation}
+                  onChangeText={setEnteredTranslation}
                 />
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={otherOpt}
-                    placeholder="View Other Options"
-                    onValueChange={(itemValue) => setOtherOpt(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="banana 1" value="word" />
-                    <Select.Item label="banana 2" value="sentence" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={type}
-                    placeholder="Select Type"
-                    onValueChange={(itemValue) => setType(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Word" value="word" />
-                    <Select.Item label="Sentence" value="sentence" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={category}
-                    placeholder="Select Category"
-                    onValueChange={(itemValue) => setCategory(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Shopping" value="shopping" />
-                    <Select.Item label="Other" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={privacy}
-                    placeholder="Set Privacy"
-                    onValueChange={(itemValue) => setPrivacy(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="Public" value="shopping" />
-                    <Select.Item label="Private" value="other" />
-                  </Select>
-                </Box>
-                <Box space={4} alignItems="center" width={200}>
-                  <Select
-                    selectedValue={cardList}
-                    placeholder="Select Flashcard List"
-                    onValueChange={(itemValue) => setCardlist(itemValue)}
-                    color={colors.onSurface}
-                  >
-                    <Select.Item label="list 1" value="shopping" />
-                    <Select.Item label="list 2" value="other" />
-                  </Select>
-                </Box>
-                <HStack space={4}>
-                  <CrudButtons
-                    title="Save"
-                    iconName="save"
-                    onPress={handleUpdate}
-                  />
-                  <CrudButtons
-                    title="Cancel"
-                    iconName="close"
-                    onPress={() => setShowUpdates(false)}
-                  />
-                </HStack>
+                <Input
+                  placeholder="Option 1"
+                  value={option1}
+                  onChangeText={setOption1}
+                />
+                <Input
+                  placeholder="Option 2"
+                  value={option2}
+                  onChangeText={setOption2}
+                />
+                <Input
+                  placeholder="Option 3"
+                  value={option3}
+                  onChangeText={setOption3}
+                />
+                <Select
+                  selectedValue={type}
+                  placeholder="Select Type"
+                  onValueChange={(itemValue) => setType(itemValue)}
+                >
+                  <Select.Item label="Word" value="word" />
+                  <Select.Item label="Sentence" value="sentence" />
+                </Select>
+                
               </VStack>
-            </Box>
-          </Center>
-        </Modal>
-        {/* delete pop up */}
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={showConfirmDelete}
-          onRequestClose={() => setShowConfirmDelete(false)}
-        >
-          <Center
-            flex={1}
-            justifyContent="center"
-            backgroundColor="rgba(0, 0, 0, 0.5)"
-          >
-            <Box
-              width="300px"
-              height="150px"
-              bg= {colors.surface}
-              alignItems="center"
-              justifyContent="center"
-              borderRadius="10px"
-              shadow={2}
-              padding={4}
-            >
-              <Text color={colors.onSurface} fontSize="lg" marginBottom={4}>
-                Delete this flashcard?
-              </Text>
-              <HStack space={4}>
-                <CrudButtons
-                  title="Yes"
-                  iconName="checkmark"
-                  onPress={handleDelete}
-                />
-                <CrudButtons
-                  title="No"
-                  iconName="close"
-                  onPress={() => setShowConfirmDelete(false)}
-                />
+            </Modal.Body>
+            <Modal.Footer>
+              <HStack space={2}>
+                <Button onPress={handleCreate}>Save</Button>
+                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost">Cancel</Button>
               </HStack>
-            </Box>
-          </Center>
+            </Modal.Footer>
+          </Modal.Content>
         </Modal>
+
+        {/* update and delete modals */}
       </Center>
     </Box>
   );
