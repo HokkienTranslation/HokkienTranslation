@@ -240,7 +240,7 @@ const FlashcardAdd = ({ route }) => {
           <TouchableOpacity
             onPress={handleSubmission}
             style={{
-              backgroundColor: colors.darkerPrimaryContainer,
+              backgroundColor: "#00FF00",
               paddingVertical: 15,
               paddingHorizontal: 20,
               borderRadius: 10,
@@ -269,7 +269,7 @@ const FlashcardAdd = ({ route }) => {
                   padding: 10,
                   alignItems: "center",
                   backgroundColor: selectedFlashcards.includes(item.id)
-                    ? colors.surface
+                    ? colors.evenDarkerPrimaryContainer
                     : colors.darkerPrimaryContainer,
                   borderWidth: 2,
                   borderColor: selectedFlashcards.includes(item.id)

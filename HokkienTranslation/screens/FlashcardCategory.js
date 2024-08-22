@@ -63,7 +63,13 @@ const FlashcardCategory = () => {
     const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
 
-    const categoryList = categorySnapshot.docs.map((doc) => doc.data());
+    const categoryList = categorySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    //TODO: REMOVE THIS
+    console.log("Print: ", categoryList)
 
     return categoryList;
   }
@@ -146,8 +152,10 @@ const FlashcardCategory = () => {
     }
 
     if (index == 0) {
+      const categoryId = category.id;
       console.log("Current Category: ", category);
       var flashcardList = category.flashcardList;
+      console.log("categoryId:", categoryId);
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
       curCategory = category.name;
@@ -204,7 +212,9 @@ const FlashcardCategory = () => {
     console.log("CardList: ", cardList);
     var deckName = category.name;
     console.log("DeckName: ", deckName);
-    navigation.navigate("Flashcard", { cardList, deckName });
+    console.log("Navigating with categoryId: ", categoryId);  
+    const categoryId = category.id; // TODO: Fix this, it comes up as 'undefined'
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId });
   };
 
   const CategoryBox = ({ category, navigation }) => {
@@ -386,6 +396,7 @@ const FlashcardCategory = () => {
   );
 };
 
+// might need a bit more work for the dark mode to look fitting
 const styles = StyleSheet.create({
   popupcontainer: {
     flex: 1,
@@ -440,10 +451,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
   },
-  // safeArea: {
-  //   flex: 1,
-  //   justifyContent: "center",
-  // },
   addBox: {
     minWidth: "48%",
     width: "48%",
@@ -515,7 +522,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     flexShrink: 1,
     flexWrap: "wrap",
-    width: "100%", // Ensure the text takes up the full width of the box
+    width: "100%",
     lineHeight: 20,
   },
   headingBox: {
