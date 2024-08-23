@@ -49,6 +49,7 @@ var alldecks = [];
 var curCategory = "";
 var currentUser = "";
 var deckID = "";
+var categoryId = "";
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
@@ -152,10 +153,8 @@ const FlashcardCategory = () => {
     }
 
     if (index == 0) {
-      const categoryId = category.id;
       console.log("Current Category in FlashcardCategory is: ", category); 
       var flashcardList = category.flashcardList;
-      console.log("categoryId:", categoryId); // TODO: Remove
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
       curCategory = category.name;
@@ -165,12 +164,14 @@ const FlashcardCategory = () => {
 
         // Await the document snapshot
         const ref = await getDoc(docRef);
-
+        
         deckID = ref.id;
         // console.log(ref.data())
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
+        console.log(temp)
+        categoryId = temp.categoryId;
         // console.log(temp)
 
         if (temp.createdBy === currentUser || temp.shared) {
@@ -179,6 +180,7 @@ const FlashcardCategory = () => {
 
         index = 1;
       }
+      console.log("CategoryID is", categoryId)
       setDisplay(decks);
       return;
     }
@@ -207,7 +209,9 @@ const FlashcardCategory = () => {
     }
 
     const deckName = category.name;
-    const categoryIdToPass = category.id || category.categoryId; // Ensure categoryId is defined
+    const categoryIdToPass = categoryId || category.categoryId; // Ensure categoryId is defined
+    console.log(categoryId)
+    console.log(category.categoryID)
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
     navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
   };
@@ -240,7 +244,7 @@ const FlashcardCategory = () => {
       // get category data
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
-      const categoryId = categoryData.categoryID;
+      const categoryId = categoryData.categoryId;
       console.log("CategoryID: ", categoryId);
 
       // Delete the flashcardList document
