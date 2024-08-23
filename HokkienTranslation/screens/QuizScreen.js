@@ -91,20 +91,31 @@ const QuizScreen = ({ route }) => {
             let word = data.origin;
             let translation = data.destination;
 
-            if (
-              languages[0] !== "English" &&
-              languages[0] !== "Chinese (Simplified)"
-            ) {
-              word = await translateText(word, languages[0]);
+            const [lang1, lang2] = languages;
+            if (lang1 === "Chinese (Simplified)") {
+              word = translation;
             }
-            if (
-              languages[1] !== "English" &&
-              languages[1] !== "Chinese (Simplified)"
-            ) {
-              translation = await translateText(translation, languages[1]);
+            if (lang2 === "English") {
+              translation = word;
             }
 
-            const choices = shuffleArray([translation, ...data.otherOptions]);
+            if (lang1 !== "English" && lang1 !== "Chinese (Simplified)") {
+              word = await translateText(word, lang1);
+            }
+            if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
+              translation = await translateText(translation, lang2);
+            }
+
+            const translatedOptions = await Promise.all(
+              data.otherOptions.map(async (option) => {
+                if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
+                  return await translateText(option, lang2);
+                }
+                return option;
+              })
+            );
+
+            const choices = shuffleArray([translation, ...translatedOptions]);
 
             flashcards.push({
               id: flashcardDoc.id,
