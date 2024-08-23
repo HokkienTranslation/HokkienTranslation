@@ -43,6 +43,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [option3, setOption3] = useState("");
   const [type, setType] = useState("");
 
+  const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
   console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
 

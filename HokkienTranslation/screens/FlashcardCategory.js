@@ -80,7 +80,12 @@ const FlashcardCategory = () => {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
 
-    const flashcardList = flashcardSnapshot.docs.map((doc) => doc.data());
+    const flashcardList = flashcardSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    console.log("Print: ", flashcardList)
 
     flashcardList.forEach((deck) => {
       if (deck.createdBy !== currentUser && !deck.shared) {
@@ -170,18 +175,19 @@ const FlashcardCategory = () => {
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
-        console.log(temp)
+        console.log("Temp", temp)
         categoryId = temp.categoryId;
         // console.log(temp)
 
         if (temp.createdBy === currentUser || temp.shared) {
-          decks.push(ref.data());
+          decks.push({ id: ref.id, ...temp });
         }
 
         index = 1;
       }
       console.log("CategoryID is", categoryId)
       setDisplay(decks);
+      console.log("Decks", decks)
       return;
     }
 
@@ -209,9 +215,9 @@ const FlashcardCategory = () => {
     }
 
     const deckName = category.name;
+    console.log("Deckname", deckName)
     const categoryIdToPass = categoryId || category.categoryId; // Ensure categoryId is defined
-    console.log(categoryId)
-    console.log(category.categoryID)
+    console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
     navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
   };
@@ -221,6 +227,11 @@ const FlashcardCategory = () => {
     const [isHovered, setIsHovered] = useState(false);
     const { themes, theme } = useTheme();
     const colors = themes[theme];
+
+    const handleDeckPress = (deckID) => {
+      console.log("Navigating to Flashcard screen with deckID: ", deckID);
+      navigation.navigate("Flashcard", { deckID, curCategory, currentUser });
+    };
 
     const handleUpdateDeck = async (category) => {
       var deckName = category.name;
