@@ -24,6 +24,8 @@ import {
 } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import { useLanguage } from "./context/LanguageProvider";
+import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -39,9 +41,23 @@ const QuizScreen = ({ route }) => {
   const [userScores, setUserScores] = useState([]);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
+  const { languages } = useLanguage();
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
+
+  const translateText = async (text, language) => {
+    try {
+      const response = await callOpenAIChat(
+        `Translate ${text} to ${language}. You must respond with only the translation.`
+      );
+      console.log("OpenAI Response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+      return "Error with translation.";
+    }
+  };
 
   useEffect(() => {
     const fetchFlashcards = async () => {
@@ -71,14 +87,29 @@ const QuizScreen = ({ route }) => {
 
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
-            const choices = shuffleArray([
-              data.destination,
-              ...data.otherOptions,
-            ]);
+
+            let word = data.origin;
+            let translation = data.destination;
+
+            if (
+              languages[0] !== "English" &&
+              languages[0] !== "Chinese (Simplified)"
+            ) {
+              word = await translateText(word, languages[0]);
+            }
+            if (
+              languages[1] !== "English" &&
+              languages[1] !== "Chinese (Simplified)"
+            ) {
+              translation = await translateText(translation, languages[1]);
+            }
+
+            const choices = shuffleArray([translation, ...data.otherOptions]);
 
             flashcards.push({
               id: flashcardDoc.id,
-              ...data,
+              origin: word,
+              destination: translation,
               choices,
             });
           }
@@ -316,7 +347,7 @@ const QuizScreen = ({ route }) => {
   if (loading) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
-        <Text color={colors.onSurface} >Loading...</Text>
+        <Text color={colors.onSurface}>Loading...</Text>
       </Center>
     );
   }
