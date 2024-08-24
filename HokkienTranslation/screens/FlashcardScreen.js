@@ -638,7 +638,7 @@ useEffect(() => { //prefill fields
             <Modal.Footer>
               <HStack space={2}>
                 <Button onPress={handleCreate}>Save</Button>
-                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost">Cancel</Button>
+                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">Cancel</Button>
               </HStack>
             </Modal.Footer>
           </Modal.Content>
@@ -654,33 +654,56 @@ useEffect(() => { //prefill fields
             <Modal.CloseButton />
             <Modal.Header>Update Flashcard</Modal.Header>
             <Modal.Body>
-              <VStack space={4}>
+              <VStack space={3}>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Word:</Text>
               <Input
-                  placeholder="Update Word"
+                    flex={1}                       // Ensures the input takes up remaining space
                   value={enteredWord}
                   onChangeText={setEnteredWord}
+                    textAlign="left"               // Ensures left-aligned text
                 />
+                </HStack>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Translation:</Text>
                 <Input
-                  placeholder="Update Translation"
+                    flex={1}
                   value={enteredTranslation}
                   onChangeText={setEnteredTranslation}
+                    textAlign="left"
                 />
+                </HStack>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Option 1:</Text>
                 <Input
-                  placeholder="Option 1"
+                    flex={1}
                   value={option1}
                   onChangeText={setOption1}
+                    textAlign="left"
                 />
+                </HStack>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Option 2:</Text>
                 <Input
-                  placeholder="Option 2"
+                    flex={1}
                   value={option2}
                   onChangeText={setOption2}
+                    textAlign="left"
                 />
+                </HStack>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Option 3:</Text>
                 <Input
-                  placeholder="Option 3"
+                    flex={1}
                   value={option3}
                   onChangeText={setOption3}
+                    textAlign="left"
                 />
+                </HStack>
+                <HStack space={2} alignItems="center">
+                  <Text width="100px">Type:</Text>
                 <Select
+                    flex={1}
                   selectedValue={type}
                   placeholder="Select Type"
                   onValueChange={(itemValue) => setType(itemValue)}
@@ -688,12 +711,13 @@ useEffect(() => { //prefill fields
                   <Select.Item label="Word" value="word" />
                   <Select.Item label="Sentence" value="sentence" />
                 </Select>
+                </HStack>
               </VStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
                 <Button onPress={handleUpdate}>Save</Button>
-                <Button onPress={() => setShowUpdates(false)} variant="ghost">
+                <Button onPress={() => setShowUpdates(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">
                   Cancel
                 </Button>
               </HStack>
@@ -718,12 +742,12 @@ useEffect(() => { //prefill fields
                   size="sm"
           />
                 <Text fontSize="sm">
-                  Delete this flashcard permanently
+                  Delete flashcard permanently
                 </Text>
         </HStack>
             </Modal.Body>
             <Modal.Footer>
-              <HStack space={2}>
+              <HStack space={4}>
                   <Button
                   onPress={isPermanentDelete ? handlePermaDelete : handleDelete}
                     colorScheme="red"
