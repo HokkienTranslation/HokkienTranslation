@@ -13,7 +13,7 @@ import {
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, setDoc, collection, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, collection, serverTimestamp, query, where, getDocs, arrayUnion, updateDoc } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
@@ -46,6 +46,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
   console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
+  const [deckID, setDeckID] = useState("");
 
   const flashcardListName = route.params.deckName || "";
   const currentUser = route.params.currentUser;
@@ -91,6 +92,30 @@ const FlashcardScreen = ({ route, navigation }) => {
     })
   ).current;
 
+  const getDeckIDByName = async (deckName) => { //function to query deck id by name
+    const deckCollection = collection(db, "flashcardList");
+    const q = query(deckCollection, where("name", "==", deckName));
+    const querySnapshot = await getDocs(q);
+        
+    const deckDoc = querySnapshot.docs[0];
+    const deckID = deckDoc.id;
+    console.log("Deck ID:", deckID);
+    console.log("No deck found with the given name.");
+    
+    return deckID;    
+  };
+
+  useEffect(() => {
+    const fetchDeckID = async () => {
+      const id = await getDeckIDByName(flashcardListName);
+      if (id) {
+        setDeckID(id);
+      }
+    };
+
+    fetchDeckID();
+  }, [flashcardListName]);
+
   const handleNext = (gestureState = null) => {
     const value = {
       x: gestureState?.dx > 0 ? 500 : -500,
@@ -133,56 +158,59 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handleCreate = async () => {
-    try {
-      if (!enteredWord || !enteredTranslation || !type) {
-        alert("Please fill out all required fields");
-        return;
-      }
-      
-      console.log("Current user is ", currentUser);
-      console.log("Current categoryId is ", categoryId);
-
-      const newFlashcardData = {
-        origin: enteredWord,
-        destination: enteredTranslation,
-        otherOptions: [option1, option2, option3],
-        type: type,
-        categoryId: categoryId,
-        createdAt: serverTimestamp(),
-        createdBy: currentUser,
-      };
-
-      const flashcardRef = doc(collection(db, "flashcard"));
-      await setDoc(flashcardRef, newFlashcardData);
-
-      console.log("Flashcard created successfully");
-
-      setEnteredWord("");
-      setEnteredTranslation("");
-      setOption1("");
-      setOption2("");
-      setOption3("");
-      setType("");
-      setShowNewFlashcard(false); //close when done
-
-      setFlashcards((prev) => [
-        ...prev,
-        {
-          word: newFlashcardData.origin,
-          translation: newFlashcardData.destination,
-        },
-      ]);
-    } catch (error) {
-      console.error("Error creating flashcard:", error);
-      alert("Failed to create flashcard. Please try again.");
+  try {
+    if (!enteredWord || !enteredTranslation || !type) {
+      alert("Please fill out all required fields");
+      return;
     }
-  };
 
-  const handleUpdate = () => {
-    // const currentFlashcard = flashcards[currentCardIndex];
-    // navigation.navigate('UpdateFlashcard', { flashcard: currentFlashcard });
-    setShowUpdates(true);
-  };
+    console.log("Current user is ", currentUser);
+    console.log("Current categoryId is ", categoryId);
+    console.log("Current deckID is ", deckID);
+
+    const newFlashcardData = {
+      origin: enteredWord,
+      destination: enteredTranslation,
+      otherOptions: [option1, option2, option3],
+      type: type,
+      categoryId: categoryId,
+      createdAt: serverTimestamp(),
+      createdBy: currentUser,
+    };
+
+    const flashcardRef = doc(collection(db, "flashcard"));
+    
+    await setDoc(flashcardRef, newFlashcardData);
+
+    const newFlashcardID = flashcardRef.id;
+    console.log("Flashcard created successfully with ID:", newFlashcardID);
+
+    const flashcardListRef = doc(db, "flashcardList", deckID);
+    await updateDoc(flashcardListRef, {
+      cardList: arrayUnion(newFlashcardID)
+    });
+
+    console.log("New flashcard ID added to cardList in flashcardList document");
+
+    setEnteredWord("");
+    setEnteredTranslation("");
+    setOption1("");
+    setOption2("");
+    setOption3("");
+    setType("");
+    setShowNewFlashcard(false);
+    setFlashcards((prev) => [
+      ...prev,
+      {
+        word: newFlashcardData.origin,
+        translation: newFlashcardData.destination,
+      },
+    ]);
+  } catch (error) {
+    console.error("Error creating flashcard:", error.message);
+    alert(`Failed to create flashcard: ${error.message}`);
+  }
+};
 
   useEffect(() => {
     const generateFlashcards = async (languages) => {

@@ -185,7 +185,6 @@ const FlashcardCategory = () => {
 
         index = 1;
       }
-      console.log("CategoryID is", categoryId)
       setDisplay(decks);
       console.log("Decks", decks)
       return;
@@ -216,7 +215,7 @@ const FlashcardCategory = () => {
 
     const deckName = category.name;
     console.log("Deckname", deckName)
-    const categoryIdToPass = categoryId || category.categoryId; // Ensure categoryId is defined
+    const categoryIdToPass = categoryId || category.categoryId;
     console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
     navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
@@ -227,11 +226,6 @@ const FlashcardCategory = () => {
     const [isHovered, setIsHovered] = useState(false);
     const { themes, theme } = useTheme();
     const colors = themes[theme];
-
-    const handleDeckPress = (deckID) => {
-      console.log("Navigating to Flashcard screen with deckID: ", deckID);
-      navigation.navigate("Flashcard", { deckID, curCategory, currentUser });
-    };
 
     const handleUpdateDeck = async (category) => {
       var deckName = category.name;
