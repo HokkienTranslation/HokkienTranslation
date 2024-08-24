@@ -301,7 +301,10 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handleDelete = async () => {
-    const flashcardID = flashcards[currentCardIndex].id;
+    const flashcardId = flashcards[currentCardIndex]?.id;
+    if (!flashcardId) {
+      throw new Error("No flashcard ID found");
+    }
   
     // remove local flashcard
     setFlashcards((prevFlashcards) =>
@@ -310,6 +313,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     const flashcardRef = doc(db, "flashcard", flashcardID);
     await deleteDoc(flashcardRef);
+    console.log("Flashcard deleted from flashcard collection");
   
     // remove from flashcardList -> cardList 
     const flashcardListRef = doc(db, "flashcardList", deckID);
@@ -319,12 +323,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   
     console.log("Flashcard ", flashcardID, " deleted successfully");
     setShowConfirmDelete(false);
-    setCurrentCardIndex((prevIndex) => {
-      if (prevIndex === flashcards.length - 1 && prevIndex !== 0) {
-        return prevIndex - 1;
-      }
-      return prevIndex;
-    });
+    console.log("Flashcard successfully deleted from all relevant decks across categories");
   };
 
   useEffect(() => {
