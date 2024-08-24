@@ -45,14 +45,13 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
-  console.log("Current category in FlashcardScreen is ", categoryId); // TODO: Remove
+
   const [deckID, setDeckID] = useState("");
 
   const flashcardListName = route.params.deckName || "";
   const currentUser = route.params.currentUser;
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
-  console.log("Current deck is ", flashcardListName);
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
@@ -100,8 +99,8 @@ const FlashcardScreen = ({ route, navigation }) => {
     const deckDoc = querySnapshot.docs[0];
     const deckID = deckDoc.id;
     console.log("Deck ID:", deckID);
-    console.log("No deck found with the given name.");
-    
+    console.log("Current category in FlashcardScreen is:", categoryId);
+    console.log("Current deck is:", flashcardListName);
     return deckID;    
   };
 
@@ -115,6 +114,13 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     fetchDeckID();
   }, [flashcardListName]);
+
+  useEffect(() => {
+    // Log the currently displayed flashcard whenever the currentCardIndex changes
+    if (flashcards.length > 0) {
+      console.log("Current flashcard data: ", flashcards[currentCardIndex]);
+    }
+  }, [currentCardIndex, flashcards]);
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -179,7 +185,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     };
 
     const flashcardRef = doc(collection(db, "flashcard"));
-    
+    console.log("FlashcardRef", flashcardRef);
     await setDoc(flashcardRef, newFlashcardData);
 
     const newFlashcardID = flashcardRef.id;
@@ -201,10 +207,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowNewFlashcard(false);
     setFlashcards((prev) => [
       ...prev,
-      {
-        word: newFlashcardData.origin,
-        translation: newFlashcardData.destination,
-      },
+      newFlashcardData,
     ]);
   } catch (error) {
     console.error("Error creating flashcard:", error.message);
@@ -236,7 +239,11 @@ const FlashcardScreen = ({ route, navigation }) => {
           if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
             translation = await translateText(translation, lang2);
           }
-          return { word, translation };
+          return {
+            ...flashcard,
+            word,
+            translation,
+          };
         })
       );
     };
