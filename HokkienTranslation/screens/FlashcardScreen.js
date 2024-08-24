@@ -155,8 +155,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   }, [flashcardListName]);
 
   useEffect(() => {
-    // Log the currently displayed flashcard whenever the currentCardIndex changes
     if (flashcards.length > 0) {
+      console.log("Current flashcard ID: ", flashcards[currentCardIndex].id);
       console.log("Current flashcard data: ", flashcards[currentCardIndex]);
     }
   }, [currentCardIndex, flashcards]);
@@ -255,29 +255,48 @@ const FlashcardScreen = ({ route, navigation }) => {
 };
 
   useEffect(() => {
-    const generateFlashcards = async (languages) => {
-      const [lang1, lang2] = languages;
+  const fetchAndGenerateFlashcards = async () => {
+    try {
+      const deckCollection = collection(db, "flashcardList");
+      const deckQuery = query(deckCollection, where("name", "==", flashcardListName));
+      const querySnapshot = await getDocs(deckQuery);
 
-      return Promise.all(
-        flashcards.map(async (flashcard) => {
+      if (!querySnapshot.empty) {
+        const deckDoc = querySnapshot.docs[0];
+        const flashcardIDs = deckDoc.data().cardList || [];
+
+        // fetch by ID
+        const flashcardCollection = collection(db, "flashcard");
+        const flashcardQuery = query(
+          flashcardCollection,
+          where("__name__", "in", flashcardIDs)
+        );
+        const flashcardSnapshot = await getDocs(flashcardQuery);
+
+        let fetchedFlashcards = flashcardSnapshot.docs.map((doc) => ({ //add ID to flashcards
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        const processedFlashcards = await Promise.all(
+          fetchedFlashcards.map(async (flashcard) => {
           let word = flashcard.destination;
           let translation = flashcard.origin;
 
-          // logic to reduce the need of translating to English or Chinese (Simplified)
-          // will need to be changed for Hokkien
-          if (lang1 === "Chinese (Simplified)") {
+            if (languages[0] === "Chinese (Simplified)") {
             word = translation;
           }
-          if (lang2 === "English") {
+            if (languages[1] === "English") {
             translation = word;
           }
 
-          if (lang1 !== "English" && lang1 !== "Chinese (Simplified)") {
-            word = await translateText(word, lang1);
+            if (languages[0] !== "English" && languages[0] !== "Chinese (Simplified)") {
+              word = await translateText(word, languages[0]);
           }
-          if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
-            translation = await translateText(translation, lang2);
+            if (languages[1] !== "English" && languages[1] !== "Chinese (Simplified)") {
+              translation = await translateText(translation, languages[1]);
           }
+
           return {
             ...flashcard,
             word,
@@ -285,10 +304,20 @@ const FlashcardScreen = ({ route, navigation }) => {
           };
         })
       );
-    };
 
-    generateFlashcards(languages).then(setFlashcards);
-  }, [languages]);
+        setFlashcards(processedFlashcards);
+      } else {
+        console.log("Deck not found.");
+      }
+    } catch (error) {
+      console.error("Error fetching or generating flashcards:", error);
+    }
+  };
+
+  if (flashcardListName) {
+    fetchAndGenerateFlashcards();
+  }
+}, [flashcardListName, languages]);
 
   return (
     <Box flex={1} background={colors.surface}>
