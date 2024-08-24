@@ -49,6 +49,7 @@ var alldecks = [];
 var curCategory = "";
 var currentUser = "";
 var deckID = "";
+var categoryId = "";
 
 const FlashcardCategory = () => {
   const navigation = useNavigation();
@@ -79,7 +80,12 @@ const FlashcardCategory = () => {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
 
-    const flashcardList = flashcardSnapshot.docs.map((doc) => doc.data());
+    const flashcardList = flashcardSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    console.log("Print: ", flashcardList)
 
     flashcardList.forEach((deck) => {
       if (deck.createdBy !== currentUser && !deck.shared) {
@@ -152,10 +158,8 @@ const FlashcardCategory = () => {
     }
 
     if (index == 0) {
-      const categoryId = category.id;
       console.log("Current Category in FlashcardCategory is: ", category); 
       var flashcardList = category.flashcardList;
-      console.log("categoryId:", categoryId); // TODO: Remove
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
       curCategory = category.name;
@@ -165,21 +169,24 @@ const FlashcardCategory = () => {
 
         // Await the document snapshot
         const ref = await getDoc(docRef);
-
+        
         deckID = ref.id;
         // console.log(ref.data())
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
+        console.log("Temp", temp)
+        categoryId = temp.categoryId;
         // console.log(temp)
 
         if (temp.createdBy === currentUser || temp.shared) {
-          decks.push(ref.data());
+          decks.push({ id: ref.id, ...temp });
         }
 
         index = 1;
       }
       setDisplay(decks);
+      console.log("Decks", decks)
       return;
     }
 
@@ -207,7 +214,9 @@ const FlashcardCategory = () => {
     }
 
     const deckName = category.name;
-    const categoryIdToPass = category.id || category.categoryId; // Ensure categoryId is defined
+    console.log("Deckname", deckName)
+    const categoryIdToPass = categoryId || category.categoryId;
+    console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
     navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
   };
@@ -240,7 +249,7 @@ const FlashcardCategory = () => {
       // get category data
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
-      const categoryId = categoryData.categoryID;
+      const categoryId = categoryData.categoryId;
       console.log("CategoryID: ", categoryId);
 
       // Delete the flashcardList document

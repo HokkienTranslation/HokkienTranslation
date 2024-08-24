@@ -131,7 +131,7 @@ const FlashcardAdd = ({ route }) => {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamps,
-        categoryID: categoryID,
+        categoryId: categoryID,
         createdBy: route.params.currentUser,
         shared: shared,
       });
@@ -153,7 +153,7 @@ const FlashcardAdd = ({ route }) => {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamp(),
-        categoryID: categoryID,
+        categoryId: categoryID,
         createdBy: route.params.currentUser,
         shared: shared,
       });

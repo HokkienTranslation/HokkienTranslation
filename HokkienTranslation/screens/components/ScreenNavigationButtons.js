@@ -9,8 +9,6 @@ const ScreenNavigationButtons = ({ colors, flashcardListName }) => {
   const [isPressedCatButton, setIsPressedCatButton] = useState(false);
   const [isPressedQuizButton, setIsPressedQuizButton] = useState(false);
 
-  console.log("ScreenNavigationButtons: flashcardListName", flashcardListName);
-
   const styles = StyleSheet.create({
     categoryBox: {
       alignItems: "center",
