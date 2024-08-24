@@ -301,7 +301,9 @@ const FlashcardScreen = ({ route, navigation }) => {
           : flashcard
       )
     );
+    setShowUpdates(false);
   };
+
   const handleDelete = async () => {
     try {
       const flashcardID = flashcards[currentCardIndex]?.id;
