@@ -114,6 +114,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     fetchDeckID();
   }, [flashcardListName]);
+        const flashcardQuery = query(
 
   useEffect(() => {
     // Log the currently displayed flashcard whenever the currentCardIndex changes
@@ -426,7 +427,61 @@ const FlashcardScreen = ({ route, navigation }) => {
         </Modal>
 
         {/* update and delete modals */}
+         <Modal
+          isOpen={showUpdates}
+          onClose={() => setShowUpdates(false)}
+          size="lg"
+        >
+          <Modal.Content width="80%" maxWidth="350px">
+            <Modal.CloseButton />
+            <Modal.Header>Update Flashcard</Modal.Header>
+            <Modal.Body>
+              <VStack space={4}>
+              <Input
+                  placeholder={flashcards[currentCardIndex].destination}
+                  value={enteredWord}
+                  onChangeText={setEnteredWord}
+                />
+                <Input
+                  placeholder={flashcards[currentCardIndex].origin}
+                  value={enteredTranslation}
+                  onChangeText={setEnteredTranslation}
+                />
+                <Input
+                  placeholder="Option 1 (leave blank to keep unchanged)"
+                  value={option1}
+                  onChangeText={setOption1}
+                />
+                <Input
+                  placeholder="Option 2 (leave blank to keep unchanged)"
+                  value={option2}
+                  onChangeText={setOption2}
+                />
+                <Input
+                  placeholder="Option 3 (leave blank to keep unchanged)"
+                  value={option3}
+                  onChangeText={setOption3}
+                />
+                <Select
+                  selectedValue={type}
                   placeholder="Select Type"
+                  onValueChange={(itemValue) => setType(itemValue)}
+                >
+                  <Select.Item label="Word" value="word" />
+                  <Select.Item label="Sentence" value="sentence" />
+                </Select>
+              </VStack>
+            </Modal.Body>
+            <Modal.Footer>
+              <HStack space={2}>
+                <Button onPress={() => setShowUpdates(false)}>Save</Button>
+                <Button onPress={() => setShowUpdates(false)} variant="ghost">
+                  Cancel
+                </Button>
+              </HStack>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal>
       </Center>
     </Box>
   );
