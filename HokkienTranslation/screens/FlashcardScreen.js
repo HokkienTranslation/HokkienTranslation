@@ -330,6 +330,18 @@ const FlashcardScreen = ({ route, navigation }) => {
   }
 }, [flashcardListName, languages]);
 
+useEffect(() => { //prefill fields
+  if (showUpdates && flashcards.length > 0) {
+    const currentFlashcard = flashcards[currentCardIndex];
+    setEnteredWord(currentFlashcard.origin);
+    setEnteredTranslation(currentFlashcard.destination);
+    setOption1(currentFlashcard.otherOptions[0] || "");
+    setOption2(currentFlashcard.otherOptions[1] || "");
+    setOption3(currentFlashcard.otherOptions[2] || "");
+    setType(currentFlashcard.type || "word");
+  }
+}, [showUpdates, currentCardIndex, flashcards]);
+
   return (
     <Box flex={1} background={colors.surface}>
       <NavigationButtons
@@ -516,27 +528,27 @@ const FlashcardScreen = ({ route, navigation }) => {
             <Modal.Body>
               <VStack space={4}>
               <Input
-                  placeholder={flashcards[currentCardIndex].destination}
+                  placeholder="Update Word"
                   value={enteredWord}
                   onChangeText={setEnteredWord}
                 />
                 <Input
-                  placeholder={flashcards[currentCardIndex].origin}
+                  placeholder="Update Translation"
                   value={enteredTranslation}
                   onChangeText={setEnteredTranslation}
                 />
                 <Input
-                  placeholder="Option 1 (leave blank to keep unchanged)"
+                  placeholder="Option 1"
                   value={option1}
                   onChangeText={setOption1}
                 />
                 <Input
-                  placeholder="Option 2 (leave blank to keep unchanged)"
+                  placeholder="Option 2"
                   value={option2}
                   onChangeText={setOption2}
                 />
                 <Input
-                  placeholder="Option 3 (leave blank to keep unchanged)"
+                  placeholder="Option 3"
                   value={option3}
                   onChangeText={setOption3}
                 />
@@ -552,7 +564,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
-                <Button onPress={() => setShowUpdates(false)}>Save</Button>
+                <Button onPress={handleUpdate}>Save</Button>
                 <Button onPress={() => setShowUpdates(false)} variant="ghost">
                   Cancel
                 </Button>
