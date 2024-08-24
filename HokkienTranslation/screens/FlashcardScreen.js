@@ -236,7 +236,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     });
 
     console.log("New flashcard ID added to cardList in flashcardList document");
-          createdBy: currentUser,
+
 
     setEnteredWord("");
     setEnteredTranslation("");
@@ -245,9 +245,19 @@ const FlashcardScreen = ({ route, navigation }) => {
     setOption3("");
     setType("");
     setShowNewFlashcard(false);
-    setFlashcards((prev) => [
-      ...prev,
-      newFlashcardData,
+      setFlashcards((prevFlashcards) => [
+        ...prevFlashcards,
+        {
+          id: newFlashcardID,
+          origin: enteredWord,
+          destination: enteredTranslation,
+          otherOptions: [option1, option2, option3],
+          type: type,
+          createdAt: new Date().toISOString(),
+          createdBy: currentUser,
+          word: enteredTranslation,
+          translation: enteredWord,
+        },
     ]);
   } catch (error) {
     console.error("Error creating flashcard:", error.message);
