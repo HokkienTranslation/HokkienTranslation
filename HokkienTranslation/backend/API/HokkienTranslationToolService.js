@@ -38,5 +38,3 @@ const fetchTranslation = async (query, outputLanguage = "HAN") => {
 };
 
 export { fetchTranslation };
-
-fetchTranslation("Hello, how are you?", "ZH");
