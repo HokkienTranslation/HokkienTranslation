@@ -265,6 +265,41 @@ const FlashcardScreen = ({ route, navigation }) => {
   }
 };
 
+  const handleUpdate = async () => {
+    const flashcardID = flashcards[currentCardIndex].id;
+  
+    if (!enteredWord || !enteredTranslation || !type) {
+      alert("Please fill out all required fields");
+      return;
+    }
+  
+    const flashcardRef = doc(db, "flashcard", flashcardID);
+    await updateDoc(flashcardRef, {
+      origin: enteredWord,
+      destination: enteredTranslation,
+      otherOptions: [option1, option2, option3],
+      type: type,
+      updatedAt: serverTimestamp(),
+    });
+  
+    // locally update
+    setFlashcards((prevFlashcards) =>
+      prevFlashcards.map((flashcard, index) =>
+        index === currentCardIndex
+          ? {
+              ...flashcard,
+              origin: enteredWord,
+              destination: enteredTranslation,
+              otherOptions: [option1, option2, option3],
+              type: type,
+              word: enteredTranslation,
+              translation: enteredWord,
+            }
+          : flashcard
+      )
+    );
+  };
+
   useEffect(() => {
   const fetchAndGenerateFlashcards = async () => {
     try {
