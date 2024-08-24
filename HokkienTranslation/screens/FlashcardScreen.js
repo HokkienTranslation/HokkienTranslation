@@ -641,31 +641,39 @@ useEffect(() => { //prefill fields
           size="lg"
         >
           <Modal.Content maxWidth="400px">
-            <Modal.CloseButton />
             <Modal.Body>
-              <VStack space={4} alignItems="center">
-                <Text textAlign="center">
-                  Are you sure you want to delete this flashcard?
-                </Text>
-                <HStack space={4} alignItems="center" justifyContent="center">
+      <VStack space={4}>
+        <Text>Are you sure you want to delete this flashcard?</Text>
+
+        {/* Toggle for permanent delete */}
+        <HStack alignItems="center" space={3}>
+          <Switch
+            size="md"
+            isChecked={isPermanentDelete}
+            onToggle={() => setIsPermanentDelete(!isPermanentDelete)}
+          />
+          <Text>Delete this flashcard permanently</Text>
+        </HStack>
+      </VStack>
+
+      <HStack space={2} justifyContent="flex-end" mt={4}>
                   <Button
                     colorScheme="red"
+          borderWidth={1}
+          borderColor={colors.primaryContainer}
                     onPress={handleDelete}
-                    borderWidth={0.6}
-                    borderColor="red.500"
                   >
                     Yes
                   </Button>
                   <Button
                     variant="ghost"
+          borderWidth={1}
+          borderColor={colors.primaryContainer}
                     onPress={() => setShowConfirmDelete(false)}
-                    borderWidth={0.6}
-                    borderColor="gray.400"
                   >
                     No
                   </Button>
                 </HStack>
-              </VStack>
             </Modal.Body>
           </Modal.Content>
         </Modal>
