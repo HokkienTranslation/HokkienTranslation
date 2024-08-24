@@ -84,7 +84,11 @@ const uploadData = async () => {
           const flashcardListSnapshot = await getDocs(flashcardListQuery);
 
           if (flashcardListSnapshot.empty) {
-            const flashcardListRef = doc(collection(db, "flashcardList"));
+            const flashcardListRef = doc(
+              db,
+              "flashcardList",
+              flashcardListName
+            );
             const flashcardList = {
               name: flashcardListName,
               cardList: [],
@@ -99,7 +103,7 @@ const uploadData = async () => {
             await setDoc(flashcardListRef, flashcardList);
 
             await updateDoc(categoryRef, {
-              flashcardList: arrayUnion(flashcardListRef.id),
+              flashcardList: arrayUnion(flashcardListName),
             });
 
             for (let i = 0; i < 10; i++) {
@@ -142,14 +146,14 @@ const uploadData = async () => {
             // Check for existing flashcard quiz
             const flashcardQuizQuery = query(
               collection(db, "flashcardQuiz"),
-              where("flashcardListId", "==", flashcardListRef.id)
+              where("flashcardListId", "==", flashcardListName)
             );
             const flashcardQuizSnapshot = await getDocs(flashcardQuizQuery);
 
             if (flashcardQuizSnapshot.empty) {
               const flashcardQuizRef = doc(collection(db, "flashcardQuiz"));
               const flashcardQuiz = {
-                flashcardListId: flashcardListRef.id,
+                flashcardListId: flashcardListName,
                 scores: {
                   [createdBy]: [],
                 },
@@ -158,7 +162,7 @@ const uploadData = async () => {
               await setDoc(flashcardQuizRef, flashcardQuiz);
             }
 
-            console.log("flashcardQuiz flashcardListId: ", flashcardListRef.id);
+            console.log("flashcardQuiz flashcardListID: ", flashcardListName);
           }
         }
       }
