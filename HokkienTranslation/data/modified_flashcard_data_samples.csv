@@ -5,9 +5,9 @@ origin,destination,otherOptions,type
 請,Please,"Hello,Goodbye,Thank you",word
 對不住,Sorry,"Excuse me,Thank you,Please",word
 無要緊,It's okay,"Sorry,Thank you,Please",word
-早起好,Good morning,"Good evening,Good night,Hello",word
-下昏仔好,Good evening,"Good morning,Good night,Hello",word
-晚安,Good night,"Good evening,Good morning,Hello",word
+早起好,Good morning,"Good afternoon,Good night,Hello",word
+下昏仔好,Good evening,"Good morning,Good bye,Hello",word
+晚安,Good night,"Good bye,Good morning,Hello",word
 再會,See you,"Goodbye,Hello,Please",word
 食飯,Eat,"Drink,Sleep,Run",word
 啉水,Drink,"Eat,Sleep,Run",word
