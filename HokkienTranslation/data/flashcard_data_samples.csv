@@ -5,7 +5,7 @@ origin,destination,otherOptions,type
 请,Please,"Hello,Goodbye,Thank you",word
 对不起,Sorry,"Excuse me,Thank you,Please",word
 没关系,It's okay,"Sorry,Thank you,Please",word
-早上好,Good morning,"Good evening,Good night,Hello",word
+早上好,Good morning,"Good afternoon,Good night,Hello",word
 晚上好,Good evening,"Good morning,Good night,Hello",word
 晚安,Good night,"Good evening,Good morning,Hello",word
 再见,See you,"Goodbye,Hello,Please",word
