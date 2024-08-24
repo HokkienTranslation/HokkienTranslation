@@ -13,7 +13,7 @@ import {
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, setDoc, collection, serverTimestamp, query, where, getDocs, arrayUnion, updateDoc } from "firebase/firestore";
+import { doc, setDoc, collection, serverTimestamp, query, where, getDocs, arrayUnion, updateDoc, deleteDoc, arrayRemove  } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
@@ -300,6 +300,33 @@ const FlashcardScreen = ({ route, navigation }) => {
     );
   };
 
+  const handleDelete = async () => {
+    const flashcardID = flashcards[currentCardIndex].id;
+  
+    // remove local flashcard
+    setFlashcards((prevFlashcards) =>
+      prevFlashcards.filter((_, index) => index !== currentCardIndex)
+    );
+
+    const flashcardRef = doc(db, "flashcard", flashcardID);
+    await deleteDoc(flashcardRef);
+  
+    // remove from flashcardList -> cardList 
+    const flashcardListRef = doc(db, "flashcardList", deckID);
+    await updateDoc(flashcardListRef, {
+      cardList: arrayRemove(flashcardID),
+    });
+  
+    console.log("Flashcard ", flashcardID, " deleted successfully");
+    setShowConfirmDelete(false);
+    setCurrentCardIndex((prevIndex) => {
+      if (prevIndex === flashcards.length - 1 && prevIndex !== 0) {
+        return prevIndex - 1;
+      }
+      return prevIndex;
+    });
+  };
+
   useEffect(() => {
   const fetchAndGenerateFlashcards = async () => {
     try {
@@ -551,7 +578,7 @@ useEffect(() => { //prefill fields
           </Modal.Content>
         </Modal>
 
-        {/* update and delete modals */}
+        {/* update modal */}
          <Modal
           isOpen={showUpdates}
           onClose={() => setShowUpdates(false)}
@@ -605,6 +632,42 @@ useEffect(() => { //prefill fields
                 </Button>
               </HStack>
             </Modal.Footer>
+          </Modal.Content>
+        </Modal>
+
+        {/* delete modal */}
+        <Modal
+          isOpen={showConfirmDelete}
+          onClose={() => setShowConfirmDelete(false)}
+          size="lg"
+        >
+          <Modal.Content maxWidth="400px">
+            <Modal.CloseButton />
+            <Modal.Body>
+              <VStack space={4} alignItems="center">
+                <Text textAlign="center">
+                  Are you sure you want to delete this flashcard?
+                </Text>
+                <HStack space={4} alignItems="center" justifyContent="center">
+                  <Button
+                    colorScheme="red"
+                    onPress={handleDelete}
+                    borderWidth={0.6}
+                    borderColor="red.500"
+                  >
+                    Yes
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onPress={() => setShowConfirmDelete(false)}
+                    borderWidth={0.6}
+                    borderColor="gray.400"
+                  >
+                    No
+                  </Button>
+                </HStack>
+              </VStack>
+            </Modal.Body>
           </Modal.Content>
         </Modal>
       </Center>
