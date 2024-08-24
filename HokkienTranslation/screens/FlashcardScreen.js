@@ -10,10 +10,11 @@ import {
   Select,
   Modal,
   Button,
+  Switch,
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, setDoc, collection, serverTimestamp, query, where, getDocs, arrayUnion, updateDoc, deleteDoc, arrayRemove  } from "firebase/firestore";
+import { doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs, arrayUnion, updateDoc, deleteDoc, arrayRemove  } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
@@ -52,6 +53,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   const currentUser = route.params.currentUser;
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
+
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
@@ -299,29 +302,91 @@ const FlashcardScreen = ({ route, navigation }) => {
       )
     );
   };
-
   const handleDelete = async () => {
+    try {
+      const flashcardID = flashcards[currentCardIndex]?.id;
+  
+      if (!flashcardID) {
+        throw new Error("Flashcard ID not found");
+      }
+  
+      // Step 1: Remove the flashcard locally
+      setFlashcards((prevFlashcards) =>
+        prevFlashcards.filter((_, index) => index !== currentCardIndex)
+      );
+  
+      // Step 2: Remove the flashcard ID from the cardList in the current deck
+      const flashcardListRef = doc(db, "flashcardList", deckID);
+      await updateDoc(flashcardListRef, {
+        cardList: arrayRemove(flashcardID),
+      });
+  
+      console.log(`Flashcard ${flashcardID} removed from the current deck`);
+  
+      // Close the modal and adjust the current card index
+      setShowConfirmDelete(false);
+      setCurrentCardIndex((prevIndex) => {
+        if (prevIndex === flashcards.length - 1 && prevIndex !== 0) {
+          return prevIndex - 1;
+        }
+        return prevIndex;
+      });
+    } catch (error) {
+      console.error("Error deleting flashcard:", error);
+      alert(`Failed to delete flashcard: ${error.message}`);
+    }
+  };
+
+  const handlePermaDelete = async () => {
     const flashcardId = flashcards[currentCardIndex]?.id;
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
   
-    // remove local flashcard
     setFlashcards((prevFlashcards) =>
       prevFlashcards.filter((_, index) => index !== currentCardIndex)
     );
 
-    const flashcardRef = doc(db, "flashcard", flashcardID);
+    const flashcardRef = doc(db, "flashcard", flashcardId);
     await deleteDoc(flashcardRef);
     console.log("Flashcard deleted from flashcard collection");
   
-    // remove from flashcardList -> cardList 
-    const flashcardListRef = doc(db, "flashcardList", deckID);
+    const flashcardListRef = doc(db, "flashcardList", deckID); //remove from current deck
     await updateDoc(flashcardListRef, {
-      cardList: arrayRemove(flashcardID),
+      cardList: arrayRemove(flashcardId),
     });
+    console.log("Flashcard ID removed from current deck's cardList");
   
-    console.log("Flashcard ", flashcardID, " deleted successfully");
+    const categoriesCollectionRef = collection(db, "category");
+    const categorySnapshot = await getDocs(categoriesCollectionRef);
+  
+    for (const categoryDoc of categorySnapshot.docs) {
+      const categoryData = categoryDoc.data();
+      const flashcardListNames = categoryData.flashcardList;
+  
+      if (Array.isArray(flashcardListNames) && flashcardListNames.length > 0) {
+        for (const flashcardListName of flashcardListNames) {
+          // Check if decks contain this flashcard ID
+          const flashcardListRef = doc(db, "flashcardList", flashcardListName);
+          const flashcardListDoc = await getDoc(flashcardListRef);
+  
+          if (flashcardListDoc.exists()) {
+            const flashcardListData = flashcardListDoc.data();
+  
+            // remove if cardlist has the flashcard
+            if (flashcardListData.cardList.includes(flashcardId)) {
+              const updatedCardList = flashcardListData.cardList.filter((id) => id !== flashcardId);
+  
+              await updateDoc(flashcardListRef, {
+                cardList: updatedCardList,
+              });
+              console.log(`Flashcard ID removed from deck: ${flashcardListName} in category: ${categoryDoc.id}`);
+            }
+          }
+        }
+      }
+    }
+  
     setShowConfirmDelete(false);
     console.log("Flashcard successfully deleted from all relevant decks across categories");
   };
@@ -641,40 +706,40 @@ useEffect(() => { //prefill fields
           size="lg"
         >
           <Modal.Content maxWidth="400px">
+            <Modal.CloseButton />
             <Modal.Body>
-      <VStack space={4}>
-        <Text>Are you sure you want to delete this flashcard?</Text>
-
-        {/* Toggle for permanent delete */}
-        <HStack alignItems="center" space={3}>
+              <Text size>Are you sure you want to delete this flashcard from this deck?</Text>
+              <HStack space={2} alignItems="center" marginTop={4}>
           <Switch
-            size="md"
             isChecked={isPermanentDelete}
             onToggle={() => setIsPermanentDelete(!isPermanentDelete)}
+                  size="sm"
           />
-          <Text>Delete this flashcard permanently</Text>
+                <Text fontSize="sm">
+                  Delete this flashcard permanently
+                </Text>
         </HStack>
-      </VStack>
-
-      <HStack space={2} justifyContent="flex-end" mt={4}>
+            </Modal.Body>
+            <Modal.Footer>
+              <HStack space={2}>
                   <Button
+                  onPress={isPermanentDelete ? handlePermaDelete : handleDelete}
                     colorScheme="red"
           borderWidth={1}
-          borderColor={colors.primaryContainer}
-                    onPress={handleDelete}
+                  borderColor="red.500"
                   >
                     Yes
                   </Button>
                   <Button
                     variant="ghost"
+                  onPress={() => setShowConfirmDelete(false)}
           borderWidth={1}
-          borderColor={colors.primaryContainer}
-                    onPress={() => setShowConfirmDelete(false)}
+                  borderColor="coolGray.200"
                   >
                     No
                   </Button>
                 </HStack>
-            </Modal.Body>
+            </Modal.Footer>
           </Modal.Content>
         </Modal>
       </Center>
