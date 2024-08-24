@@ -114,7 +114,45 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     fetchDeckID();
   }, [flashcardListName]);
+
+  const fetchFlashcardsByDeck = async (deckName) => {
+    try {
+      const deckCollection = collection(db, "flashcardList");
+      const deckQuery = query(deckCollection, where("name", "==", deckName));
+      const querySnapshot = await getDocs(deckQuery);
+
+      if (!querySnapshot.empty) {
+        const deckDoc = querySnapshot.docs[0];
+        const flashcardIDs = deckDoc.data().cardList || [];
+
+        // Fetch flashcards by their IDs
+        const flashcardCollection = collection(db, "flashcard");
         const flashcardQuery = query(
+          flashcardCollection,
+          where("__name__", "in", flashcardIDs)
+        );
+        const flashcardSnapshot = await getDocs(flashcardQuery);
+
+        const flashcardsWithIDs = flashcardSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        console.log("Flashcards with IDs:", flashcardsWithIDs);
+        setFlashcards(flashcardsWithIDs);
+      } else {
+        console.log("Deck not found.");
+      }
+    } catch (error) {
+      console.error("Error fetching flashcards:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (flashcardListName) {
+      fetchFlashcardsByDeck(flashcardListName);
+    }
+  }, [flashcardListName]);
 
   useEffect(() => {
     // Log the currently displayed flashcard whenever the currentCardIndex changes
