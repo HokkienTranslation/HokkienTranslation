@@ -426,6 +426,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         </Modal>
 
         {/* update and delete modals */}
+                  placeholder="Select Type"
       </Center>
     </Box>
   );
