@@ -206,48 +206,48 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handleCreate = async () => {
-  try {
-    if (!enteredWord || !enteredTranslation || !type) {
-      alert("Please fill out all required fields");
-      return;
-    }
+    try {
+      if (!enteredWord || !enteredTranslation || !type) {
+        alert("Please fill out all required fields");
+        return;
+      }
+  
+      console.log("Current user is ", currentUser);
+      console.log("Current categoryId is ", categoryId);
+      console.log("Current deckID is ", deckID);
+  
+      const newFlashcardData = {
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        categoryId: categoryId,
+        createdAt: serverTimestamp(),
+        createdBy: currentUser,
+      };
 
-    console.log("Current user is ", currentUser);
-    console.log("Current categoryId is ", categoryId);
-    console.log("Current deckID is ", deckID);
-
-    const newFlashcardData = {
-      origin: enteredWord,
-      destination: enteredTranslation,
-      otherOptions: [option1, option2, option3],
-      type: type,
-      categoryId: categoryId,
-      createdAt: serverTimestamp(),
-      createdBy: currentUser,
-    };
-
-    const flashcardRef = doc(collection(db, "flashcard"));
-    console.log("FlashcardRef", flashcardRef);
-    await setDoc(flashcardRef, newFlashcardData);
-
-    const newFlashcardID = flashcardRef.id;
-    console.log("Flashcard created successfully with ID:", newFlashcardID);
-
-    const flashcardListRef = doc(db, "flashcardList", deckID);
-    await updateDoc(flashcardListRef, {
-      cardList: arrayUnion(newFlashcardID)
-    });
-
-    console.log("New flashcard ID added to cardList in flashcardList document");
+      const flashcardRef = doc(collection(db, "flashcard"));
+      console.log("FlashcardRef", flashcardRef); 
+      await setDoc(flashcardRef, newFlashcardData);
+  
+      const newFlashcardID = flashcardRef.id;
+      console.log("Flashcard created successfully with ID:", newFlashcardID);
+  
+      const flashcardListRef = doc(db, "flashcardList", deckID);
+      await updateDoc(flashcardListRef, {
+        cardList: arrayUnion(newFlashcardID)
+      });
+  
+      console.log("New flashcard ID added to cardList in flashcardList document");
 
 
-    setEnteredWord("");
-    setEnteredTranslation("");
-    setOption1("");
-    setOption2("");
-    setOption3("");
-    setType("");
-    setShowNewFlashcard(false);
+      setEnteredWord("");
+      setEnteredTranslation("");
+      setOption1("");
+      setOption2("");
+      setOption3("");
+      setType("");
+      setShowNewFlashcard(false);
       setFlashcards((prevFlashcards) => [
         ...prevFlashcards,
         {
@@ -261,12 +261,12 @@ const FlashcardScreen = ({ route, navigation }) => {
           word: enteredTranslation,
           translation: enteredWord,
         },
-    ]);
-  } catch (error) {
-    console.error("Error creating flashcard:", error.message);
-    alert(`Failed to create flashcard: ${error.message}`);
-  }
-};
+      ]);
+    } catch (error) {
+      console.error("Error creating flashcard:", error.message);
+      alert(`Failed to create flashcard: ${error.message}`);
+    }
+  };
 
   const handleUpdate = async () => {
     const flashcardID = flashcards[currentCardIndex].id;
@@ -344,11 +344,11 @@ const FlashcardScreen = ({ route, navigation }) => {
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
-  
+
     setFlashcards((prevFlashcards) =>
       prevFlashcards.filter((_, index) => index !== currentCardIndex)
     );
-
+  
     const flashcardRef = doc(db, "flashcard", flashcardId);
     await deleteDoc(flashcardRef);
     console.log("Flashcard deleted from flashcard collection");
@@ -638,14 +638,14 @@ useEffect(() => { //prefill fields
             <Modal.Footer>
               <HStack space={2}>
                 <Button onPress={handleCreate}>Save</Button>
-                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">Cancel</Button>
+                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1}borderColor="coolGray.200">Cancel</Button>
               </HStack>
             </Modal.Footer>
           </Modal.Content>
         </Modal>
 
         {/* update modal */}
-         <Modal
+        <Modal
           isOpen={showUpdates}
           onClose={() => setShowUpdates(false)}
           size="lg"
@@ -657,60 +657,55 @@ useEffect(() => { //prefill fields
               <VStack space={3}>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Word:</Text>
-              <Input
-                    flex={1}                       // Ensures the input takes up remaining space
-                  value={enteredWord}
-                  onChangeText={setEnteredWord}
-                    textAlign="left"               // Ensures left-aligned text
-                />
+                  <Input
+                    flex={1}
+                    value={enteredWord}
+                    onChangeText={setEnteredWord}
+                  />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Translation:</Text>
-                <Input
+                  <Input
                     flex={1}
-                  value={enteredTranslation}
-                  onChangeText={setEnteredTranslation}
-                    textAlign="left"
-                />
+                    value={enteredTranslation}
+                    onChangeText={setEnteredTranslation}
+                  />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 1:</Text>
-                <Input
+                  <Input
                     flex={1}
-                  value={option1}
-                  onChangeText={setOption1}
-                    textAlign="left"
-                />
+                    value={option1}
+                    onChangeText={setOption1}
+                  />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 2:</Text>
-                <Input
+                  <Input
                     flex={1}
-                  value={option2}
-                  onChangeText={setOption2}
-                    textAlign="left"
-                />
+                    value={option2}
+                    onChangeText={setOption2}
+                  />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 3:</Text>
-                <Input
+                  <Input
                     flex={1}
-                  value={option3}
-                  onChangeText={setOption3}
-                    textAlign="left"
-                />
+                    value={option3}
+                    onChangeText={setOption3}
+                  />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Type:</Text>
-                <Select
+                  <Select
                     flex={1}
-                  selectedValue={type}
-                  placeholder="Select Type"
-                  onValueChange={(itemValue) => setType(itemValue)}
-                >
-                  <Select.Item label="Word" value="word" />
-                  <Select.Item label="Sentence" value="sentence" />
-                </Select>
+                    selectedValue={type}
+                    placeholder="Select Type"
+                    onValueChange={(itemValue) => setType(itemValue)}
+                  >
+                    <Select.Item label="Word" value="word" />
+                    <Select.Item label="Sentence" value="sentence" />
+                  </Select>
                 </HStack>
               </VStack>
             </Modal.Body>
@@ -736,35 +731,35 @@ useEffect(() => { //prefill fields
             <Modal.Body>
               <Text size>Are you sure you want to delete this flashcard from this deck?</Text>
               <HStack space={2} alignItems="center" marginTop={4}>
-          <Switch
-            isChecked={isPermanentDelete}
-            onToggle={() => setIsPermanentDelete(!isPermanentDelete)}
+                <Switch
+                  isChecked={isPermanentDelete}
+                  onToggle={() => setIsPermanentDelete(!isPermanentDelete)}
                   size="sm"
-          />
+                />
                 <Text fontSize="sm">
                   Delete flashcard permanently
                 </Text>
-        </HStack>
+              </HStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={4}>
-                  <Button
+                <Button
                   onPress={isPermanentDelete ? handlePermaDelete : handleDelete}
-                    colorScheme="red"
-          borderWidth={1}
+                  colorScheme="red"
+                  borderWidth={1}
                   borderColor="red.500"
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    variant="ghost"
+                >
+                  Yes
+                </Button>
+                <Button
+                  variant="ghost"
                   onPress={() => setShowConfirmDelete(false)}
-          borderWidth={1}
+                  borderWidth={1}
                   borderColor="coolGray.200"
-                  >
-                    No
-                  </Button>
-                </HStack>
+                >
+                  No
+                </Button>
+              </HStack>
             </Modal.Footer>
           </Modal.Content>
         </Modal>
