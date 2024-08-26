@@ -117,6 +117,7 @@ const FlashcardCategory = () => {
 
     return flashcards;
   }
+  
   const fetchUser = async () => {
     try {
       const user = await getCurrentUser();

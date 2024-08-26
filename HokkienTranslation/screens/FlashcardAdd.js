@@ -24,9 +24,12 @@ import {
 import { db } from "../backend/database/Firebase";
 import { HStack, Switch } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
+import getCurrentUser from "../backend/database/GetCurrentUser";
 
 var categoryId = "";
 var ID = "";
+var currentUser = "";
+
 async function getFlashcardsforCategory(db, category) {
   const categoryRef = collection(db, "category");
 
@@ -101,6 +104,15 @@ const FlashcardAdd = ({ route }) => {
       });
   }, []);
 
+  const fetchUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      currentUser = user;
+    } catch (error) {
+      console.error("Error fetching user: ", error);
+    }
+  };
+
   const toggleSelection = (id) => {
     if (selectedFlashcards.includes(id)) {
       setSelectedFlashcards(
@@ -113,6 +125,10 @@ const FlashcardAdd = ({ route }) => {
 
   const handleSubmission = async () => {
     var cardList = selectedFlashcards;
+
+    if (currentUser === "") {
+      fetchUser();
+    }
 
     if (route.params.update) {
       var serverTimestamps;
@@ -198,11 +214,12 @@ const FlashcardAdd = ({ route }) => {
           type: cardData.type,
           word: cardData.destination,
           translation: cardData.origin,
+          createdBy: currentUser,
+          createdAt: new Date().toISOString(),
         });
       }
     }
-    console.log("LOOK AT ME:", categoryId)
-    navigation.navigate("Flashcard", { cardList, deckName: deckName, categoryId});
+    navigation.navigate("Flashcard", { cardList, deckName: deckName, currentUser, categoryId});
   };
 
   return (
