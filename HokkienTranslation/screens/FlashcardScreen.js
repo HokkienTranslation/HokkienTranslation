@@ -28,8 +28,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   const { languages } = useLanguage();
   const [showTranslation, setShowTranslation] = useState(false);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isMin, setIsMin] = useState(true);
-  const [isMax, setIsMax] = useState(false);
   const [isPressedLeft, setIsPressedLeft] = useState(false);
   const [isPressedRight, setIsPressedRight] = useState(false);
 
@@ -165,6 +163,14 @@ const FlashcardScreen = ({ route, navigation }) => {
     }
   }, [currentCardIndex, flashcards]);
 
+  useEffect(() => {
+  console.log("Current flashcard index:", currentCardIndex);
+  console.log("Flashcards array length:", flashcards.length);
+
+  position.setValue({ x: 0, y: 0 });
+  
+}, [currentCardIndex, flashcards]);
+
   const handleNext = (gestureState = null) => {
     const value = {
       x: gestureState?.dx > 0 ? 500 : -500,
@@ -178,8 +184,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       setShowTranslation(false);
       setCurrentCardIndex((prevIndex) => {
         const newIndex = (prevIndex + 1) % flashcards.length;
-        setIsMin(newIndex === 0);
-        setIsMax(newIndex === flashcards.length - 1);
         return newIndex;
       });
       position.setValue({ x: 0, y: 0 });
@@ -190,8 +194,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowTranslation(false);
     setCurrentCardIndex((prevIndex) => {
       const newIndex = (prevIndex - 1 + flashcards.length) % flashcards.length;
-      setIsMin(newIndex === 0);
-      setIsMax(false);
       return newIndex;
     });
     position.setValue({ x: -500, y: -500 });
@@ -206,6 +208,16 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowTranslation(!showTranslation);
   };
 
+  const handleSoftRefresh = () => {
+    navigation.replace('FlashcardScreen', {
+      flashcardListId: flashcardListId,
+      deckName: flashcardListName,
+      currentUser: currentUser,
+      cardList: flashcards,
+      categoryId: categoryId,
+    });
+  };
+
   const handleCreate = async () => {
     try {
       if (!enteredWord || !enteredTranslation || !type) {
@@ -216,7 +228,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       console.log("Current user is ", currentUser);
       console.log("Current categoryId is ", categoryId);
       console.log("Current deckID is ", deckID);
-  
+
       const newFlashcardData = {
         origin: enteredWord,
         destination: enteredTranslation,
@@ -226,9 +238,9 @@ const FlashcardScreen = ({ route, navigation }) => {
         createdAt: serverTimestamp(),
         createdBy: currentUser,
       };
-
+  
       const flashcardRef = doc(collection(db, "flashcard"));
-      console.log("FlashcardRef", flashcardRef); 
+      console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
   
       const newFlashcardID = flashcardRef.id;
@@ -236,12 +248,30 @@ const FlashcardScreen = ({ route, navigation }) => {
   
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
-        cardList: arrayUnion(newFlashcardID)
+        cardList: arrayUnion(newFlashcardID),
       });
   
       console.log("New flashcard ID added to cardList in flashcardList document");
-      setIsMax(false);
-
+  
+      const updatedFlashcards = [...flashcards, {
+        id: newFlashcardID,
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser,
+        word: enteredTranslation,
+        translation: enteredWord,
+      }];
+      
+      setFlashcards(updatedFlashcards);
+      
+      // Get the updated length of the array
+      const updatedLength = updatedFlashcards.length;
+      console.log("Updated flashcards length:", updatedLength);
+  
+      // Step 5: Reset form and state
       setEnteredWord("");
       setEnteredTranslation("");
       setOption1("");
@@ -249,20 +279,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       setOption3("");
       setType("");
       setShowNewFlashcard(false);
-      setFlashcards((prevFlashcards) => [
-        ...prevFlashcards,
-        {
-          id: newFlashcardID,
-          origin: enteredWord,
-          destination: enteredTranslation,
-          otherOptions: [option1, option2, option3],
-          type: type,
-          createdAt: new Date().toISOString(),
-          createdBy: currentUser,
-          word: enteredTranslation,
-          translation: enteredWord,
-        },
-      ]);
+  
+      handleSoftRefresh();
     } catch (error) {
       console.error("Error creating flashcard:", error.message);
       alert(`Failed to create flashcard: ${error.message}`);
@@ -306,59 +324,70 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handlePermaDelete = async () => {
-    setDisableDeleteButton(true); 
+    setDisableDeleteButton(true);
+
+    setCurrentCardIndex((prevIndex) => {
+      const newIndex = prevIndex > 0 ? prevIndex - 1 : 0; // doesn't go below 0
+      return newIndex;
+    });
+  
     const flashcardId = flashcards[currentCardIndex]?.id;
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
-
-    setFlashcards((prevFlashcards) =>
-      prevFlashcards.filter((_, index) => index !== currentCardIndex)
-    );
   
-    const flashcardRef = doc(db, "flashcard", flashcardId);
-    await deleteDoc(flashcardRef);
-    console.log("Flashcard deleted from flashcard collection");
+    try {
+      setFlashcards((prevFlashcards) => {
+        const updatedFlashcards = prevFlashcards.filter((_, index) => index !== currentCardIndex);
+        return updatedFlashcards;
+      });
+      const flashcardRef = doc(db, "flashcard", flashcardId);
+      await deleteDoc(flashcardRef);
+      console.log("Flashcard deleted from flashcard collection");
   
-    const flashcardListRef = doc(db, "flashcardList", deckID); //remove from current deck
-    await updateDoc(flashcardListRef, {
-      cardList: arrayRemove(flashcardId),
-    });
-    console.log("Flashcard ID removed from current deck's cardList");
+      const flashcardListRef = doc(db, "flashcardList", deckID);
+      await updateDoc(flashcardListRef, {
+        cardList: arrayRemove(flashcardId),
+      });
+      console.log("Flashcard ID removed from current deck's cardList");
   
-    const categoriesCollectionRef = collection(db, "category");
-    const categorySnapshot = await getDocs(categoriesCollectionRef);
+      const categoriesCollectionRef = collection(db, "category");
+      const categorySnapshot = await getDocs(categoriesCollectionRef);
   
-    for (const categoryDoc of categorySnapshot.docs) {
-      const categoryData = categoryDoc.data();
-      const flashcardListNames = categoryData.flashcardList;
+      for (const categoryDoc of categorySnapshot.docs) {
+        const categoryData = categoryDoc.data();
+        const flashcardListNames = categoryData.flashcardList;
   
-      if (Array.isArray(flashcardListNames) && flashcardListNames.length > 0) {
-        for (const flashcardListName of flashcardListNames) {
-          // Check if decks contain this flashcard ID
-          const flashcardListRef = doc(db, "flashcardList", flashcardListName);
-          const flashcardListDoc = await getDoc(flashcardListRef);
+        if (Array.isArray(flashcardListNames) && flashcardListNames.length > 0) {
+          for (const flashcardListName of flashcardListNames) {
+            const flashcardListRef = doc(db, "flashcardList", flashcardListName);
+            const flashcardListDoc = await getDoc(flashcardListRef);
   
-          if (flashcardListDoc.exists()) {
-            const flashcardListData = flashcardListDoc.data();
+            if (flashcardListDoc.exists()) {
+              const flashcardListData = flashcardListDoc.data();
   
-            // remove if cardlist has the flashcard
-            if (flashcardListData.cardList.includes(flashcardId)) {
-              const updatedCardList = flashcardListData.cardList.filter((id) => id !== flashcardId);
+              if (flashcardListData.cardList.includes(flashcardId)) {
+                const updatedCardList = flashcardListData.cardList.filter((id) => id !== flashcardId);
   
-              await updateDoc(flashcardListRef, {
-                cardList: updatedCardList,
-              });
-              console.log(`Flashcard ID removed from deck: ${flashcardListName} in category: ${categoryDoc.id}`);
+                await updateDoc(flashcardListRef, {
+                  cardList: updatedCardList,
+                });
+                console.log(`Flashcard ID removed from deck: ${flashcardListName} in category: ${categoryDoc.id}`);
+              }
             }
           }
         }
       }
-    }
   
-    setShowConfirmDelete(false);
-    console.log("Flashcard successfully deleted from all relevant decks across categories");
-    setDisableDeleteButton(false); 
+      console.log("Flashcard successfully deleted from all relevant decks across categories");
+      handleSoftRefresh();
+    } catch (error) {
+      console.error("Error deleting flashcard:", error.message);
+      alert(`Failed to delete flashcard: ${error.message}`);
+    } finally {
+      setShowConfirmDelete(false);
+      setDisableDeleteButton(false);
+    }
   };
 
   useEffect(() => {
@@ -522,7 +551,6 @@ useEffect(() => { //prefill fields
               onPressIn={() => setIsPressedLeft(true)}
               onPressOut={() => setIsPressedLeft(false)}
               onPress={handleBack}
-              disabled={isMin}
             >
               <Ionicons
                 name={
@@ -530,7 +558,7 @@ useEffect(() => { //prefill fields
                     ? "chevron-back-circle"
                     : "chevron-back-circle-outline"
                 }
-                color={isMin ? "grey" : colors.onSurface}
+                color={colors.onSurface}
                 size={50}
               />
             </Pressable>
@@ -542,7 +570,6 @@ useEffect(() => { //prefill fields
               onPressIn={() => setIsPressedRight(true)}
               onPressOut={() => setIsPressedRight(false)}
               onPress={handleNext}
-              disabled={isMax}
             >
               <Ionicons
                 name={
@@ -550,7 +577,7 @@ useEffect(() => { //prefill fields
                     ? "chevron-forward-circle"
                     : "chevron-forward-circle-outline"
                 }
-                color={isMax ? "grey" : colors.onSurface}
+                color={colors.onSurface}
                 size={50}
               />
             </Pressable>
