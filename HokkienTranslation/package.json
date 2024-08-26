@@ -25,6 +25,7 @@
     "dotenv": "^16.4.5",
     "expo": "~49.0.15",
     "expo-clipboard": "~4.3.1",
+    "expo-linear-gradient": "~12.3.0",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.7.1",
     "native-base": "^3.4.28",
@@ -35,13 +36,13 @@
     "react-icons": "^5.2.1",
     "react-native": "0.72.10",
     "react-native-dropdown-select-list": "^2.0.5",
+    "react-native-modal": "^13.0.1",
     "react-native-progress": "^5.0.1",
     "react-native-reanimated": "~3.3.0",
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
     "react-native-web": "~0.19.6",
-    "xlsx": "^0.18.5",
-    "expo-linear-gradient": "~12.3.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
