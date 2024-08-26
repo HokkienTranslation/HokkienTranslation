@@ -218,7 +218,71 @@ const FlashcardScreen = ({ route, navigation }) => {
     });
   };
 
+  const handleCreate = async () => {
+    try {
+      if (!enteredWord || !enteredTranslation || !type) {
+        alert("Please fill out all required fields");
+        return;
+      }
   
+      console.log("Current user is ", currentUser);
+      console.log("Current categoryId is ", categoryId);
+      console.log("Current deckID is ", deckID);
+
+      const newFlashcardData = {
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        categoryId: categoryId,
+        createdAt: serverTimestamp(),
+        createdBy: currentUser,
+      };
+  
+      const flashcardRef = doc(collection(db, "flashcard"));
+      console.log("FlashcardRef", flashcardRef);
+      await setDoc(flashcardRef, newFlashcardData);
+  
+      const newFlashcardID = flashcardRef.id;
+      console.log("Flashcard created successfully with ID:", newFlashcardID);
+  
+      const flashcardListRef = doc(db, "flashcardList", deckID);
+      await updateDoc(flashcardListRef, {
+        cardList: arrayUnion(newFlashcardID),
+      });
+  
+      console.log("New flashcard ID added to cardList in flashcardList document");
+  
+      const updatedFlashcards = [...flashcards, {
+        id: newFlashcardID,
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        createdAt: new Date().toISOString(),
+        createdBy: currentUser,
+        word: enteredTranslation,
+        translation: enteredWord,
+      }];
+      
+      setFlashcards(updatedFlashcards);
+      const updatedLength = updatedFlashcards.length;
+      console.log("Updated flashcards length:", updatedLength);
+  
+      setEnteredWord("");
+      setEnteredTranslation("");
+      setOption1("");
+      setOption2("");
+      setOption3("");
+      setType("");
+      setShowNewFlashcard(false);
+  
+      handleSoftRefresh();
+    } catch (error) {
+      console.error("Error creating flashcard:", error.message);
+      alert(`Failed to create flashcard: ${error.message}`);
+    }
+  };
 
   const handleUpdate = async () => {
     const flashcardID = flashcards[currentCardIndex].id;
@@ -486,7 +550,11 @@ useEffect(() => { //prefill fields
               onPress={handleBack}
             >
               <Ionicons
-                name={"chevron-back-circle-outline"}
+                name={
+                  isPressedLeft
+                    ? "chevron-back-circle"
+                    : "chevron-back-circle-outline"
+                }
                 color={colors.onSurface}
                 size={50}
               />
@@ -501,7 +569,11 @@ useEffect(() => { //prefill fields
               onPress={handleNext}
             >
               <Ionicons
-                name={"chevron-forward-circle-outline"}
+                name={
+                  isPressedRight
+                    ? "chevron-forward-circle"
+                    : "chevron-forward-circle-outline"
+                }
                 color={colors.onSurface}
                 size={50}
               />
