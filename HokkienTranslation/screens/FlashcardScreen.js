@@ -53,7 +53,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   const currentUser = route.params.currentUser;
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
-  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
+  //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false); 
 
   const translateText = async (text, language) => {
     try {
@@ -340,6 +341,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handlePermaDelete = async () => {
+    setDisableDeleteButton(true); 
     const flashcardId = flashcards[currentCardIndex]?.id;
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
@@ -391,6 +393,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   
     setShowConfirmDelete(false);
     console.log("Flashcard successfully deleted from all relevant decks across categories");
+    setDisableDeleteButton(false); 
   };
 
   useEffect(() => {
@@ -740,6 +743,7 @@ useEffect(() => { //prefill fields
                   colorScheme="red"
                   borderWidth={1}
                   borderColor="red.500"
+                  disabled={disableDeleteButton}
                 >
                   Yes
                 </Button>
