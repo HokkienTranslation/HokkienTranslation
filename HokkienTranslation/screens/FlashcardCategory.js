@@ -14,6 +14,7 @@ import {
   Text,
   VStack,
   HStack,
+  Modal,
   View,
   ScrollView,
   Checkbox,
@@ -24,7 +25,6 @@ import { Pressable } from "react-native-web";
 import { useState } from "react";
 import { useTheme } from "./context/ThemeProvider";
 import app, { db } from "../backend/database/Firebase";
-import Modal from 'react-native-modal';
 import {
   collection,
   doc,
@@ -117,6 +117,7 @@ const FlashcardCategory = () => {
 
     return flashcards;
   }
+  
   const fetchUser = async () => {
     try {
       const user = await getCurrentUser();
@@ -224,16 +225,9 @@ const FlashcardCategory = () => {
   const CategoryBox = ({ category, navigation }) => {
     const [isPressed, setIsPressed] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
-    const [isModalVisible, setModalVisible] = useState(false);
-
     const { themes, theme } = useTheme();
     const colors = themes[theme];
 
-  
-    const toggleModal = () => {
-      console.log(isModalVisible)
-      setModalVisible(!isModalVisible);
-    };
     const handleUpdateDeck = async (category) => {
       var deckName = category.name;
       var selectedFlashcards = category.cardList;
@@ -247,12 +241,8 @@ const FlashcardCategory = () => {
         curCategory,
         currentUser,
         update,
+        categoryId,
       });
-    };
-
-    const confirmDelete = async (category) => {
-
-
     };
     const handleDeleteDeck = async (category) => {
       const categoryRef = doc(db, "flashcardList", category.name);
@@ -307,7 +297,6 @@ const FlashcardCategory = () => {
           console.error("Error fetching categories: ", error);
         });
       index = 0;
-      toggleModal();
     };
     return (
       <Pressable
@@ -333,25 +322,11 @@ const FlashcardCategory = () => {
             <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
               <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={toggleModal}>
+            <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
               <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
             </TouchableOpacity>
           </HStack>
         )}
-
-<Modal isVisible={isModalVisible}>
-        <View style={styles.modalContent}>
-          <Text>Are you sure you want to delete this item?</Text>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity style={styles.button} onPress={toggleModal}>
-              <Text style={styles.buttonText}>Cancel</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={[styles.button, { backgroundColor: "#d11a2a" }]} onPress={() => handleDeleteDeck(category)}>
-              <Text style={[styles.buttonText, {color: "white"}]}>Delete</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
       </Pressable>
     );
   };
@@ -361,7 +336,8 @@ const FlashcardCategory = () => {
 
     const addFlashcard = () => {
       console.log("Current curCategory: ", curCategory);
-      navigation.navigate("FlashcardAdd", { curCategory, currentUser });
+      console.log("Category ID: ", categoryId)
+      navigation.navigate("FlashcardAdd", { curCategory, currentUser, categoryId });
     };
 
     return (
@@ -442,30 +418,25 @@ const styles = StyleSheet.create({
     right: 10,
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "90%",
-  }, modalContent: {
-    backgroundColor: 'white',
+    width: "20%",
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+  },
+  modalContent: {
+    width: 300,
     padding: 20,
+    backgroundColor: "white",
     borderRadius: 10,
-    alignItems: 'center',
-    width: "50%",
-    alignSelf: 'center',
+    alignItems: "center",
   },
-  buttonContainer: {
-    flexDirection: 'row',
-    marginTop: 20,
+  modalTitle: {
+    fontSize: 18,
+    marginBottom: 10,
   },
-  button: {
-    marginHorizontal: 10,
-    padding: 10,
-    borderRadius: 5,
-    borderColor: 'black',
-    borderWidth: 1,
-  },
-  buttonText: {
-    color: 'black',
-  },
-
   input: {
     width: "100%",
     borderWidth: 1,

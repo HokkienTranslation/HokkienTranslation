@@ -24,9 +24,12 @@ import {
 import { db } from "../backend/database/Firebase";
 import { HStack, Switch } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
+import getCurrentUser from "../backend/database/GetCurrentUser";
 
-var categoryID = "";
+var categoryId = "";
 var ID = "";
+var currentUser = "";
+
 async function getFlashcardsforCategory(db, category) {
   const categoryRef = collection(db, "category");
 
@@ -39,7 +42,7 @@ async function getFlashcardsforCategory(db, category) {
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     decks = doc.data().flashcardList;
-    categoryID = doc.id;
+    categoryId = doc.id;
   });
 
   for (const deck of decks) {
@@ -66,6 +69,7 @@ async function getFlashcardsforCategory(db, category) {
       translation: flashcardData.origin,
       id: flashcardRef.id,
     });
+    //console.log(flashcardRef.id)
   }
 
   // ensure unique flashcard id
@@ -87,6 +91,9 @@ const FlashcardAdd = ({ route }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
 
+  const categoryId = route.params.categoryId;
+  console.log("Category ID in FlashcardAdd: ", categoryId)
+
   useEffect(() => {
     getFlashcardsforCategory(db, route.params.curCategory)
       .then((flashcardList) => {
@@ -96,6 +103,15 @@ const FlashcardAdd = ({ route }) => {
         console.error("Error fetching flashcards: ", error);
       });
   }, []);
+
+  const fetchUser = async () => {
+    try {
+      const user = await getCurrentUser();
+      currentUser = user;
+    } catch (error) {
+      console.error("Error fetching user: ", error);
+    }
+  };
 
   const toggleSelection = (id) => {
     if (selectedFlashcards.includes(id)) {
@@ -109,6 +125,10 @@ const FlashcardAdd = ({ route }) => {
 
   const handleSubmission = async () => {
     var cardList = selectedFlashcards;
+
+    if (currentUser === "") {
+      fetchUser();
+    }
 
     if (route.params.update) {
       var serverTimestamps;
@@ -131,12 +151,12 @@ const FlashcardAdd = ({ route }) => {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamps,
-        categoryId: categoryID,
+        categoryId: categoryId,
         createdBy: route.params.currentUser,
         shared: shared,
       });
 
-      const categoryRef2 = doc(db, "category", categoryID);
+      const categoryRef2 = doc(db, "category", categoryId);
       const categoryDoc2 = await getDoc(categoryRef2);
       const categoryData2 = categoryDoc2.data();
       var flashcardList = categoryData2.flashcardList;
@@ -153,13 +173,13 @@ const FlashcardAdd = ({ route }) => {
         name: deckName,
         cardList: cardList,
         createdAt: serverTimestamp(),
-        categoryId: categoryID,
+        categoryId: categoryId,
         createdBy: route.params.currentUser,
         shared: shared,
       });
 
       // Update the category
-      const categoryRef = doc(db, "category", categoryID);
+      const categoryRef = doc(db, "category", categoryId);
       const categoryDoc = await getDoc(categoryRef);
       const categoryData = categoryDoc.data();
       var flashcardList = categoryData.flashcardList;
@@ -187,12 +207,19 @@ const FlashcardAdd = ({ route }) => {
       if (cardDoc.exists()) {
         const cardData = cardDoc.data();
         cardList.push({
+          id: card,
+          origin: cardData.origin,
+          destination: cardData.destination,
+          otherOptions: cardData.otherOptions,
+          type: cardData.type,
           word: cardData.destination,
           translation: cardData.origin,
+          createdBy: currentUser,
+          createdAt: new Date().toISOString(),
         });
       }
     }
-    navigation.navigate("Flashcard", { cardList });
+    navigation.navigate("Flashcard", { cardList, deckName: deckName, currentUser, categoryId});
   };
 
   return (
@@ -255,7 +282,7 @@ const FlashcardAdd = ({ route }) => {
             }}
           >
             <Text
-              style={{ color: colors.onSurface, fontSize: 16, fontWeight: "bold" }}
+              style={{ color: "#000000", fontSize: 16, fontWeight: "bold" }}
             >
               Submit
             </Text>
