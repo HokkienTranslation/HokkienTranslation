@@ -305,41 +305,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     setShowUpdates(false);
   };
 
-  const handleDelete = async () => {
-    try {
-      const flashcardID = flashcards[currentCardIndex]?.id;
-  
-      if (!flashcardID) {
-        throw new Error("Flashcard ID not found");
-      }
-  
-      // Step 1: Remove the flashcard locally
-      setFlashcards((prevFlashcards) =>
-        prevFlashcards.filter((_, index) => index !== currentCardIndex)
-      );
-  
-      // Step 2: Remove the flashcard ID from the cardList in the current deck
-      const flashcardListRef = doc(db, "flashcardList", deckID);
-      await updateDoc(flashcardListRef, {
-        cardList: arrayRemove(flashcardID),
-      });
-  
-      console.log(`Flashcard ${flashcardID} removed from the current deck`);
-  
-      // Close the modal and adjust the current card index
-      setShowConfirmDelete(false);
-      setCurrentCardIndex((prevIndex) => {
-        if (prevIndex === flashcards.length - 1 && prevIndex !== 0) {
-          return prevIndex - 1;
-        }
-        return prevIndex;
-      });
-    } catch (error) {
-      console.error("Error deleting flashcard:", error);
-      alert(`Failed to delete flashcard: ${error.message}`);
-    }
-  };
-
   const handlePermaDelete = async () => {
     setDisableDeleteButton(true); 
     const flashcardId = flashcards[currentCardIndex]?.id;
