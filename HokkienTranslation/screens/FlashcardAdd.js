@@ -91,19 +91,6 @@ const FlashcardAdd = ({ route }) => {
   const categoryId = route.params.categoryId;
   console.log("Category ID in FlashcardAdd: ", categoryId)
 
-  const getDeckIDByName = async (deckName) => { //function to query deck id by name
-    const deckCollection = collection(db, "flashcardList");
-    const q = query(deckCollection, where("name", "==", deckName));
-    const querySnapshot = await getDocs(q);
-        
-    const deckDoc = querySnapshot.docs[0];
-    const deckID = deckDoc.id;
-    console.log("Deck ID:", deckID);
-    console.log("Current category in FlashcardScreen is:", categoryId);
-    console.log("Current deck is:", flashcardListName);
-    return deckID;    
-  };
-
   useEffect(() => {
     getFlashcardsforCategory(db, route.params.curCategory)
       .then((flashcardList) => {
@@ -214,7 +201,8 @@ const FlashcardAdd = ({ route }) => {
         });
       }
     }
-    navigation.navigate("Flashcard", { cardList });
+    console.log("LOOK AT ME:", categoryId)
+    navigation.navigate("Flashcard", { cardList, deckName: deckName, categoryId});
   };
 
   return (
