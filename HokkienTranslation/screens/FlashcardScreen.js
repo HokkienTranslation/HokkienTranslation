@@ -239,7 +239,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       });
   
       console.log("New flashcard ID added to cardList in flashcardList document");
-
+      setIsMax(false);
 
       setEnteredWord("");
       setEnteredTranslation("");
