@@ -729,7 +729,7 @@ useEffect(() => { //prefill fields
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
             <Modal.Body>
-              <Text size>Are you sure you want to delete this flashcard from this deck?</Text>
+              <Text fontSize="xl">Delete this flashcard from this deck?</Text>
               <HStack space={2} alignItems="center" marginTop={4}>
               </HStack>
             </Modal.Body>
