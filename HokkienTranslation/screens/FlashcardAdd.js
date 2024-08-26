@@ -255,7 +255,7 @@ const FlashcardAdd = ({ route }) => {
             }}
           >
             <Text
-              style={{ color: colors.onSurface, fontSize: 16, fontWeight: "bold" }}
+              style={{ color: "#000000", fontSize: 16, fontWeight: "bold" }}
             >
               Submit
             </Text>

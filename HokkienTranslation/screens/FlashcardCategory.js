@@ -240,6 +240,7 @@ const FlashcardCategory = () => {
         curCategory,
         currentUser,
         update,
+        categoryId,
       });
     };
     const handleDeleteDeck = async (category) => {
@@ -334,7 +335,8 @@ const FlashcardCategory = () => {
 
     const addFlashcard = () => {
       console.log("Current curCategory: ", curCategory);
-      navigation.navigate("FlashcardAdd", { curCategory, currentUser });
+      console.log("Category ID: ", categoryId)
+      navigation.navigate("FlashcardAdd", { curCategory, currentUser, categoryId });
     };
 
     return (
