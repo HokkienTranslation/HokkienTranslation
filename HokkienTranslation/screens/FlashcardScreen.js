@@ -731,20 +731,12 @@ useEffect(() => { //prefill fields
             <Modal.Body>
               <Text size>Are you sure you want to delete this flashcard from this deck?</Text>
               <HStack space={2} alignItems="center" marginTop={4}>
-                <Switch
-                  isChecked={isPermanentDelete}
-                  onToggle={() => setIsPermanentDelete(!isPermanentDelete)}
-                  size="sm"
-                />
-                <Text fontSize="sm">
-                  Delete flashcard permanently
-                </Text>
               </HStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={4}>
                 <Button
-                  onPress={isPermanentDelete ? handlePermaDelete : handleDelete}
+                  onPress={handlePermaDelete}
                   colorScheme="red"
                   borderWidth={1}
                   borderColor="red.500"
