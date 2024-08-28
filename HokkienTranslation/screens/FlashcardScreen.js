@@ -722,7 +722,7 @@ useEffect(() => { //prefill fields
               <Text fontSize="xl" fontWeight={"bold"}>Delete Confirmation</Text>
             </Modal.Header>
             <Modal.Body>
-              <Box backgroundColor={"red.200"} borderWidth={1} borderRadius={4} borderColor={"red.300"} padding={2}>
+              <Box backgroundColor={"red.200"} borderWidth={1} borderRadius={4} borderColor={"red.300"} padding={3.5}>
                 <Text color={"red.800"}>Delete this flashcard from this deck?</Text>
               </Box>
               
@@ -731,22 +731,24 @@ useEffect(() => { //prefill fields
             </Modal.Body>
             <Modal.Footer>
               <HStack space={4}>
-                <Button
-                  onPress={handlePermaDelete}
-                  colorScheme="red"
-                  borderWidth={1}
-                  borderColor="red.500"
-                  disabled={disableDeleteButton}
-                >
-                  Yes
-                </Button>
+                
                 <Button
                   variant="ghost"
                   onPress={() => setShowConfirmDelete(false)}
                   borderWidth={1}
                   borderColor="coolGray.200"
                 >
-                  No
+                  Cancel
+                </Button>
+                <Button
+                  onPress={handlePermaDelete}
+                  colorScheme="red"
+                  borderWidth={1}
+                  borderColor="red.500"
+                  disabled={disableDeleteButton}
+                  
+                >
+                  Delete
                 </Button>
               </HStack>
             </Modal.Footer>
