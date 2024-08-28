@@ -168,7 +168,7 @@ export default function LoginScreen({ navigation }) {
               </Text>
               <Divider flex={1} bg={colors.onSurface} />
             </HStack>
-            <Pressable onPress={loginWithGoogle} w="full">
+            <Pressable onPress={loginWithGoogle} w="200px">
               <HStack
                 alignItems="center"
                 justifyContent="center"
