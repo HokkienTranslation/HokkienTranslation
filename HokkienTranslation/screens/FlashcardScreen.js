@@ -627,7 +627,12 @@ useEffect(() => { //prefill fields
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
-                <Button onPress={handleCreate}>Save</Button>
+                <Button onPress={handleCreate}>
+                  <HStack space={1} alignItems="center">
+                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Text color={"#FFFFFF"}>Save</Text>
+                  </HStack>
+                </Button>
                 <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1}borderColor="coolGray.200">Cancel</Button>
               </HStack>
             </Modal.Footer>
@@ -701,7 +706,12 @@ useEffect(() => { //prefill fields
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
-                <Button onPress={handleUpdate}>Save</Button>
+                <Button onPress={handleUpdate}>
+                  <HStack space={1} alignItems="center">
+                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Text color={"#FFFFFF"}>Save</Text>
+                  </HStack>
+                </Button>
                 <Button onPress={() => setShowUpdates(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">
                   Cancel
                 </Button>
