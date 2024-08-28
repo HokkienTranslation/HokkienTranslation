@@ -93,7 +93,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     })
   ).current;
 
-  const getDeckIDByName = async (deckName) => { //function to query deck id by name
+  const getDeckIDByName = async (deckName) => {
     const deckCollection = collection(db, "flashcardList");
     const q = query(deckCollection, where("name", "==", deckName));
     const querySnapshot = await getDocs(q);
@@ -127,7 +127,6 @@ const FlashcardScreen = ({ route, navigation }) => {
         const deckDoc = querySnapshot.docs[0];
         const flashcardIDs = deckDoc.data().cardList || [];
 
-        // Fetch flashcards by their IDs
         const flashcardCollection = collection(db, "flashcard");
         const flashcardQuery = query(
           flashcardCollection,
@@ -300,8 +299,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       type: type,
       updatedAt: serverTimestamp(),
     });
-  
-    // locally update
+    
     setFlashcards((prevFlashcards) =>
       prevFlashcards.map((flashcard, index) =>
         index === currentCardIndex
