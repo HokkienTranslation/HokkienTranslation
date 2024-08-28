@@ -14,45 +14,47 @@ const SettingsScreen = () => {
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
   const { languages, setLanguages } = useLanguage();
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (languages[0] === languages[1]) {
-      setErrorMessage('The selected languages must be different.');
+      setErrorMessage("The selected languages must be different.");
     } else {
-      setErrorMessage('');
+      setErrorMessage("");
     }
   }, [languages]);
 
   const languageList = [
-    { key: 'Arabic', value: "Arabic" },
-    { key: 'Chinese (Simplified)', value: "Chinese (Simplified)" },
-    { key: 'Chinese (Traditional)', value: "Chinese (Traditional)" },
-    { key: 'Czech', value: "Czech" },
-    { key: 'Danish', value: "Danish" },
-    { key: 'Dutch', value: "Dutch" },
-    { key: 'English', value: "English" },
-    { key: 'French', value: "French" },
-    { key: 'German', value: "German" },
-    { key: 'Greek', value: "Greek" },
-    { key: 'Hindi', value: "Hindi" },
-    { key: 'Indonesian', value: "Indonesian" },
-    { key: 'Italian', value: "Italian" },
-    { key: 'Japanese', value: "Japanese" },
-    { key: 'Korean', value: "Korean" },
-    { key: 'Polish', value: "Polish" },
-    { key: 'Portuguese', value: "Portuguese" },
-    { key: 'Russian', value: "Russian" },
-    { key: 'Spanish', value: "Spanish" },
-    { key: 'Turkish', value: "Turkish" },
-    { key: 'Vietnamese', value: "Vietnamese" }
+    { key: "Arabic", value: "Arabic" },
+    { key: "Chinese (Simplified)", value: "Chinese (Simplified)" },
+    { key: "Chinese (Traditional)", value: "Chinese (Traditional)" },
+    { key: "Czech", value: "Czech" },
+    { key: "Danish", value: "Danish" },
+    { key: "Dutch", value: "Dutch" },
+    { key: "English", value: "English" },
+    { key: "French", value: "French" },
+    { key: "German", value: "German" },
+    { key: "Greek", value: "Greek" },
+    { key: "Hindi", value: "Hindi" },
+    { key: "Indonesian", value: "Indonesian" },
+    { key: "Italian", value: "Italian" },
+    { key: "Japanese", value: "Japanese" },
+    { key: "Korean", value: "Korean" },
+    { key: "Polish", value: "Polish" },
+    { key: "Portuguese", value: "Portuguese" },
+    { key: "Russian", value: "Russian" },
+    { key: "Spanish", value: "Spanish" },
+    { key: "Turkish", value: "Turkish" },
+    { key: "Vietnamese", value: "Vietnamese" },
   ];
 
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable onPress={toggleTheme} hitSlop={10}>
       <HStack space={2} alignItems="center">
         <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
-        <Text style={{ fontSize: 16, color: colors.onSurface }}>{themeName}</Text>
+        <Text style={{ fontSize: 16, color: colors.onSurface }}>
+          {themeName}
+        </Text>
       </HStack>
     </Pressable>
   );
@@ -128,33 +130,48 @@ const SettingsScreen = () => {
                 color: colors.onSurface,
               }}
             >
-              Language Options
+              Flashcard Language Options (Not for Home Page)
             </Text>
             <HStack space={2} alignItems="center">
-              <Text color={colors.onSurface} style={{ marginRight: 10, fontSize: 16 }}>Language 1 (card front):</Text>
+              <Text
+                color={colors.onSurface}
+                style={{ marginRight: 10, fontSize: 16 }}
+              >
+                Language 1 (card front):
+              </Text>
               <SelectList
                 setSelected={(key) => setLanguages([key, languages[1]])}
                 data={languageList}
                 save="key"
-                defaultOption={{ key:'English', value:'English' }}
-                boxStyles={{ backgroundColor: colors.surface }} 
-                dropdownTextStyles={{ color: colors.onSurface }} 
+                defaultOption={{ key: "English", value: "English" }}
+                boxStyles={{ backgroundColor: colors.surface }}
+                dropdownTextStyles={{ color: colors.onSurface }}
                 inputStyles={{ color: colors.onSurface }}
               />
             </HStack>
             <HStack space={2} alignItems="center">
-              <Text color={colors.onSurface} style={{ marginRight: 10, fontSize: 16 }}>Language 2 (card back):</Text>
+              <Text
+                color={colors.onSurface}
+                style={{ marginRight: 10, fontSize: 16 }}
+              >
+                Language 2 (card back):
+              </Text>
               <SelectList
                 setSelected={(key) => setLanguages([languages[0], key])}
                 data={languageList}
                 save="key"
-                defaultOption={{ key:'Chinese (Simplified)', value:'Chinese (Simplified)' }}
-                boxStyles={{ backgroundColor: colors.surface }} 
-                dropdownTextStyles={{ color: colors.onSurface }} 
+                defaultOption={{
+                  key: "Chinese (Simplified)",
+                  value: "Chinese (Simplified)",
+                }}
+                boxStyles={{ backgroundColor: colors.surface }}
+                dropdownTextStyles={{ color: colors.onSurface }}
                 inputStyles={{ color: colors.onSurface }}
               />
             </HStack>
-            {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
+            {errorMessage ? (
+              <Text style={{ color: "red" }}>{errorMessage}</Text>
+            ) : null}
           </VStack>
 
           {/* Models section */}
@@ -170,10 +187,22 @@ const SettingsScreen = () => {
             </Text>
             <VisibilityToggle label="Image" stateKey="image" />
             <VisibilityToggle label="Definition" stateKey="definition" />
-            <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
-            <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
-            <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
-            <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
+            <VisibilityToggle
+              label="English Definition"
+              stateKey="englishDefinition"
+            />
+            <VisibilityToggle
+              label="Hokkien Sentence"
+              stateKey="hokkienSentence"
+            />
+            <VisibilityToggle
+              label="Chinese Sentence"
+              stateKey="chineseSentence"
+            />
+            <VisibilityToggle
+              label="English Sentence"
+              stateKey="englishSentence"
+            />
             <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
           </VStack>
 
