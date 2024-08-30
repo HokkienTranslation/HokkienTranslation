@@ -93,7 +93,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     })
   ).current;
 
-  const getDeckIDByName = async (deckName) => { //function to query deck id by name
+  const getDeckIDByName = async (deckName) => {
     const deckCollection = collection(db, "flashcardList");
     const q = query(deckCollection, where("name", "==", deckName));
     const querySnapshot = await getDocs(q);
@@ -127,7 +127,6 @@ const FlashcardScreen = ({ route, navigation }) => {
         const deckDoc = querySnapshot.docs[0];
         const flashcardIDs = deckDoc.data().cardList || [];
 
-        // Fetch flashcards by their IDs
         const flashcardCollection = collection(db, "flashcard");
         const flashcardQuery = query(
           flashcardCollection,
@@ -300,8 +299,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       type: type,
       updatedAt: serverTimestamp(),
     });
-  
-    // locally update
+    
     setFlashcards((prevFlashcards) =>
       prevFlashcards.map((flashcard, index) =>
         index === currentCardIndex
@@ -473,7 +471,7 @@ useEffect(() => { //prefill fields
       <Center flex={1} px="3">
       <VStack space={4} alignItems="center">
           <HStack space={4}>
-            <CrudButtons 
+            <CrudButtons
               title="Create" 
               onPress={() => setShowNewFlashcard(true)}
               iconName="add"
@@ -629,7 +627,12 @@ useEffect(() => { //prefill fields
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
-                <Button onPress={handleCreate}>Save</Button>
+                <Button onPress={handleCreate}>
+                  <HStack space={1} alignItems="center">
+                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Text color={"#FFFFFF"}>Save</Text>
+                  </HStack>
+                </Button>
                 <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1}borderColor="coolGray.200">Cancel</Button>
               </HStack>
             </Modal.Footer>
@@ -703,7 +706,12 @@ useEffect(() => { //prefill fields
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
-                <Button onPress={handleUpdate}>Save</Button>
+                <Button onPress={handleUpdate}>
+                  <HStack space={1} alignItems="center">
+                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Text color={"#FFFFFF"}>Save</Text>
+                  </HStack>
+                </Button>
                 <Button onPress={() => setShowUpdates(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">
                   Cancel
                 </Button>
@@ -720,29 +728,37 @@ useEffect(() => { //prefill fields
         >
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
+            <Modal.Header>
+              <Text fontSize="xl" fontWeight={"bold"}>Delete Confirmation</Text>
+            </Modal.Header>
             <Modal.Body>
-              <Text fontSize="xl">Delete this flashcard from this deck?</Text>
+              <Box backgroundColor={"red.200"} borderWidth={1} borderRadius={4} borderColor={"red.300"} padding={3}>
+                <Text color={"red.800"}>Are you sure you want to delete the flashcard '{flashcards[currentCardIndex].word}'?</Text>
+              </Box>
+              
               <HStack space={2} alignItems="center" marginTop={4}>
               </HStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={4}>
-                <Button
-                  onPress={handlePermaDelete}
-                  colorScheme="red"
-                  borderWidth={1}
-                  borderColor="red.500"
-                  disabled={disableDeleteButton}
-                >
-                  Yes
-                </Button>
+                
                 <Button
                   variant="ghost"
                   onPress={() => setShowConfirmDelete(false)}
                   borderWidth={1}
                   borderColor="coolGray.200"
                 >
-                  No
+                  Cancel
+                </Button>
+                <Button
+                  onPress={handlePermaDelete}
+                  colorScheme="red"
+                  borderWidth={1}
+                  borderColor="red.500"
+                  disabled={disableDeleteButton}
+                  
+                >
+                  Delete
                 </Button>
               </HStack>
             </Modal.Footer>

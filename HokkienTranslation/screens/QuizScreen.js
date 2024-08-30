@@ -451,7 +451,7 @@ const QuizScreen = ({ route }) => {
           }}
         >
           <Box
-            width="400px"
+            width="350px"
             height="250px"
             bg={colors.primaryContainer}
             borderRadius="10px"
