@@ -451,23 +451,17 @@ const FlashcardScreen = ({ route, navigation }) => {
               let word = flashcard.destination;
               let translation = flashcard.origin;
 
-              if (languages[0] === "Chinese (Simplified)") {
+              if (languages[0] === "Hokkien") {
                 word = translation;
               }
               if (languages[1] === "English") {
                 translation = word;
               }
 
-              if (
-                languages[0] !== "English" &&
-                languages[0] !== "Chinese (Simplified)"
-              ) {
+              if (languages[0] !== "English" && languages[0] !== "Hokkien") {
                 word = await translateText(word, languages[0]);
               }
-              if (
-                languages[1] !== "English" &&
-                languages[1] !== "Chinese (Simplified)"
-              ) {
+              if (languages[1] !== "English" && languages[1] !== "Hokkien") {
                 translation = await translateText(translation, languages[1]);
               }
 
@@ -580,7 +574,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     <Text fontSize="2xl" color={colors.onSurface}>
                       {flashcards[currentCardIndex].translation}
                     </Text>
-                    {languages[1] === "Chinese (Simplified)" && (
+                    {languages[1] === "Hokkien" && (
                       <TextToSpeech
                         prompt={flashcards[currentCardIndex].translation}
                       />

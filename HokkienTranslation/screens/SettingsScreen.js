@@ -26,6 +26,7 @@ const SettingsScreen = () => {
 
   const languageList = [
     { key: "Arabic", value: "Arabic" },
+    { key: "Hokkien", value: "Hokkien" },
     { key: "Chinese (Simplified)", value: "Chinese (Simplified)" },
     { key: "Chinese (Traditional)", value: "Chinese (Traditional)" },
     { key: "Czech", value: "Czech" },
@@ -161,8 +162,8 @@ const SettingsScreen = () => {
                 data={languageList}
                 save="key"
                 defaultOption={{
-                  key: "Chinese (Simplified)",
-                  value: "Chinese (Simplified)",
+                  key: "Hokkien",
+                  value: "Hokkien",
                 }}
                 boxStyles={{ backgroundColor: colors.surface }}
                 dropdownTextStyles={{ color: colors.onSurface }}
