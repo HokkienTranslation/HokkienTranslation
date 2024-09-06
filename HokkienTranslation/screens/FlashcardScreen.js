@@ -14,13 +14,27 @@ import {
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs, arrayUnion, updateDoc, deleteDoc, arrayRemove  } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  collection,
+  serverTimestamp,
+  query,
+  where,
+  getDoc,
+  getDocs,
+  arrayUnion,
+  updateDoc,
+  deleteDoc,
+  arrayRemove,
+} from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
+import TextToSpeech from "./components/TextToSpeech";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -52,7 +66,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [translatedText, setTranslatedText] = useState("");
   //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
-  const [disableDeleteButton, setDisableDeleteButton] = useState(false); 
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
 
   const translateText = async (text, language) => {
     try {
@@ -97,13 +111,13 @@ const FlashcardScreen = ({ route, navigation }) => {
     const deckCollection = collection(db, "flashcardList");
     const q = query(deckCollection, where("name", "==", deckName));
     const querySnapshot = await getDocs(q);
-        
+
     const deckDoc = querySnapshot.docs[0];
     const deckID = deckDoc.id;
     console.log("Deck ID:", deckID);
     console.log("Current category in FlashcardScreen is:", categoryId);
     console.log("Current deck is:", flashcardListName);
-    return deckID;    
+    return deckID;
   };
 
   useEffect(() => {
@@ -163,12 +177,11 @@ const FlashcardScreen = ({ route, navigation }) => {
   }, [currentCardIndex, flashcards]);
 
   useEffect(() => {
-  console.log("Current flashcard index:", currentCardIndex);
-  console.log("Flashcards array length:", flashcards.length);
+    console.log("Current flashcard index:", currentCardIndex);
+    console.log("Flashcards array length:", flashcards.length);
 
-  position.setValue({ x: 0, y: 0 });
-  
-}, [currentCardIndex, flashcards]);
+    position.setValue({ x: 0, y: 0 });
+  }, [currentCardIndex, flashcards]);
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -208,7 +221,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   const handleSoftRefresh = () => {
-    navigation.replace('FlashcardScreen', {
+    navigation.replace("FlashcardScreen", {
       flashcardListId: flashcardListId,
       deckName: flashcardListName,
       currentUser: currentUser,
@@ -223,7 +236,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         alert("Please fill out all required fields");
         return;
       }
-  
+
       console.log("Current user is ", currentUser);
       console.log("Current categoryId is ", categoryId);
       console.log("Current deckID is ", deckID);
@@ -237,37 +250,42 @@ const FlashcardScreen = ({ route, navigation }) => {
         createdAt: serverTimestamp(),
         createdBy: currentUser,
       };
-  
+
       const flashcardRef = doc(collection(db, "flashcard"));
       console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
-  
+
       const newFlashcardID = flashcardRef.id;
       console.log("Flashcard created successfully with ID:", newFlashcardID);
-  
+
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
         cardList: arrayUnion(newFlashcardID),
       });
-  
-      console.log("New flashcard ID added to cardList in flashcardList document");
-  
-      const updatedFlashcards = [...flashcards, {
-        id: newFlashcardID,
-        origin: enteredWord,
-        destination: enteredTranslation,
-        otherOptions: [option1, option2, option3],
-        type: type,
-        createdAt: new Date().toISOString(),
-        createdBy: currentUser,
-        word: enteredTranslation,
-        translation: enteredWord,
-      }];
-      
+
+      console.log(
+        "New flashcard ID added to cardList in flashcardList document"
+      );
+
+      const updatedFlashcards = [
+        ...flashcards,
+        {
+          id: newFlashcardID,
+          origin: enteredWord,
+          destination: enteredTranslation,
+          otherOptions: [option1, option2, option3],
+          type: type,
+          createdAt: new Date().toISOString(),
+          createdBy: currentUser,
+          word: enteredTranslation,
+          translation: enteredWord,
+        },
+      ];
+
       setFlashcards(updatedFlashcards);
       const updatedLength = updatedFlashcards.length;
       console.log("Updated flashcards length:", updatedLength);
-  
+
       setEnteredWord("");
       setEnteredTranslation("");
       setOption1("");
@@ -275,7 +293,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       setOption3("");
       setType("");
       setShowNewFlashcard(false);
-  
+
       handleSoftRefresh();
     } catch (error) {
       console.error("Error creating flashcard:", error.message);
@@ -285,12 +303,12 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const handleUpdate = async () => {
     const flashcardID = flashcards[currentCardIndex].id;
-  
+
     if (!enteredWord || !enteredTranslation || !type) {
       alert("Please fill out all required fields");
       return;
     }
-  
+
     const flashcardRef = doc(db, "flashcard", flashcardID);
     await updateDoc(flashcardRef, {
       origin: enteredWord,
@@ -299,7 +317,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       type: type,
       updatedAt: serverTimestamp(),
     });
-    
+
     setFlashcards((prevFlashcards) =>
       prevFlashcards.map((flashcard, index) =>
         index === currentCardIndex
@@ -325,56 +343,71 @@ const FlashcardScreen = ({ route, navigation }) => {
       const newIndex = prevIndex > 0 ? prevIndex - 1 : 0; // doesn't go below 0
       return newIndex;
     });
-  
+
     const flashcardId = flashcards[currentCardIndex]?.id;
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
-  
+
     try {
       setFlashcards((prevFlashcards) => {
-        const updatedFlashcards = prevFlashcards.filter((_, index) => index !== currentCardIndex);
+        const updatedFlashcards = prevFlashcards.filter(
+          (_, index) => index !== currentCardIndex
+        );
         return updatedFlashcards;
       });
       const flashcardRef = doc(db, "flashcard", flashcardId);
       await deleteDoc(flashcardRef);
       console.log("Flashcard deleted from flashcard collection");
-  
+
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
         cardList: arrayRemove(flashcardId),
       });
       console.log("Flashcard ID removed from current deck's cardList");
-  
+
       const categoriesCollectionRef = collection(db, "category");
       const categorySnapshot = await getDocs(categoriesCollectionRef);
-  
+
       for (const categoryDoc of categorySnapshot.docs) {
         const categoryData = categoryDoc.data();
         const flashcardListNames = categoryData.flashcardList;
-  
-        if (Array.isArray(flashcardListNames) && flashcardListNames.length > 0) {
+
+        if (
+          Array.isArray(flashcardListNames) &&
+          flashcardListNames.length > 0
+        ) {
           for (const flashcardListName of flashcardListNames) {
-            const flashcardListRef = doc(db, "flashcardList", flashcardListName);
+            const flashcardListRef = doc(
+              db,
+              "flashcardList",
+              flashcardListName
+            );
             const flashcardListDoc = await getDoc(flashcardListRef);
-  
+
             if (flashcardListDoc.exists()) {
               const flashcardListData = flashcardListDoc.data();
-  
+
               if (flashcardListData.cardList.includes(flashcardId)) {
-                const updatedCardList = flashcardListData.cardList.filter((id) => id !== flashcardId);
-  
+                const updatedCardList = flashcardListData.cardList.filter(
+                  (id) => id !== flashcardId
+                );
+
                 await updateDoc(flashcardListRef, {
                   cardList: updatedCardList,
                 });
-                console.log(`Flashcard ID removed from deck: ${flashcardListName} in category: ${categoryDoc.id}`);
+                console.log(
+                  `Flashcard ID removed from deck: ${flashcardListName} in category: ${categoryDoc.id}`
+                );
               }
             }
           }
         }
       }
-  
-      console.log("Flashcard successfully deleted from all relevant decks across categories");
+
+      console.log(
+        "Flashcard successfully deleted from all relevant decks across categories"
+      );
       handleSoftRefresh();
     } catch (error) {
       console.error("Error deleting flashcard:", error.message);
@@ -386,81 +419,92 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-  const fetchAndGenerateFlashcards = async () => {
-    try {
-      const deckCollection = collection(db, "flashcardList");
-      const deckQuery = query(deckCollection, where("name", "==", flashcardListName));
-      const querySnapshot = await getDocs(deckQuery);
-
-      if (!querySnapshot.empty) {
-        const deckDoc = querySnapshot.docs[0];
-        const flashcardIDs = deckDoc.data().cardList || [];
-
-        // fetch by ID
-        const flashcardCollection = collection(db, "flashcard");
-        const flashcardQuery = query(
-          flashcardCollection,
-          where("__name__", "in", flashcardIDs)
+    const fetchAndGenerateFlashcards = async () => {
+      try {
+        const deckCollection = collection(db, "flashcardList");
+        const deckQuery = query(
+          deckCollection,
+          where("name", "==", flashcardListName)
         );
-        const flashcardSnapshot = await getDocs(flashcardQuery);
+        const querySnapshot = await getDocs(deckQuery);
 
-        let fetchedFlashcards = flashcardSnapshot.docs.map((doc) => ({ //add ID to flashcards
-          id: doc.id,
-          ...doc.data(),
-        }));
+        if (!querySnapshot.empty) {
+          const deckDoc = querySnapshot.docs[0];
+          const flashcardIDs = deckDoc.data().cardList || [];
 
-        const processedFlashcards = await Promise.all(
-          fetchedFlashcards.map(async (flashcard) => {
-          let word = flashcard.destination;
-          let translation = flashcard.origin;
+          // fetch by ID
+          const flashcardCollection = collection(db, "flashcard");
+          const flashcardQuery = query(
+            flashcardCollection,
+            where("__name__", "in", flashcardIDs)
+          );
+          const flashcardSnapshot = await getDocs(flashcardQuery);
 
-            if (languages[0] === "Chinese (Simplified)") {
-            word = translation;
-          }
-            if (languages[1] === "English") {
-            translation = word;
-          }
+          let fetchedFlashcards = flashcardSnapshot.docs.map((doc) => ({
+            //add ID to flashcards
+            id: doc.id,
+            ...doc.data(),
+          }));
 
-            if (languages[0] !== "English" && languages[0] !== "Chinese (Simplified)") {
-              word = await translateText(word, languages[0]);
-          }
-            if (languages[1] !== "English" && languages[1] !== "Chinese (Simplified)") {
-              translation = await translateText(translation, languages[1]);
-          }
+          const processedFlashcards = await Promise.all(
+            fetchedFlashcards.map(async (flashcard) => {
+              let word = flashcard.destination;
+              let translation = flashcard.origin;
 
-          return {
-            ...flashcard,
-            word,
-            translation,
-          };
-        })
-      );
+              if (languages[0] === "Chinese (Simplified)") {
+                word = translation;
+              }
+              if (languages[1] === "English") {
+                translation = word;
+              }
 
-        setFlashcards(processedFlashcards);
-      } else {
-        console.log("Deck not found.");
+              if (
+                languages[0] !== "English" &&
+                languages[0] !== "Chinese (Simplified)"
+              ) {
+                word = await translateText(word, languages[0]);
+              }
+              if (
+                languages[1] !== "English" &&
+                languages[1] !== "Chinese (Simplified)"
+              ) {
+                translation = await translateText(translation, languages[1]);
+              }
+
+              return {
+                ...flashcard,
+                word,
+                translation,
+              };
+            })
+          );
+
+          setFlashcards(processedFlashcards);
+        } else {
+          console.log("Deck not found.");
+        }
+      } catch (error) {
+        console.error("Error fetching or generating flashcards:", error);
       }
-    } catch (error) {
-      console.error("Error fetching or generating flashcards:", error);
+    };
+
+    if (flashcardListName) {
+      fetchAndGenerateFlashcards();
     }
-  };
+  }, [flashcardListName, languages]);
 
-  if (flashcardListName) {
-    fetchAndGenerateFlashcards();
-  }
-}, [flashcardListName, languages]);
-
-useEffect(() => { //prefill fields
-  if (showUpdates && flashcards.length > 0) {
-    const currentFlashcard = flashcards[currentCardIndex];
-    setEnteredWord(currentFlashcard.origin);
-    setEnteredTranslation(currentFlashcard.destination);
-    setOption1(currentFlashcard.otherOptions[0] || "");
-    setOption2(currentFlashcard.otherOptions[1] || "");
-    setOption3(currentFlashcard.otherOptions[2] || "");
-    setType(currentFlashcard.type || "word");
-  }
-}, [showUpdates, currentCardIndex, flashcards]);
+  useEffect(() => {
+    //prefill fields
+    if (showUpdates && flashcards.length > 0) {
+      const currentFlashcard = flashcards[currentCardIndex];
+      setEnteredWord(currentFlashcard.origin);
+      setEnteredTranslation(currentFlashcard.destination);
+      setOption1(currentFlashcard.otherOptions[0] || "");
+      setOption2(currentFlashcard.otherOptions[1] || "");
+      setOption3(currentFlashcard.otherOptions[2] || "");
+      setType(currentFlashcard.type || "word");
+    }
+  }, [showUpdates, currentCardIndex, flashcards]);
 
   return (
     <Box flex={1} background={colors.surface}>
@@ -469,10 +513,10 @@ useEffect(() => { //prefill fields
         flashcardListName={flashcardListName}
       />
       <Center flex={1} px="3">
-      <VStack space={4} alignItems="center">
+        <VStack space={4} alignItems="center">
           <HStack space={4}>
             <CrudButtons
-              title="Create" 
+              title="Create"
               onPress={() => setShowNewFlashcard(true)}
               iconName="add"
             />
@@ -531,11 +575,22 @@ useEffect(() => { //prefill fields
                 borderRadius="10px"
                 shadow={2}
               >
-                <Text fontSize="2xl" color={colors.onSurface}>
-                  {showTranslation
-                    ? flashcards[currentCardIndex].translation
-                    : flashcards[currentCardIndex].word}
-                </Text>
+                {showTranslation ? (
+                  <>
+                    <Text fontSize="2xl" color={colors.onSurface}>
+                      {flashcards[currentCardIndex].translation}
+                    </Text>
+                    {languages[1] === "Chinese (Simplified)" && (
+                      <TextToSpeech
+                        prompt={flashcards[currentCardIndex].translation}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <Text fontSize="2xl" color={colors.onSurface}>
+                    {flashcards[currentCardIndex].word}
+                  </Text>
+                )}
               </Box>
             </Animated.View>
           </TouchableOpacity>
@@ -622,18 +677,28 @@ useEffect(() => { //prefill fields
                   <Select.Item label="Word" value="word" />
                   <Select.Item label="Sentence" value="sentence" />
                 </Select>
-                
               </VStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={2}>
                 <Button onPress={handleCreate}>
                   <HStack space={1} alignItems="center">
-                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Ionicons
+                      name={"save-outline"}
+                      size={30}
+                      color={"#FFFFFF"}
+                    />
                     <Text color={"#FFFFFF"}>Save</Text>
                   </HStack>
                 </Button>
-                <Button onPress={() => setShowNewFlashcard(false)} variant="ghost" borderWidth={1}borderColor="coolGray.200">Cancel</Button>
+                <Button
+                  onPress={() => setShowNewFlashcard(false)}
+                  variant="ghost"
+                  borderWidth={1}
+                  borderColor="coolGray.200"
+                >
+                  Cancel
+                </Button>
               </HStack>
             </Modal.Footer>
           </Modal.Content>
@@ -668,27 +733,15 @@ useEffect(() => { //prefill fields
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 1:</Text>
-                  <Input
-                    flex={1}
-                    value={option1}
-                    onChangeText={setOption1}
-                  />
+                  <Input flex={1} value={option1} onChangeText={setOption1} />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 2:</Text>
-                  <Input
-                    flex={1}
-                    value={option2}
-                    onChangeText={setOption2}
-                  />
+                  <Input flex={1} value={option2} onChangeText={setOption2} />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Option 3:</Text>
-                  <Input
-                    flex={1}
-                    value={option3}
-                    onChangeText={setOption3}
-                  />
+                  <Input flex={1} value={option3} onChangeText={setOption3} />
                 </HStack>
                 <HStack space={2} alignItems="center">
                   <Text width="100px">Type:</Text>
@@ -708,11 +761,20 @@ useEffect(() => { //prefill fields
               <HStack space={2}>
                 <Button onPress={handleUpdate}>
                   <HStack space={1} alignItems="center">
-                    <Ionicons name={"save-outline"} size={30} color={"#FFFFFF"} />
+                    <Ionicons
+                      name={"save-outline"}
+                      size={30}
+                      color={"#FFFFFF"}
+                    />
                     <Text color={"#FFFFFF"}>Save</Text>
                   </HStack>
                 </Button>
-                <Button onPress={() => setShowUpdates(false)} variant="ghost" borderWidth={1} borderColor="coolGray.200">
+                <Button
+                  onPress={() => setShowUpdates(false)}
+                  variant="ghost"
+                  borderWidth={1}
+                  borderColor="coolGray.200"
+                >
                   Cancel
                 </Button>
               </HStack>
@@ -729,19 +791,28 @@ useEffect(() => { //prefill fields
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
             <Modal.Header>
-              <Text fontSize="xl" fontWeight={"bold"}>Delete Confirmation</Text>
+              <Text fontSize="xl" fontWeight={"bold"}>
+                Delete Confirmation
+              </Text>
             </Modal.Header>
             <Modal.Body>
-              <Box backgroundColor={"red.200"} borderWidth={1} borderRadius={4} borderColor={"red.300"} padding={3}>
-                <Text color={"red.800"}>Are you sure you want to delete the flashcard '{flashcards[currentCardIndex].word}'?</Text>
+              <Box
+                backgroundColor={"red.200"}
+                borderWidth={1}
+                borderRadius={4}
+                borderColor={"red.300"}
+                padding={3}
+              >
+                <Text color={"red.800"}>
+                  Are you sure you want to delete the flashcard '
+                  {flashcards[currentCardIndex].word}'?
+                </Text>
               </Box>
-              
-              <HStack space={2} alignItems="center" marginTop={4}>
-              </HStack>
+
+              <HStack space={2} alignItems="center" marginTop={4}></HStack>
             </Modal.Body>
             <Modal.Footer>
               <HStack space={4}>
-                
                 <Button
                   variant="ghost"
                   onPress={() => setShowConfirmDelete(false)}
@@ -756,7 +827,6 @@ useEffect(() => { //prefill fields
                   borderWidth={1}
                   borderColor="red.500"
                   disabled={disableDeleteButton}
-                  
                 >
                   Delete
                 </Button>
