@@ -5,7 +5,7 @@ const LanguageContext = createContext();
 export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }) => {
-  const [languages, setLanguages] = useState(['English', 'Chinese (Simplified)']);
+  const [languages, setLanguages] = useState(['English', 'Hokkien']);
 
   return (
     <LanguageContext.Provider value={{ languages, setLanguages }}>

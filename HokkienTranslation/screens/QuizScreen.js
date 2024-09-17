@@ -87,28 +87,29 @@ const QuizScreen = ({ route }) => {
 
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
-
+            
+            // TODO: fix bug here
             let word = data.origin;
             let translation = data.destination;
 
             const [lang1, lang2] = languages;
-            if (lang1 === "Chinese (Simplified)") {
+            if (lang1 === "Hokkien") {
               word = translation;
             }
             if (lang2 === "English") {
               translation = word;
             }
 
-            if (lang1 !== "English" && lang1 !== "Chinese (Simplified)") {
+            if (lang1 !== "English" && lang1 !== "Hokkien") {
               word = await translateText(word, lang1);
             }
-            if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
-              translation = await translateText(translation, lang2);
+            if (lang2 !== "English" && lang2 !== "Hokkien") {
+              translation = await translateText(word, lang2);
             }
 
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
-                if (lang2 !== "English" && lang2 !== "Chinese (Simplified)") {
+                if (lang2 !== "English" && lang2 !== "Hokkien") {
                   return await translateText(option, lang2);
                 }
                 return option;
