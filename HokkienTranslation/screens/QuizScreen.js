@@ -88,40 +88,42 @@ const QuizScreen = ({ route }) => {
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
             
-            // TODO: fix bug here
-            let word = data.origin;
-            let translation = data.destination;
+            let translation = data.origin; // question (Hokkien)
+            let word = data.destination; // answer (English)
 
             const [lang1, lang2] = languages;
+            // question (translation) is lang2, answer (word) / choices is lang1
+
             if (lang1 === "Hokkien") {
-              word = translation;
+              word = data.origin;
             }
             if (lang2 === "English") {
-              translation = word;
+              translation = data.destination;
             }
 
             if (lang1 !== "English" && lang1 !== "Hokkien") {
-              word = await translateText(word, lang1);
+              word = await translateText(data.destination, lang1);
             }
             if (lang2 !== "English" && lang2 !== "Hokkien") {
-              translation = await translateText(word, lang2);
+              translation = await translateText(data.destination, lang2);
             }
 
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
-                if (lang2 !== "English" && lang2 !== "Hokkien") {
-                  return await translateText(option, lang2);
+                if (lang1 !== "English") {
+                  // might be an issue if lang1 is Hokkien
+                  return await translateText(option, lang1); 
                 }
                 return option;
               })
             );
 
-            const choices = shuffleArray([translation, ...translatedOptions]);
+            const choices = shuffleArray([word, ...translatedOptions]);
 
             flashcards.push({
               id: flashcardDoc.id,
-              origin: word,
-              destination: translation,
+              origin: translation,
+              destination: word,
               choices,
             });
           }
