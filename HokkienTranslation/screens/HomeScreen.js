@@ -128,7 +128,7 @@ export default function HomeScreen({ navigation }) {
                 <Ionicons
                   name="checkbox"
                   size={40}
-                  color={colors.primaryContainer}
+                  color={colors.onPrimaryContainer}
                 />
               }
               onPress={() =>
