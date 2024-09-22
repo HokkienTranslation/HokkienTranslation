@@ -452,17 +452,17 @@ const FlashcardScreen = ({ route, navigation }) => {
               let translation = flashcard.origin;
 
               if (languages[0] === "Hokkien") {
-                word = translation;
+                word = flashcard.origin;
               }
               if (languages[1] === "English") {
-                translation = word;
+                translation = flashcard.destination;
               }
 
               if (languages[0] !== "English" && languages[0] !== "Hokkien") {
-                word = await translateText(word, languages[0]);
+                word = await translateText(flashcard.destination, languages[0]);
               }
               if (languages[1] !== "English" && languages[1] !== "Hokkien") {
-                translation = await translateText(translation, languages[1]);
+                translation = await translateText(flashcard.destination, languages[1]);
               }
 
               return {
