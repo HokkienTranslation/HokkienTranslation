@@ -8,6 +8,7 @@ import {
   Text,
   Progress,
   ScrollView,
+  Select,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing } from "react-native";
@@ -37,12 +38,16 @@ const QuizScreen = ({ route }) => {
   const [isDisabled, setIsDisabled] = useState(false);
   const [flashcards, setFlashcards] = useState([]);
   const [flashcardScores, setFlashcardScores] = useState({});
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [userScores, setUserScores] = useState([]);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
   const { languages } = useLanguage();
+  const [lang1, setLang1] = useState(languages[0]);
+  const [lang2, setLang2] = useState(languages[1]);
+  const [quizStarted, setQuizStarted] = useState(false);
+  const [answerWith, setAnswerWith] = useState(lang1);
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -60,9 +65,25 @@ const QuizScreen = ({ route }) => {
     }
   };
 
+  const handleAnswerWithChange = (value) => {
+    if (value === lang2) {
+      setLang1(lang2);
+      setLang2(lang1);
+    } else {
+      setLang1(lang1);
+      setLang2(lang2);
+    }
+    setAnswerWith(value);
+  };
+
+  const handleStartQuiz = () => {
+    setQuizStarted(true);
+  }
+
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
+        setLoading(true);
         const querySnapshot = await getDocs(collection(db, "flashcardList"));
         let flashcardListDoc;
 
@@ -92,7 +113,7 @@ const QuizScreen = ({ route }) => {
             let translation = data.origin; // question (Hokkien)
             let word = data.destination; // answer (English)
 
-            const [lang1, lang2] = languages;
+            // const [lang1, lang2] = languages; // replaced by answer with selection
             // question (translation) is lang2, answer (word) / choices is lang1
 
             if (lang1 === "Hokkien") {
@@ -140,7 +161,7 @@ const QuizScreen = ({ route }) => {
     };
 
     fetchFlashcards();
-  }, [flashcardListName]);
+  }, [flashcardListName, quizStarted]);
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
@@ -369,6 +390,34 @@ const QuizScreen = ({ route }) => {
     );
   }
 
+  if (!quizStarted) {
+    return (
+      <Center flex={1} px="3" background={colors.surface}>
+        <VStack space={4} alignItems="center">
+          <Text
+            style={{
+            fontSize: 24,
+            fontWeight: "bold",
+            color: colors.onSurface,
+            }}>Answer with:
+          </Text>
+          <Select
+            selectedValue={answerWith}
+            minWidth={200}
+            onValueChange={handleAnswerWithChange}
+            _selectedItem={{
+              _text: { fontSize: 24 }, 
+            }}
+          >
+            <Select.Item label={lang1} value={lang1} />
+            <Select.Item label={lang2} value={lang2} />
+          </Select>
+        <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
+      </VStack>
+      </Center>
+    );
+  }
+  
   if (!flashcards.length) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
