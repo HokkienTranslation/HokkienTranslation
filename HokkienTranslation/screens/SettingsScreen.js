@@ -25,8 +25,8 @@ const SettingsScreen = () => {
   }, [languages]);
 
   const languageList = [
-    { key: "Arabic", value: "Arabic" },
     { key: "Hokkien", value: "Hokkien" },
+    { key: "Arabic", value: "Arabic" },
     { key: "Chinese (Simplified)", value: "Chinese (Simplified)" },
     { key: "Chinese (Traditional)", value: "Chinese (Traditional)" },
     { key: "Czech", value: "Czech" },

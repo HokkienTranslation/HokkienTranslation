@@ -26,6 +26,7 @@ import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
+import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -110,8 +111,10 @@ const QuizScreen = ({ route }) => {
 
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
-                if (lang1 !== "English") {
-                  // might be an issue if lang1 is Hokkien
+                if (lang1 === "Hokkien") {
+                  return await fetchTranslation(option);
+                }
+                if (lang1 !== "English" && lang1 !== "Hokkien") {
                   return await translateText(option, lang1); 
                 }
                 return option;
