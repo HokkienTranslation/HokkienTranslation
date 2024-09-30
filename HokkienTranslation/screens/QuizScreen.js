@@ -41,7 +41,7 @@ const QuizScreen = ({ route }) => {
   const [userScores, setUserScores] = useState([]);
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
-  const { languages } = useLanguage();
+  const { languages } = useLanguage(); 
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
