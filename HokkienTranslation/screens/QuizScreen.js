@@ -11,7 +11,7 @@ import {
   Select,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
-import { Animated, Easing } from "react-native";
+import { Animated, Easing, TouchableOpacity} from "react-native";
 import {
   collection,
   getDocs,
@@ -48,6 +48,7 @@ const QuizScreen = ({ route }) => {
   const [lang2, setLang2] = useState(languages[1]);
   const [quizStarted, setQuizStarted] = useState(false);
   const [answerWith, setAnswerWith] = useState(lang1);
+  const [choiceIndex, setChoice] = useState(null);
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -167,7 +168,7 @@ const QuizScreen = ({ route }) => {
     return array.sort(() => Math.random() - 0.5);
   };
 
-  const handleChoice = async (index) => {
+  const handleSubmit = async (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
 
@@ -293,6 +294,7 @@ const QuizScreen = ({ route }) => {
         }, 300);
       }, 1000);
     }
+    setChoice(null);
   };
 
   const showScoreHistory = async (user, flashcardListName) => {
@@ -370,10 +372,9 @@ const QuizScreen = ({ route }) => {
     const choice = flashcards[currentCardIndex].choices[index];
 
     if (selectedAnswer === null) {
-      return {
-        bg: colors.primaryContainer,
-        borderColor: colors.buttonBorder,
-      };
+      return index === choiceIndex 
+        ? {bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder}
+        : {bg: colors.primaryContainer, borderColor: colors.buttonBorder};
     } else if (choice === correctAnswer) {
       return index === selectedAnswer
         ? { bg: "rgba(39, 201, 36, 0.6)", borderColor: "#27c924" }
@@ -543,7 +544,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => handleChoice(0)}
+                    onPress={() => setChoice(0)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -565,7 +566,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => handleChoice(1)}
+                    onPress={() => setChoice(1)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -589,7 +590,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => handleChoice(2)}
+                    onPress={() => setChoice(2)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -611,7 +612,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => handleChoice(3)}
+                    onPress={() => setChoice(3)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -624,6 +625,21 @@ const QuizScreen = ({ route }) => {
           </Box>
         </Animated.View>
       </VStack>
+      <TouchableOpacity
+        onPress={() => handleSubmit(1)}
+        style={{
+          backgroundColor: colors.onPrimaryContainer,
+          paddingVertical: 15,
+          paddingHorizontal: 20,
+          borderRadius: 10,
+          alignItems: "center",
+          marginTop: 20,
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}>
+          Submit
+        </Text>
+      </TouchableOpacity>
       <Text fontSize="lg" color={colors.onSurface} mt={4}>
         Score: {score}
       </Text>
