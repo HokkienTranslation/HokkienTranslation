@@ -633,7 +633,7 @@ const QuizScreen = ({ route }) => {
         </Animated.View>
       </VStack>
       <TouchableOpacity
-        onPress={() => handleSubmit(1)}
+        onPress={() => handleSubmit(choiceIndex)}
         disabled={choiceIndex === null}
         style={{
           backgroundColor: choiceIndex === null ? "#CCCCCC" : colors.onPrimaryContainer,
