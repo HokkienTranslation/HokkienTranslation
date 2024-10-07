@@ -28,6 +28,7 @@ import getCurrentUser from "../backend/database/GetCurrentUser";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import TextToSpeech from "./components/TextToSpeech";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -44,8 +45,8 @@ const QuizScreen = ({ route }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
   const { languages } = useLanguage();
-  const [lang1, setLang1] = useState(languages[0]);
-  const [lang2, setLang2] = useState(languages[1]);
+  const [lang1, setLang1] = useState(languages[0]); // choices
+  const [lang2, setLang2] = useState(languages[1]); // question
   const [quizStarted, setQuizStarted] = useState(false);
   const [answerWith, setAnswerWith] = useState(lang1);
   const [choiceIndex, setChoice] = useState(null);
@@ -524,8 +525,14 @@ const QuizScreen = ({ route }) => {
               flex={1}
               justifyContent="center"
             >
-              <Text fontSize="2xl" color={colors.onSurface} mb={0}>
+              <Text fontSize="2xl" alignItems={"center"} color={colors.onSurface} mb={0}>
                 {flashcards[currentCardIndex].origin}
+                {"\u00A0\u00A0"}
+                {lang2 === "Hokkien" && (
+                        <TextToSpeech
+                          prompt={flashcards[currentCardIndex].origin}
+                        />
+                      )}
               </Text>
               <VStack space={5} width="100%">
                 <HStack space={9} width="100%">
@@ -627,9 +634,10 @@ const QuizScreen = ({ route }) => {
       </VStack>
       <TouchableOpacity
         onPress={() => handleSubmit(1)}
+        disabled={choiceIndex === null}
         style={{
-          backgroundColor: colors.onPrimaryContainer,
-          paddingVertical: 15,
+          backgroundColor: choiceIndex === null ? "#CCCCCC" : colors.onPrimaryContainer,
+          paddingVertical: 10,
           paddingHorizontal: 20,
           borderRadius: 10,
           alignItems: "center",
