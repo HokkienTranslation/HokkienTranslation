@@ -438,7 +438,7 @@ const QuizScreen = ({ route }) => {
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
             <VStack space={4} alignItems="stretch" width="90%" mx="auto">
               {userScores && userScores.length > 0 ? (
-                userScores.map((scoreEntry, index) => (
+                userScores.slice().reverse().map((scoreEntry, index) => (
                   <Box
                     key={index}
                     bg={colors.primaryContainer}
