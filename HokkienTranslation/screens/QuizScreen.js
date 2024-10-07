@@ -251,10 +251,10 @@ const QuizScreen = ({ route }) => {
             await updateDoc(quizDocRef, {
               scores: existingScores,
             });
+            setUserScores(existingScores[userEmail]);
           } else {
             // If the document does not exist, create it
-            await setDoc(quizDocRef, {
-              scores: {
+            const newScoreDoc = {
                 [userEmail]: [
                   {
                     time: timestamp,
@@ -266,8 +266,11 @@ const QuizScreen = ({ route }) => {
                     },
                   },
                 ],
-              },
-            });
+              };
+            await setDoc(quizDocRef, {
+              scores: newScoreDoc
+              });
+            setUserScores(newScoreDoc[userEmail]);
           }
         } else {
           console.error(
