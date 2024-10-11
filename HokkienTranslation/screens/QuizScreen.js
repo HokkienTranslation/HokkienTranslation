@@ -28,6 +28,7 @@ import getCurrentUser from "../backend/database/GetCurrentUser";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechService";
 import TextToSpeech from "./components/TextToSpeech";
 
 const QuizScreen = ({ route }) => {
@@ -167,6 +168,22 @@ const QuizScreen = ({ route }) => {
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
+  };
+
+  const handleChoice = async (index) => {
+    setChoice(index);
+    if (lang1 === "Hokkien") {
+      try {
+        const numeric_tones = await fetchNumericTones(flashcards[currentCardIndex].choices[index]);
+        const audioUrl = await fetchAudioUrl(numeric_tones);
+        if (audioUrl) {
+          const audio = new Audio(audioUrl);
+          audio.play();
+        }
+      } catch (error) {
+        console.error("Error fetching audio URL:", error);
+      }
+    }
   };
 
   const handleSubmit = async (index) => {
@@ -551,7 +568,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => setChoice(0)}
+                    onPress={() => handleChoice(0)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -573,7 +590,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => setChoice(1)}
+                    onPress={() => handleChoice(1)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -597,7 +614,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => setChoice(2)}
+                    onPress={() => handleChoice(2)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
@@ -619,7 +636,7 @@ const QuizScreen = ({ route }) => {
                       opacity: 1,
                     }}
                     flex={1}
-                    onPress={() => setChoice(3)}
+                    onPress={() => handleChoice(3)}
                     isDisabled={isDisabled}
                   >
                     <Text color={colors.onSurface}>
