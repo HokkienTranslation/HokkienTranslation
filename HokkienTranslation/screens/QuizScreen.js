@@ -30,6 +30,7 @@ import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechService";
 import TextToSpeech from "./components/TextToSpeech";
+import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -51,6 +52,7 @@ const QuizScreen = ({ route }) => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [answerWith, setAnswerWith] = useState(lang1);
   const [choiceIndex, setChoice] = useState(null);
+  const [hokkienOption, setHokkienOption] = useState("Characters");
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -121,6 +123,14 @@ const QuizScreen = ({ route }) => {
 
             if (lang1 === "Hokkien") {
               word = data.origin;
+              if (hokkienOption === "Romanization") {
+                try {
+                  word = await fetchRomanizer(word);
+                } catch (error) {
+                  word = "Error with romanization.";
+                  console.error(error);
+                }
+              }
             }
             if (lang2 === "English") {
               translation = data.destination;
@@ -136,7 +146,11 @@ const QuizScreen = ({ route }) => {
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
                 if (lang1 === "Hokkien") {
-                  return await fetchTranslation(option);
+                  let display = await fetchTranslation(option);
+                  if (hokkienOption === "Romanization") {
+                    display = await fetchRomanizer(display);
+                  }
+                  return display;
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
                   return await translateText(option, lang1); 
@@ -174,6 +188,7 @@ const QuizScreen = ({ route }) => {
     setChoice(index);
     if (lang1 === "Hokkien") {
       try {
+        console.log("fetching audio for:", flashcards[currentCardIndex].choices[index]);
         const numeric_tones = await fetchNumericTones(flashcards[currentCardIndex].choices[index]);
         const audioUrl = await fetchAudioUrl(numeric_tones);
         if (audioUrl) {
@@ -434,6 +449,20 @@ const QuizScreen = ({ route }) => {
             <Select.Item label={lang1} value={lang1} />
             <Select.Item label={lang2} value={lang2} />
           </Select>
+
+          {answerWith === "Hokkien" && (
+            <Select
+              selectedValue={hokkienOption}
+              minWidth={200}
+              onValueChange={(value) => setHokkienOption(value)}
+              _selectedItem={{
+                _text: { fontSize: 24 },
+              }}
+            >
+              <Select.Item label="Characters" value="Characters" />
+              <Select.Item label="Romanization" value="Romanization" />
+            </Select>
+          )}
         <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
       </VStack>
       </Center>
