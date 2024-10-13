@@ -106,7 +106,7 @@ const QuizScreen = ({ route }) => {
 
         const flashcardListData = flashcardListDoc.data();
         const flashcardIds = flashcardListData.cardList;
-        const flashcards = [];
+        let flashcards = [];
 
         for (const flashcardId of flashcardIds) {
           const flashcardDocRef = doc(db, "flashcard", flashcardId);
@@ -169,6 +169,8 @@ const QuizScreen = ({ route }) => {
             });
           }
         }
+
+        flashcards = shuffleArray(flashcards);
 
         setFlashcards(flashcards);
         setLoading(false);
