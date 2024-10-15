@@ -444,6 +444,8 @@ const QuizScreen = ({ route }) => {
             selectedValue={answerWith}
             minWidth={200}
             onValueChange={handleAnswerWithChange}
+            accessibilityLabel="Choose Answer Language" 
+            placeholder="Choose Answer Language" 
             _selectedItem={{
               _text: { fontSize: 24 }, 
             }}
@@ -457,6 +459,8 @@ const QuizScreen = ({ route }) => {
               selectedValue={hokkienOption}
               minWidth={200}
               onValueChange={(value) => setHokkienOption(value)}
+              accessibilityLabel="Choose Hokkien Answer Type"
+              placeholder="Choose Hokkien Answer Type" 
               _selectedItem={{
                 _text: { fontSize: 24 },
               }}
