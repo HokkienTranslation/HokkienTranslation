@@ -10,6 +10,7 @@ import {
   Select,
   Modal,
   Button,
+  Image,
   Switch,
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
@@ -529,8 +530,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           <Box
             position="absolute"
             top="74px"
-            width="299px"
-            height="199px"
+            width="699px" // responsive...
+            height="399px"
             bg={colors.darkerPrimaryContainer}
             alignItems="center"
             justifyContent="center"
@@ -561,17 +562,18 @@ const FlashcardScreen = ({ route, navigation }) => {
               ]}
             >
               <Box
-                width="300px"
-                height="200px"
+                width="699px"
+                height="399px"
                 bg={colors.primaryContainer}
                 alignItems="center"
                 justifyContent="center"
                 borderRadius="10px"
                 shadow={2}
+                px={8}
               >
                 {showTranslation ? (
                   <>
-                    <Text fontSize="2xl" color={colors.onSurface}>
+                    <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
                       {flashcards[currentCardIndex].translation}
                     </Text>
                     {languages[1] === "Hokkien" && (
@@ -579,11 +581,38 @@ const FlashcardScreen = ({ route, navigation }) => {
                         prompt={flashcards[currentCardIndex].translation}
                       />
                     )}
+                    <HStack spacing={4}>
+                      <VStack alignItems="flex-start" spacing={4} mr={4}>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          Definition
+                        </Text>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          English Definition
+                        </Text>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          Hokkien Example Sentence
+                        </Text>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          Chinese Example Sentence
+                        </Text>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          English Example Sentence
+                        </Text>
+                      </VStack>
+                      <VStack spacing={4}>
+                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          Context
+                        </Text>
+                        <Image source={require("../assets/temp-image.png")} size="2xl" />
+                      </VStack>
+                    </HStack>
                   </>
                 ) : (
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex].word}
-                  </Text>
+                  <Center>
+                    <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
+                      {flashcards[currentCardIndex].word}
+                    </Text>
+                  </Center>
                 )}
               </Box>
             </Animated.View>
