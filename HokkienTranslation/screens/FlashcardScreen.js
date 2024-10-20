@@ -530,7 +530,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           <Box
             position="absolute"
             top="74px"
-            width="699px" // responsive...
+            width="599px"
             height="399px"
             bg={colors.darkerPrimaryContainer}
             alignItems="center"
@@ -562,7 +562,7 @@ const FlashcardScreen = ({ route, navigation }) => {
               ]}
             >
               <Box
-                width="699px"
+                width="599px"
                 height="399px"
                 bg={colors.primaryContainer}
                 alignItems="center"
@@ -581,25 +581,40 @@ const FlashcardScreen = ({ route, navigation }) => {
                         prompt={flashcards[currentCardIndex].translation}
                       />
                     )}
-                    <HStack spacing={4}>
-                      <VStack alignItems="flex-start" spacing={4} mr={4}>
+                    <HStack spacing={4} direction={direction}>
+                      <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           Definition
+                        </Text>
+                        <Text  fontSize="sm" color={colors.onSurface}>
+                          {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
                         </Text>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           English Definition
                         </Text>
+                        <Text  fontSize="sm" color={colors.onSurface}>
+                          {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
+                        </Text>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           Hokkien Example Sentence
+                        </Text>
+                        <Text  fontSize="sm" color={colors.onSurface}>
+                          {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
                         </Text>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           Chinese Example Sentence
                         </Text>
+                        <Text  fontSize="sm" color={colors.onSurface}>
+                          {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
+                        </Text>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           English Example Sentence
                         </Text>
+                        <Text  fontSize="sm" color={colors.onSurface}>
+                          {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                        </Text>
                       </VStack>
-                      <VStack spacing={4}>
+                      <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           Context
                         </Text>
