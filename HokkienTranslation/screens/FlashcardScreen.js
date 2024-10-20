@@ -11,6 +11,7 @@ import {
   Modal,
   Button,
   Image,
+  useBreakpointValue,
   Switch,
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
@@ -59,6 +60,11 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
+
+  const direction = useBreakpointValue({
+    base: 'column',  
+    md: 'row',   
+  });
 
   const [deckID, setDeckID] = useState("");
 
@@ -530,13 +536,19 @@ const FlashcardScreen = ({ route, navigation }) => {
           <Box
             position="absolute"
             top="74px"
-            width="599px"
-            height="399px"
+            width= "600"
+            //{{ base: '100%', md: '50%' }}
+            minWidth="300px"
+            height= "400"
+            //{{ base: 'auto', md: '50%' }}
+            minHeight="300px"
+            maxHeight="400px"
             bg={colors.darkerPrimaryContainer}
             alignItems="center"
             justifyContent="center"
             borderRadius="10px"
             shadow={1}
+            p={4}
             zIndex={-1}
           >
             <Text fontSize="2xl" color={colors.onSurface}>
@@ -562,13 +574,19 @@ const FlashcardScreen = ({ route, navigation }) => {
               ]}
             >
               <Box
-                width="599px"
-                height="399px"
+                width= "600"
+                //{{ base: '100%', md: '50%' }}
+                minWidth="300px"
+                height= "400"
+                //{{ base: 'auto', md: '50%' }}
+                minHeight="300px"
+                maxHeight="400px"
                 bg={colors.primaryContainer}
                 alignItems="center"
                 justifyContent="center"
                 borderRadius="10px"
                 shadow={2}
+                p = {4}
                 px={8}
               >
                 {showTranslation ? (
