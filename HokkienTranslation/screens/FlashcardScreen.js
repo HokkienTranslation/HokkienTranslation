@@ -12,6 +12,7 @@ import {
   Button,
   Image,
   useBreakpointValue,
+  IconButton,
   ScrollView,
   Switch,
 } from "native-base";
@@ -38,6 +39,7 @@ import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
+import * as Clipboard from "expo-clipboard";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -71,6 +73,9 @@ const FlashcardScreen = ({ route, navigation }) => {
   const cardWidth = width * 0.90;
   //width <= 414 ? width * 0.90 : width * 0.90;
   //const cardHeight = height * 0.60; 
+
+  const copyToClipboard = (text) => Clipboard.setString(text);
+
 
   const [deckID, setDeckID] = useState("");
 
@@ -625,21 +630,57 @@ const FlashcardScreen = ({ route, navigation }) => {
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Hokkien Example Sentence
                           </Text>
-                          <Text  fontSize="sm" color={colors.onSurface}>
-                            {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
-                          </Text>
+                          <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                          </HStack>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Chinese Example Sentence
                           </Text>
-                          <Text  fontSize="sm" color={colors.onSurface}>
-                            {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
-                          </Text>
+                          <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                          </HStack>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             English Example Sentence
                           </Text>
-                          <Text  fontSize="sm" color={colors.onSurface}>
-                            {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-                          </Text>
+                          <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                          </HStack>
                         </VStack>
                         <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
