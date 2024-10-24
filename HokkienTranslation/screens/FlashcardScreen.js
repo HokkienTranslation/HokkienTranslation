@@ -14,7 +14,7 @@ import {
   useBreakpointValue,
   Switch,
 } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import { TouchableOpacity, Animated, PanResponder, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   doc,
@@ -61,10 +61,14 @@ const FlashcardScreen = ({ route, navigation }) => {
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
 
+  // For responsive flashcards
   const direction = useBreakpointValue({
     base: 'column',  
     md: 'row',   
   });
+  const { height, width } = Dimensions.get("window");
+  const cardWidth = width <= 414 ? width * 0.90 : width * 0.60;
+  const cardHeight = height * 0.60; 
 
   const [deckID, setDeckID] = useState("");
 
@@ -536,13 +540,13 @@ const FlashcardScreen = ({ route, navigation }) => {
           <Box
             position="absolute"
             top="74px"
-            width= "600"
+            width = {cardWidth}
             //{{ base: '100%', md: '50%' }}
-            minWidth="300px"
-            height= "400"
+            //minWidth="300px"
+            height= "auto"
             //{{ base: 'auto', md: '50%' }}
             minHeight="300px"
-            maxHeight="400px"
+            //maxHeight="400px"
             bg={colors.darkerPrimaryContainer}
             alignItems="center"
             justifyContent="center"
@@ -574,13 +578,13 @@ const FlashcardScreen = ({ route, navigation }) => {
               ]}
             >
               <Box
-                width= "600"
+                width= {cardWidth}
                 //{{ base: '100%', md: '50%' }}
-                minWidth="300px"
-                height= "400"
+                //minWidth="300px"
+                height= "auto"
                 //{{ base: 'auto', md: '50%' }}
                 minHeight="300px"
-                maxHeight="400px"
+                //maxHeight="400px"
                 bg={colors.primaryContainer}
                 alignItems="center"
                 justifyContent="center"
@@ -636,7 +640,9 @@ const FlashcardScreen = ({ route, navigation }) => {
                         <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                           Context
                         </Text>
-                        <Image source={require("../assets/temp-image.png")} size="2xl" />
+                        <Box p={4}>
+                          <Image source={require("../assets/temp-image.png")} size="2xl" />
+                        </Box>
                       </VStack>
                     </HStack>
                   </>
