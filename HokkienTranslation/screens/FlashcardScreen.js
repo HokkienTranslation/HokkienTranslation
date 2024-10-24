@@ -68,8 +68,9 @@ const FlashcardScreen = ({ route, navigation }) => {
     md: 'row',   
   });
   const { height, width } = Dimensions.get("window");
-  const cardWidth = width <= 414 ? width * 0.90 : width * 0.60;
-  const cardHeight = height * 0.60; 
+  const cardWidth = width * 0.90;
+  //width <= 414 ? width * 0.90 : width * 0.90;
+  //const cardHeight = height * 0.60; 
 
   const [deckID, setDeckID] = useState("");
 
@@ -541,14 +542,14 @@ const FlashcardScreen = ({ route, navigation }) => {
 
             <Box
               position="absolute"
-              top="74px"
-              width = {cardWidth}
-              maxWidth = "auto"
+              top="75px"
+              width = "auto"
+              maxWidth = {cardWidth}
               //{{ base: '100%', md: '50%' }}
-              //minWidth="300px"
+              minWidth="300px"
               height= "auto"
               //{{ base: 'auto', md: '50%' }}
-              minHeight="300px"
+              minHeight="199px"
               //maxHeight="400px"
               bg={colors.darkerPrimaryContainer}
               alignItems="center"
@@ -581,12 +582,13 @@ const FlashcardScreen = ({ route, navigation }) => {
                 ]}
               >
                 <Box
-                  width= {cardWidth}
-                  maxWidth = "auto"
-                  //minWidth="300px"
+                
+                  width= "auto"
+                  maxWidth = {cardWidth}
+                  minWidth="300px"
                   height= "auto"
                   //{{ base: 'auto', md: '50%' }}
-                  minHeight="300px"
+                  minHeight="200px"
                   //maxHeight="400px"
                   bg={colors.primaryContainer}
                   alignItems="center"
@@ -643,15 +645,17 @@ const FlashcardScreen = ({ route, navigation }) => {
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Context
                           </Text>
-                          <Box p={4}>
-                            <Image source={require("../assets/temp-image.png")} size="2xl" />
-                          </Box>
+                            <Center>
+                              <Box p={4}>
+                                <Image source={require("../assets/temp-image.png")} size="2xl" />
+                              </Box>
+                            </Center>
                         </VStack>
                       </HStack>
                     </>
                   ) : (
                     <Center>
-                      <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
+                      <Text fontSize="4xl" color={colors.onSurface}>
                         {flashcards[currentCardIndex].word}
                       </Text>
                     </Center>
