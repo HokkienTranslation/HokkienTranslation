@@ -12,6 +12,7 @@ import {
   Button,
   Image,
   useBreakpointValue,
+  ScrollView,
   Switch,
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder, Dimensions } from "react-native";
@@ -512,303 +513,228 @@ const FlashcardScreen = ({ route, navigation }) => {
   }, [showUpdates, currentCardIndex, flashcards]);
 
   return (
-    <Box flex={1} background={colors.surface}>
-      <NavigationButtons
-        colors={colors}
-        flashcardListName={flashcardListName}
-      />
-      <Center flex={1} px="3">
-        <VStack space={4} alignItems="center">
-          <HStack space={4}>
-            <CrudButtons
-              title="Create"
-              onPress={() => setShowNewFlashcard(true)}
-              iconName="add"
-            />
-            <CrudButtons
-              title="Update"
-              onPress={() => setShowUpdates(true)}
-              iconName="pencil"
-            />
-            <CrudButtons
-              title="Delete"
-              onPress={() => setShowConfirmDelete(true)}
-              iconName="trash"
-            />
-          </HStack>
+    <ScrollView style={{ backgroundColor: colors.surface }}>
+      <Box flex={1} background={colors.surface}>
+        <NavigationButtons
+          colors={colors}
+          flashcardListName={flashcardListName}
+        />
+        <Center flex={1} px="3">
+          <VStack space={4} alignItems="center">
+            <HStack space={4}>
+              <CrudButtons
+                title="Create"
+                onPress={() => setShowNewFlashcard(true)}
+                iconName="add"
+              />
+              <CrudButtons
+                title="Update"
+                onPress={() => setShowUpdates(true)}
+                iconName="pencil"
+              />
+              <CrudButtons
+                title="Delete"
+                onPress={() => setShowConfirmDelete(true)}
+                iconName="trash"
+              />
+            </HStack>
 
-          <Box
-            position="absolute"
-            top="74px"
-            width = {cardWidth}
-            //{{ base: '100%', md: '50%' }}
-            //minWidth="300px"
-            height= "auto"
-            //{{ base: 'auto', md: '50%' }}
-            minHeight="300px"
-            //maxHeight="400px"
-            bg={colors.darkerPrimaryContainer}
-            alignItems="center"
-            justifyContent="center"
-            borderRadius="10px"
-            shadow={1}
-            p={4}
-            zIndex={-1}
-          >
-            <Text fontSize="2xl" color={colors.onSurface}>
-              {flashcards[(currentCardIndex + 1) % flashcards.length].word}
-            </Text>
-          </Box>
-
-          <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
-            <Animated.View
-              {...panResponder.panHandlers}
-              style={[
-                position.getLayout(),
-                {
-                  transform: [
-                    {
-                      rotate: position.x.interpolate({
-                        inputRange: [-500, 0, 500],
-                        outputRange: ["-10deg", "0deg", "10deg"],
-                      }),
-                    },
-                  ],
-                },
-              ]}
+            <Box
+              position="absolute"
+              top="74px"
+              width = {cardWidth}
+              maxWidth = "auto"
+              //{{ base: '100%', md: '50%' }}
+              //minWidth="300px"
+              height= "auto"
+              //{{ base: 'auto', md: '50%' }}
+              minHeight="300px"
+              //maxHeight="400px"
+              bg={colors.darkerPrimaryContainer}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={1}
+              p={4}
+              zIndex={-1}
             >
-              <Box
-                width= {cardWidth}
-                //{{ base: '100%', md: '50%' }}
-                //minWidth="300px"
-                height= "auto"
-                //{{ base: 'auto', md: '50%' }}
-                minHeight="300px"
-                //maxHeight="400px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-                p = {4}
-                px={8}
+              <Text fontSize="2xl" color={colors.onSurface}>
+                {flashcards[(currentCardIndex + 1) % flashcards.length].word}
+              </Text>
+            </Box>
+
+            <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
+              <Animated.View
+                {...panResponder.panHandlers}
+                style={[
+                  position.getLayout(),
+                  {
+                    transform: [
+                      {
+                        rotate: position.x.interpolate({
+                          inputRange: [-500, 0, 500],
+                          outputRange: ["-10deg", "0deg", "10deg"],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
               >
-                {showTranslation ? (
-                  <>
-                    <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
-                      {flashcards[currentCardIndex].translation}
-                    </Text>
-                    {languages[1] === "Hokkien" && (
-                      <TextToSpeech
-                        prompt={flashcards[currentCardIndex].translation}
-                      />
-                    )}
-                    <HStack spacing={4} direction={direction}>
-                      <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          Definition
-                        </Text>
-                        <Text  fontSize="sm" color={colors.onSurface}>
-                          {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
-                        </Text>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          English Definition
-                        </Text>
-                        <Text  fontSize="sm" color={colors.onSurface}>
-                          {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
-                        </Text>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          Hokkien Example Sentence
-                        </Text>
-                        <Text  fontSize="sm" color={colors.onSurface}>
-                          {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
-                        </Text>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          Chinese Example Sentence
-                        </Text>
-                        <Text  fontSize="sm" color={colors.onSurface}>
-                          {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
-                        </Text>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          English Example Sentence
-                        </Text>
-                        <Text  fontSize="sm" color={colors.onSurface}>
-                          {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-                        </Text>
-                      </VStack>
-                      <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
-                        <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                          Context
-                        </Text>
-                        <Box p={4}>
-                          <Image source={require("../assets/temp-image.png")} size="2xl" />
-                        </Box>
-                      </VStack>
-                    </HStack>
-                  </>
-                ) : (
-                  <Center>
-                    <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
-                      {flashcards[currentCardIndex].word}
-                    </Text>
-                  </Center>
-                )}
-              </Box>
-            </Animated.View>
-          </TouchableOpacity>
-
-          <HStack space={4} alignItems="center">
-            <Pressable
-              borderRadius="50"
-              onPressIn={() => setIsPressedLeft(true)}
-              onPressOut={() => setIsPressedLeft(false)}
-              onPress={handleBack}
-            >
-              <Ionicons
-                name={
-                  isPressedLeft
-                    ? "chevron-back-circle"
-                    : "chevron-back-circle-outline"
-                }
-                color={colors.onSurface}
-                size={50}
-              />
-            </Pressable>
-            <Text fontSize="lg" color={colors.onSurface}>
-              {currentCardIndex + 1}/{flashcards.length}
-            </Text>
-            <Pressable
-              borderRadius="50"
-              onPressIn={() => setIsPressedRight(true)}
-              onPressOut={() => setIsPressedRight(false)}
-              onPress={handleNext}
-            >
-              <Ionicons
-                name={
-                  isPressedRight
-                    ? "chevron-forward-circle"
-                    : "chevron-forward-circle-outline"
-                }
-                color={colors.onSurface}
-                size={50}
-              />
-            </Pressable>
-          </HStack>
-        </VStack>
-        {/* create pop up */}
-        <Modal
-          isOpen={showNewFlashcard}
-          onClose={() => setShowNewFlashcard(false)}
-          size="lg"
-        >
-          <Modal.Content width="80%" maxWidth="350px">
-            <Modal.CloseButton />
-            <Modal.Header>Create new flashcard</Modal.Header>
-            <Modal.Body>
-              <VStack space={4}>
-                <Input
-                  placeholder="Enter word"
-                  value={enteredWord}
-                  onChangeText={setEnteredWord}
-                />
-                <Input
-                  placeholder="Enter Translation"
-                  value={enteredTranslation}
-                  onChangeText={setEnteredTranslation}
-                />
-                <Input
-                  placeholder="Option 1"
-                  value={option1}
-                  onChangeText={setOption1}
-                />
-                <Input
-                  placeholder="Option 2"
-                  value={option2}
-                  onChangeText={setOption2}
-                />
-                <Input
-                  placeholder="Option 3"
-                  value={option3}
-                  onChangeText={setOption3}
-                />
-                <Select
-                  selectedValue={type}
-                  placeholder="Select Type"
-                  onValueChange={(itemValue) => setType(itemValue)}
+                <Box
+                  width= {cardWidth}
+                  maxWidth = "auto"
+                  //minWidth="300px"
+                  height= "auto"
+                  //{{ base: 'auto', md: '50%' }}
+                  minHeight="300px"
+                  //maxHeight="400px"
+                  bg={colors.primaryContainer}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="10px"
+                  shadow={2}
+                  p = {4}
+                  px={8}
                 >
-                  <Select.Item label="Word" value="word" />
-                  <Select.Item label="Sentence" value="sentence" />
-                </Select>
-              </VStack>
-            </Modal.Body>
-            <Modal.Footer>
-              <HStack space={2}>
-                <Button onPress={handleCreate}>
-                  <HStack space={1} alignItems="center">
-                    <Ionicons
-                      name={"save-outline"}
-                      size={30}
-                      color={"#FFFFFF"}
-                    />
-                    <Text color={"#FFFFFF"}>Save</Text>
-                  </HStack>
-                </Button>
-                <Button
-                  onPress={() => setShowNewFlashcard(false)}
-                  variant="ghost"
-                  borderWidth={1}
-                  borderColor="coolGray.200"
-                >
-                  Cancel
-                </Button>
-              </HStack>
-            </Modal.Footer>
-          </Modal.Content>
-        </Modal>
+                  {showTranslation ? (
+                    <>
+                      <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
+                        {flashcards[currentCardIndex].translation}
+                      </Text>
+                      {languages[1] === "Hokkien" && (
+                        <TextToSpeech
+                          prompt={flashcards[currentCardIndex].translation}
+                        />
+                      )}
+                      <HStack spacing={4} direction={direction}>
+                        <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Definition
+                          </Text>
+                          <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
+                          </Text>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            English Definition
+                          </Text>
+                          <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
+                          </Text>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Hokkien Example Sentence
+                          </Text>
+                          <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
+                          </Text>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Chinese Example Sentence
+                          </Text>
+                          <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
+                          </Text>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            English Example Sentence
+                          </Text>
+                          <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                          </Text>
+                        </VStack>
+                        <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Context
+                          </Text>
+                          <Box p={4}>
+                            <Image source={require("../assets/temp-image.png")} size="2xl" />
+                          </Box>
+                        </VStack>
+                      </HStack>
+                    </>
+                  ) : (
+                    <Center>
+                      <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
+                        {flashcards[currentCardIndex].word}
+                      </Text>
+                    </Center>
+                  )}
+                </Box>
+              </Animated.View>
+            </TouchableOpacity>
 
-        {/* update modal */}
-        <Modal
-          isOpen={showUpdates}
-          onClose={() => setShowUpdates(false)}
-          size="lg"
-        >
-          <Modal.Content width="80%" maxWidth="350px">
-            <Modal.CloseButton />
-            <Modal.Header>Update Flashcard</Modal.Header>
-            <Modal.Body>
-              <VStack space={3}>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Word:</Text>
+            <HStack space={4} alignItems="center">
+              <Pressable
+                borderRadius="50"
+                onPressIn={() => setIsPressedLeft(true)}
+                onPressOut={() => setIsPressedLeft(false)}
+                onPress={handleBack}
+              >
+                <Ionicons
+                  name={
+                    isPressedLeft
+                      ? "chevron-back-circle"
+                      : "chevron-back-circle-outline"
+                  }
+                  color={colors.onSurface}
+                  size={50}
+                />
+              </Pressable>
+              <Text fontSize="lg" color={colors.onSurface}>
+                {currentCardIndex + 1}/{flashcards.length}
+              </Text>
+              <Pressable
+                borderRadius="50"
+                onPressIn={() => setIsPressedRight(true)}
+                onPressOut={() => setIsPressedRight(false)}
+                onPress={handleNext}
+              >
+                <Ionicons
+                  name={
+                    isPressedRight
+                      ? "chevron-forward-circle"
+                      : "chevron-forward-circle-outline"
+                  }
+                  color={colors.onSurface}
+                  size={50}
+                />
+              </Pressable>
+            </HStack>
+          </VStack>
+          {/* create pop up */}
+          <Modal
+            isOpen={showNewFlashcard}
+            onClose={() => setShowNewFlashcard(false)}
+            size="lg"
+          >
+            <Modal.Content width="80%" maxWidth="350px">
+              <Modal.CloseButton />
+              <Modal.Header>Create new flashcard</Modal.Header>
+              <Modal.Body>
+                <VStack space={4}>
                   <Input
-                    flex={1}
+                    placeholder="Enter word"
                     value={enteredWord}
                     onChangeText={setEnteredWord}
                   />
-                </HStack>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Translation:</Text>
                   <Input
-                    flex={1}
+                    placeholder="Enter Translation"
                     value={enteredTranslation}
                     onChangeText={setEnteredTranslation}
                   />
-                </HStack>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Option 1:</Text>
-                  <Input flex={1} value={option1} onChangeText={setOption1} />
-                </HStack>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Option 2:</Text>
-                  <Input flex={1} value={option2} onChangeText={setOption2} />
-                </HStack>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Option 3:</Text>
-                  <Input flex={1} value={option3} onChangeText={setOption3} />
-                </HStack>
-                <HStack space={2} alignItems="center">
-                  <Text width="100px">Type:</Text>
+                  <Input
+                    placeholder="Option 1"
+                    value={option1}
+                    onChangeText={setOption1}
+                  />
+                  <Input
+                    placeholder="Option 2"
+                    value={option2}
+                    onChangeText={setOption2}
+                  />
+                  <Input
+                    placeholder="Option 3"
+                    value={option3}
+                    onChangeText={setOption3}
+                  />
                   <Select
-                    flex={1}
                     selectedValue={type}
                     placeholder="Select Type"
                     onValueChange={(itemValue) => setType(itemValue)}
@@ -816,88 +742,166 @@ const FlashcardScreen = ({ route, navigation }) => {
                     <Select.Item label="Word" value="word" />
                     <Select.Item label="Sentence" value="sentence" />
                   </Select>
+                </VStack>
+              </Modal.Body>
+              <Modal.Footer>
+                <HStack space={2}>
+                  <Button onPress={handleCreate}>
+                    <HStack space={1} alignItems="center">
+                      <Ionicons
+                        name={"save-outline"}
+                        size={30}
+                        color={"#FFFFFF"}
+                      />
+                      <Text color={"#FFFFFF"}>Save</Text>
+                    </HStack>
+                  </Button>
+                  <Button
+                    onPress={() => setShowNewFlashcard(false)}
+                    variant="ghost"
+                    borderWidth={1}
+                    borderColor="coolGray.200"
+                  >
+                    Cancel
+                  </Button>
                 </HStack>
-              </VStack>
-            </Modal.Body>
-            <Modal.Footer>
-              <HStack space={2}>
-                <Button onPress={handleUpdate}>
-                  <HStack space={1} alignItems="center">
-                    <Ionicons
-                      name={"save-outline"}
-                      size={30}
-                      color={"#FFFFFF"}
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal>
+
+          {/* update modal */}
+          <Modal
+            isOpen={showUpdates}
+            onClose={() => setShowUpdates(false)}
+            size="lg"
+          >
+            <Modal.Content width="80%" maxWidth="350px">
+              <Modal.CloseButton />
+              <Modal.Header>Update Flashcard</Modal.Header>
+              <Modal.Body>
+                <VStack space={3}>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Word:</Text>
+                    <Input
+                      flex={1}
+                      value={enteredWord}
+                      onChangeText={setEnteredWord}
                     />
-                    <Text color={"#FFFFFF"}>Save</Text>
                   </HStack>
-                </Button>
-                <Button
-                  onPress={() => setShowUpdates(false)}
-                  variant="ghost"
-                  borderWidth={1}
-                  borderColor="coolGray.200"
-                >
-                  Cancel
-                </Button>
-              </HStack>
-            </Modal.Footer>
-          </Modal.Content>
-        </Modal>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Translation:</Text>
+                    <Input
+                      flex={1}
+                      value={enteredTranslation}
+                      onChangeText={setEnteredTranslation}
+                    />
+                  </HStack>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Option 1:</Text>
+                    <Input flex={1} value={option1} onChangeText={setOption1} />
+                  </HStack>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Option 2:</Text>
+                    <Input flex={1} value={option2} onChangeText={setOption2} />
+                  </HStack>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Option 3:</Text>
+                    <Input flex={1} value={option3} onChangeText={setOption3} />
+                  </HStack>
+                  <HStack space={2} alignItems="center">
+                    <Text width="100px">Type:</Text>
+                    <Select
+                      flex={1}
+                      selectedValue={type}
+                      placeholder="Select Type"
+                      onValueChange={(itemValue) => setType(itemValue)}
+                    >
+                      <Select.Item label="Word" value="word" />
+                      <Select.Item label="Sentence" value="sentence" />
+                    </Select>
+                  </HStack>
+                </VStack>
+              </Modal.Body>
+              <Modal.Footer>
+                <HStack space={2}>
+                  <Button onPress={handleUpdate}>
+                    <HStack space={1} alignItems="center">
+                      <Ionicons
+                        name={"save-outline"}
+                        size={30}
+                        color={"#FFFFFF"}
+                      />
+                      <Text color={"#FFFFFF"}>Save</Text>
+                    </HStack>
+                  </Button>
+                  <Button
+                    onPress={() => setShowUpdates(false)}
+                    variant="ghost"
+                    borderWidth={1}
+                    borderColor="coolGray.200"
+                  >
+                    Cancel
+                  </Button>
+                </HStack>
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal>
 
-        {/* delete modal */}
-        <Modal
-          isOpen={showConfirmDelete}
-          onClose={() => setShowConfirmDelete(false)}
-          size="lg"
-        >
-          <Modal.Content maxWidth="400px">
-            <Modal.CloseButton />
-            <Modal.Header>
-              <Text fontSize="xl" fontWeight={"bold"}>
-                Delete Confirmation
-              </Text>
-            </Modal.Header>
-            <Modal.Body>
-              <Box
-                backgroundColor={"red.200"}
-                borderWidth={1}
-                borderRadius={4}
-                borderColor={"red.300"}
-                padding={3}
-              >
-                <Text color={"red.800"}>
-                  Are you sure you want to delete the flashcard '
-                  {flashcards[currentCardIndex].word}'?
+          {/* delete modal */}
+          <Modal
+            isOpen={showConfirmDelete}
+            onClose={() => setShowConfirmDelete(false)}
+            size="lg"
+          >
+            <Modal.Content maxWidth="400px">
+              <Modal.CloseButton />
+              <Modal.Header>
+                <Text fontSize="xl" fontWeight={"bold"}>
+                  Delete Confirmation
                 </Text>
-              </Box>
+              </Modal.Header>
+              <Modal.Body>
+                <Box
+                  backgroundColor={"red.200"}
+                  borderWidth={1}
+                  borderRadius={4}
+                  borderColor={"red.300"}
+                  padding={3}
+                >
+                  <Text color={"red.800"}>
+                    Are you sure you want to delete the flashcard '
+                    {flashcards[currentCardIndex].word}'?
+                  </Text>
+                </Box>
 
-              <HStack space={2} alignItems="center" marginTop={4}></HStack>
-            </Modal.Body>
-            <Modal.Footer>
-              <HStack space={4}>
-                <Button
-                  variant="ghost"
-                  onPress={() => setShowConfirmDelete(false)}
-                  borderWidth={1}
-                  borderColor="coolGray.200"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onPress={handlePermaDelete}
-                  colorScheme="red"
-                  borderWidth={1}
-                  borderColor="red.500"
-                  disabled={disableDeleteButton}
-                >
-                  Delete
-                </Button>
-              </HStack>
-            </Modal.Footer>
-          </Modal.Content>
-        </Modal>
-      </Center>
-    </Box>
+                <HStack space={2} alignItems="center" marginTop={4}></HStack>
+              </Modal.Body>
+              <Modal.Footer>
+                <HStack space={4}>
+                  <Button
+                    variant="ghost"
+                    onPress={() => setShowConfirmDelete(false)}
+                    borderWidth={1}
+                    borderColor="coolGray.200"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onPress={handlePermaDelete}
+                    colorScheme="red"
+                    borderWidth={1}
+                    borderColor="red.500"
+                    disabled={disableDeleteButton}
+                  >
+                    Delete
+                  </Button>
+                </HStack>
+              </Modal.Footer>
+            </Modal.Content>
+          </Modal>
+        </Center>
+      </Box>
+    </ScrollView>
   );
 };
 
