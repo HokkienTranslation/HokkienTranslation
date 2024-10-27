@@ -27,11 +27,11 @@ const categories = [
   "Other",
 ];
 
-const createdBy = "vincenthero16@gmail.com";
+const createdBy = "lu.ya.495@gmail.com";
 
 const uploadData = async () => {
   try {
-    const path = "../../data/modified_flashcard_data_samples.csv";
+    const path = "../../data/new_flashcard_data_samples.csv";
     const csvString = await fs.readFile(path, "utf-8");
 
     parse(

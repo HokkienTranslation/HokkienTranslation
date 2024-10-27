@@ -1,0 +1,111 @@
+origin,destination,otherOptions,type
+你好,Hello,"Goodbye,Thank you,Please",word
+再會,Goodbye,"Hello,Please,Thank you",word
+多謝,Thank you,"Hello,Goodbye,Please",word
+請,Please,"Hello,Goodbye,Thank you",word
+對不住,Sorry,"Excuse me,Thank you,Please",word
+無要緊,It's okay,"Sorry,Thank you,Please",word
+早起好,Good morning,"Good afternoon,Good night,Hello",word
+下昏仔好,Good evening,"Good morning,Good bye,Hello",word
+晚安,Good night,"Good bye,Good morning,Hello",word
+再會,See you,"Good night,Hello,Please",word
+食飯,Eat,"Drink,Sleep,Run",word
+啉水,Drink,"Eat,Sleep,Run",word
+飽,Full,"Hungry,Thirsty,Sleepy",word
+枵,Hungry,"Full,Thirsty,Sleepy",word
+菜,Vegetable,"Fruit,Meat,Bread",word
+豬肉,Meat,"Vegetable,Fruit,Bread",word
+果子,Fruit,"Vegetable,Meat,Bread",word
+麵包,Bread,"Vegetable,Meat,Fruit",word
+湯,Soup,"Water,Juice,Milk",word
+奶,Milk,"Water,Juice,Soup",word
+機場,Airport,"Bus station,Train station,Hotel",word
+火車,Train,"Bus,Car,Bike",word
+汽車,Car,"Bus,Train,Bike",word
+公共汽車,Bus,"Car,Train,Bike",word
+跤踏車,Bike,"Car,Train,Bus",word
+船,Boat,"Plane,Car,Bus",word
+飛機,Plane,"Boat,Car,Bus",word
+計程仔,Taxi,"Bus,Train,Car",word
+地下鐵,Subway,"Train,Bus,Car",word
+酒家,Hotel,"Motel,Hostel,Inn",word
+辦公室,Office,"Meeting,Conference room,Cubicle",word
+會議,Meeting,"Conference,Workshop,Report",word
+報告,Report,"Meeting,Summary,Outline",word
+項目,Project,"Task,Colleague,Report",word
+頭家,Boss,"Manager,Supervisor,Leader",word
+員工,Employee,"Worker,Boss,Colleague",word
+同事,Colleague,"Teammate,Boss,Employee",word
+薪水,Salary,"Wage,Contract,Bonus",word
+合約,Contract,"Agreement,Salary,Arrangement",word
+任務,Task,"Project,Contract,Job",word
+採買,Shopping,"Buying,Selling,Price",word
+價數,Price,"Cost,Value,Discount",word
+折數,Discount,"Sale,Offer,Price",word
+俗,Cheap,"Expensive,Discount,Price",word
+貴,Expensive,"Cheap,Price,Discount",word
+質量,Quality,"Service,Price,Grade",word
+顧主,Customer,"Client,Shopping,Colleague",word
+服務,Service,"Shopping,Help,Goods",word
+商品,Goods,"Products,Shopping,Refund",word
+退款,Refund,"Return,Price,Goods",word
+醫生,Doctor,"Nurse,Surgeon,Pharmacist",word
+病院,Hospital,"Clinic,Medical center,Pharmacy",word
+藥,Medicine,"Prescription,Pharmacy,Treatment",word
+疼,Pain,"Ache,Sore,Health",word
+健康,Health,"Pain,Medicine,Disease",word
+病,Disease,"Surgery,Medicine,Health",word
+藥仔店,Pharmacy,"Hospital,Medicine,Clinic",word
+急救,First aid,"CPR,Treatment,Emergency",word
+預約,Appointment,"Meeting,Doctor,Session",word
+手術,Surgery,"Medicine,Procedure,Treatment",word
+家庭,Family,"Relative,Household,Grandparents",word
+父親,Father,"Brother,Mother,Parent",word
+母親,Mother,"Brother,Father,Parent",word
+兄弟,Brother,"Sister,Sibling,Cousin",word
+姊妹仔,Sister,"Brother,Sibling,Cousin",word
+夫妻,Spouse,"Father,Husband,Wife",word
+朋友,Friend,"Family,Child,Sister",word
+囡仔,Child,"Sister,Brother,Infant",word
+親情,Relative,"Family,Friend,Child",word
+公媽,Grandparents,"Grandfather,Grandmother,Great-grandparents",word
+學校,School,"College,University,Hospital",word
+老師,Teacher,"Instructor,Professor,Student",word
+學生,Student,"Pupil,Scholar,Teacher",word
+冊,Book,"Exam,Course,Journal",word
+課程,Course,"Class,Book,Program",word
+考試,Exam,"Project,Homework,Grade",word
+作業,Homework,"Exam,Task,Project",word
+教室,Classroom,"Office,Study room,Laboratory",word
+成績,Grade,"Price,Quality,Result",word
+學位,Degree,"School,Certificate,Qualification",word
+運動,Sports,"Music,Exercise,Activity",word
+音樂,Music,"Song,Movie,Sports",word
+電影,Movie,"Music,Show,Picture",word
+書籍,Books,"Novels,Comics,Movie",word
+畫圖,Painting,"Drawing,Sketching,Art",word
+旅行,Travel,"Trip,Journey,Dancing",word
+園藝,Gardening,"Farming,Planting,Cooking",word
+料理,Cooking,"Baking,Frying,Fishing",word
+釣魚,Fishing,"Boating,Cooking,Swimming",word
+跳舞,Dancing,"Singing,Gardening,Music",word
+救命,Help,"Service,Escape,First aid",word
+火災,Fire,"Flame,Blaze,Danger",word
+警察,Police,"Officer,Detective,Doctor",word
+醫生,Doctor,"Medic,Nurse,Paramedic",word
+緊急,Emergency,"Urgent,Danger,Immediate",word
+危險,Danger,"Risk,Threat,Help",word
+走去予人追,Escape,"Run,Fire,Danger",word
+報案,Report,"First aid,Danger,Alert",word
+急救,First aid,"Medicine,CPR,Help",word
+地動,Earthquake,"Tremor,Event,Weather",word
+天氣,Weather,"Earthquake,Forecast,Temperature",word
+新聞,News,"Report,Update,Books",word
+事件,Event,"Report,Weather,Incident",word
+時間,Time,"Hour,Minute,Date",word
+日期,Date,"Time,Month,Year",word
+色水,Color,"Sound,Shade,Time",word
+聲音,Sound,"Color,Tone,Voice",word
+圖畫,Picture,"Color,Movie,Snapshot",word
+批,Letter,"Mail,Sound,Message",word
+問題,Question,"Report,Letter,Issue",word
