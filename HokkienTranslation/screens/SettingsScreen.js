@@ -81,6 +81,28 @@ const SettingsScreen = () => {
     </HStack>
   );
 
+  const FlashcardVisibilityToggle = ({ label, stateKey }) => (
+    <HStack
+      p={3}
+      bg={colors.primaryContainer}
+      borderRadius="lg"
+      justifyContent="space-between"
+      alignItems={"center"}
+    >
+      <Text fontSize="md" color={colors.onSurface}>
+        {label}
+      </Text>
+      <Switch
+        isChecked={visibilityStates[stateKey]}
+        onToggle={() => toggleFlashcardVisibility(stateKey)}
+        onTrackColor={colors.onPrimaryContainer}
+        offTrackColor={colors.light}
+        onThumbColor={colors.primaryContainer}
+        offThumbColor={colors.dark}
+      />
+    </HStack>
+  );
+
   return (
     <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <VStack
@@ -134,22 +156,10 @@ const SettingsScreen = () => {
             </Text>
             <VisibilityToggle label="Image" stateKey="image" />
             <VisibilityToggle label="Definition" stateKey="definition" />
-            <VisibilityToggle
-              label="English Definition"
-              stateKey="englishDefinition"
-            />
-            <VisibilityToggle
-              label="Hokkien Sentence"
-              stateKey="hokkienSentence"
-            />
-            <VisibilityToggle
-              label="Chinese Sentence"
-              stateKey="chineseSentence"
-            />
-            <VisibilityToggle
-              label="English Sentence"
-              stateKey="englishSentence"
-            />
+            <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
+            <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
+            <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
+            <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
             <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
           </VStack>
 
@@ -240,25 +250,13 @@ const SettingsScreen = () => {
               >
                 Display Options
               </Text>
-              <VisibilityToggle label="Image" stateKey="image" />
-              <VisibilityToggle label="Definition" stateKey="definition" />
-              <VisibilityToggle
-                label="English Definition"
-                stateKey="englishDefinition"
-              />
-              <VisibilityToggle
-                label="Hokkien Sentence"
-                stateKey="hokkienSentence"
-              />
-              <VisibilityToggle
-                label="Chinese Sentence"
-                stateKey="chineseSentence"
-              />
-              <VisibilityToggle
-                label="English Sentence"
-                stateKey="englishSentence"
-              />
-              <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
+              <FlashcardVisibilityToggle label="Image" stateKey="image" />
+              <FlashcardVisibilityToggle label="Definition" stateKey="definition" />
+              <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" />
+              <FlashcardVisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
+              <FlashcardVisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
+              <FlashcardVisibilityToggle label="English Sentence" stateKey="englishSentence" />
+              <FlashcardVisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
             </VStack>
           </VStack>
 
