@@ -27,7 +27,7 @@ const categories = [
   "Other",
 ];
 
-const createdBy = "lu.ya.495@gmail.com";
+const createdBy = "starter_words";
 
 const uploadData = async () => {
   try {
