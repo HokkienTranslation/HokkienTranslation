@@ -296,7 +296,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
       
       // Call the function with necessary parameters
-      processImage(contextSentence, currentUser, word);
+      await processImage(contextSentence, currentUser, word);
       console.log(downloadURL)
       const newFlashcardData = {
         origin: enteredWord,
