@@ -292,11 +292,15 @@ const FlashcardScreen = ({ route, navigation }) => {
         if (base64Image) {
           const downloadURL = await uploadBase64Image(base64Image, currentUser, word);
           console.log("Final download URL:", downloadURL);
+          return downloadURL;
         }
       };
       
       // Call the function with necessary parameters
-      await processImage(contextSentence, currentUser, word);
+      downloadURL = await processImage(contextSentence, currentUser, word);
+      if (downloadURL === null) {
+        console.log("Error, download URL is null");
+      }
       console.log(downloadURL)
       const newFlashcardData = {
         origin: enteredWord,
