@@ -267,6 +267,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           console.log("Uploading image for user:", userId);
           
           const storage = getStorage(); // Assumes Firebase app is already initialized
+          console.log(word);
           const storageRef = ref(storage, `images/${userId}/${word}.jpg`);
           
           // Decode the base64 image
@@ -297,6 +298,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
       var downloadURL;
       // Call the function with necessary parameters
+      // works just noting a bug, enteredword reads as object object as opposed to the actual word, idk why tha is
       downloadURL = await processImage(contextSentence, currentUser, enteredWord);
       if (downloadURL === null) {
         console.log("Error, download URL is null");
