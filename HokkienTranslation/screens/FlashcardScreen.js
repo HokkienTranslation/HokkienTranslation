@@ -247,45 +247,56 @@ const FlashcardScreen = ({ route, navigation }) => {
       console.log(enteredWord);
       var contextSentence = await getContextSentence(word={word});
       var image;
-        const fetchImage = async (prompt) => {
-          try {
-            const { imgBase64, error } = await generateImage(prompt);
-            if (imgBase64) {
-              image = `data:image/jpeg;base64,${imgBase64}`;
-              console.log("Image fetched successfully")
-            } else if (error) {
-              console.log(error)
-            }
-          } catch (error) {
-            console.log(error)
+      const fetchImage = async (prompt) => {
+        try {
+          const { imgBase64, error } = await generateImage(prompt);
+          if (imgBase64) {
+            image = `data:image/jpeg;base64,${imgBase64}`;
+            console.log("Image fetched successfully");
+            return image; // Return the image to pass it directly to uploadBase64Image
+          } else if (error) {
+            console.log(error);
           }
-        };
-          const uploadBase64Image = async (base64Image, userId) => {
-            try {
-                // Initialize Firebase app and storage reference
-                console.log(base64Image, userId);
-                const storage = getStorage(db);
-                const storageRef = ref(storage, `images/${userId}/${word}.jpg`);
-        
-                // Decode the base64 image
-                const base64Response = await fetch(`data:image/jpeg;base64,${base64Image}`);
-                const imageBlob = await base64Response.blob();
-        
-                // Upload the image to Firebase Storage
-                const snapshot = await uploadBytes(storageRef, imageBlob);
-        
-                // Get the download URL
-                const downloadURL = await getDownloadURL(snapshot.ref);
-                
-                console.log("Image uploaded successfully, URL:", downloadURL);
-        
-                return downloadURL; // You can store this URL in Firestore or use it in your app
-            } catch (error) {
-                console.error("Error uploading the image:", error);
-            }
-        };
-      await fetchImage(contextSentence);
-      var downloadURL = uploadBase64Image(image, currentUser);
+        } catch (error) {
+          console.log("Error fetching image:", error);
+        }
+      };
+      
+      const uploadBase64Image = async (base64Image, userId, word) => {
+        try {
+          console.log("Uploading image for user:", userId);
+          
+          const storage = getStorage(); // Assumes Firebase app is already initialized
+          const storageRef = ref(storage, `images/${userId}/${word}.jpg`);
+          
+          // Decode the base64 image
+          const base64Response = await fetch(base64Image);
+          const imageBlob = await base64Response.blob();
+          
+          // Upload the image to Firebase Storage
+          const snapshot = await uploadBytes(storageRef, imageBlob);
+          
+          // Get the download URL
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          console.log("Image uploaded successfully, URL:", downloadURL);
+          
+          return downloadURL; // Return URL for further usage
+        } catch (error) {
+          console.error("Error uploading the image:", error);
+        }
+      };
+      
+      // Usage example
+      const processImage = async (contextSentence, currentUser, word) => {
+        const base64Image = await fetchImage(contextSentence);
+        if (base64Image) {
+          const downloadURL = await uploadBase64Image(base64Image, currentUser, word);
+          console.log("Final download URL:", downloadURL);
+        }
+      };
+      
+      // Call the function with necessary parameters
+      processImage(contextSentence, currentUser, word);
       console.log(downloadURL)
       const newFlashcardData = {
         origin: enteredWord,
