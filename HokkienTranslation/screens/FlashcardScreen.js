@@ -297,7 +297,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
       
       // Call the function with necessary parameters
-      downloadURL = await processImage(contextSentence, currentUser, word);
+      var downloadURL = await processImage(contextSentence, currentUser, word);
       if (downloadURL === null) {
         console.log("Error, download URL is null");
       }
