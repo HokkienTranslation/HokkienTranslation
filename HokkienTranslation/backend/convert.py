@@ -4,10 +4,10 @@ import pandas as pd
 
 def hokkien_to_audio(sentence, save_directory, index):
     # API URLs and API Key
-    translate_url = 'https://7070-203-145-219-124.ngrok-free.app/translateHAN2KIP'
-    romanize_url = "https://tw-tts.z12.tw/display2"
-    audio_url = "https://tw-tts.z12.tw/synthesize_TLPA"
-    headers = {'API-KEY': 'iisriisra305'}
+    translate_url = '------'
+    romanize_url = "-----"
+    audio_url = "-----"
+    headers = {'API-KEY': 'key-goes-here'}
 
     # Ensure the directory exists
     base_directory = os.path.dirname(__file__)  # Base directory where the script is located
