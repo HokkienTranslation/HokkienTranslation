@@ -1,0 +1,111 @@
+origin,destination,otherOptions,type,audio_filename
+你好,Hello,"Goodbye,Thank you,Please",word,001_你好.wav
+再會,Goodbye,"Hello,Please,Thank you",word,002_再會.wav
+多謝,Thank you,"Hello,Goodbye,Please",word,003_多謝.wav
+請,Please,"Hello,Goodbye,Thank you",word,004_請.wav
+對不住,Sorry,"Excuse me,Thank you,Please",word,005_對不住.wav
+無要緊,It's okay,"Sorry,Thank you,Please",word,006_無要緊.wav
+早起好,Good morning,"Good afternoon,Good night,Hello",word,007_早起好.wav
+下昏仔好,Good evening,"Good morning,Good bye,Hello",word,008_下昏仔好.wav
+晚安,Good night,"Good bye,Good morning,Hello",word,009_晚安.wav
+再會,See you,"Good night,Hello,Please",word,010_再會.wav
+食飯,Eat,"Drink,Sleep,Run",word,011_食飯.wav
+啉水,Drink,"Eat,Sleep,Run",word,012_啉水.wav
+飽,Full,"Hungry,Thirsty,Sleepy",word,013_飽.wav
+枵,Hungry,"Full,Thirsty,Sleepy",word,014_枵.wav
+菜,Vegetable,"Fruit,Meat,Bread",word,015_菜.wav
+豬肉,Meat,"Vegetable,Fruit,Bread",word,016_豬肉.wav
+果子,Fruit,"Vegetable,Meat,Bread",word,017_果子.wav
+麵包,Bread,"Vegetable,Meat,Fruit",word,018_麵包.wav
+湯,Soup,"Water,Juice,Milk",word,019_湯.wav
+奶,Milk,"Water,Juice,Soup",word,020_奶.wav
+機場,Airport,"Bus station,Train station,Hotel",word,021_機場.wav
+火車,Train,"Bus,Car,Bike",word,022_火車.wav
+汽車,Car,"Bus,Train,Bike",word,023_汽車.wav
+公共汽車,Bus,"Car,Train,Bike",word,024_公共汽車.wav
+跤踏車,Bike,"Car,Train,Bus",word,025_跤踏車.wav
+船,Boat,"Plane,Car,Bus",word,026_船.wav
+飛機,Plane,"Boat,Car,Bus",word,027_飛機.wav
+計程仔,Taxi,"Bus,Train,Car",word,028_計程仔.wav
+地下鐵,Subway,"Train,Bus,Car",word,029_地下鐵.wav
+酒家,Hotel,"Motel,Hostel,Inn",word,030_酒家.wav
+辦公室,Office,"Meeting,Conference room,Cubicle",word,031_辦公室.wav
+會議,Meeting,"Conference,Workshop,Report",word,032_會議.wav
+報告,Report,"Meeting,Summary,Outline",word,033_報告.wav
+項目,Project,"Task,Colleague,Report",word,034_項目.wav
+頭家,Boss,"Manager,Supervisor,Leader",word,035_頭家.wav
+員工,Employee,"Worker,Boss,Colleague",word,036_員工.wav
+同事,Colleague,"Teammate,Boss,Employee",word,037_同事.wav
+薪水,Salary,"Wage,Contract,Bonus",word,038_薪水.wav
+合約,Contract,"Agreement,Salary,Arrangement",word,039_合約.wav
+任務,Task,"Project,Contract,Job",word,040_任務.wav
+採買,Shopping,"Buying,Selling,Price",word,041_採買.wav
+價數,Price,"Cost,Value,Discount",word,042_價數.wav
+折數,Discount,"Sale,Offer,Price",word,043_折數.wav
+俗,Cheap,"Expensive,Discount,Price",word,044_俗.wav
+貴,Expensive,"Cheap,Price,Discount",word,045_貴.wav
+質量,Quality,"Service,Price,Grade",word,046_質量.wav
+顧主,Customer,"Client,Shopping,Colleague",word,047_顧主.wav
+服務,Service,"Shopping,Help,Goods",word,048_服務.wav
+商品,Goods,"Products,Shopping,Refund",word,049_商品.wav
+退款,Refund,"Return,Price,Goods",word,050_退款.wav
+醫生,Doctor,"Nurse,Surgeon,Pharmacist",word,051_醫生.wav
+病院,Hospital,"Clinic,Medical center,Pharmacy",word,052_病院.wav
+藥,Medicine,"Prescription,Pharmacy,Treatment",word,053_藥.wav
+疼,Pain,"Ache,Sore,Health",word,054_疼.wav
+健康,Health,"Pain,Medicine,Disease",word,055_健康.wav
+病,Disease,"Surgery,Medicine,Health",word,056_病.wav
+藥仔店,Pharmacy,"Hospital,Medicine,Clinic",word,057_藥仔店.wav
+急救,First aid,"CPR,Treatment,Emergency",word,058_急救.wav
+預約,Appointment,"Meeting,Doctor,Session",word,059_預約.wav
+手術,Surgery,"Medicine,Procedure,Treatment",word,060_手術.wav
+家庭,Family,"Relative,Household,Grandparents",word,061_家庭.wav
+父親,Father,"Brother,Mother,Parent",word,062_父親.wav
+母親,Mother,"Brother,Father,Parent",word,063_母親.wav
+兄弟,Brother,"Sister,Sibling,Cousin",word,064_兄弟.wav
+姊妹仔,Sister,"Brother,Sibling,Cousin",word,065_姊妹仔.wav
+夫妻,Spouse,"Father,Husband,Wife",word,066_夫妻.wav
+朋友,Friend,"Family,Child,Sister",word,067_朋友.wav
+囡仔,Child,"Sister,Brother,Infant",word,068_囡仔.wav
+親情,Relative,"Family,Friend,Child",word,069_親情.wav
+公媽,Grandparents,"Grandfather,Grandmother,Great-grandparents",word,070_公媽.wav
+學校,School,"College,University,Hospital",word,071_學校.wav
+老師,Teacher,"Instructor,Professor,Student",word,072_老師.wav
+學生,Student,"Pupil,Scholar,Teacher",word,073_學生.wav
+冊,Book,"Exam,Course,Journal",word,074_冊.wav
+課程,Course,"Class,Book,Program",word,075_課程.wav
+考試,Exam,"Project,Homework,Grade",word,076_考試.wav
+作業,Homework,"Exam,Task,Project",word,077_作業.wav
+教室,Classroom,"Office,Study room,Laboratory",word,078_教室.wav
+成績,Grade,"Price,Quality,Result",word,079_成績.wav
+學位,Degree,"School,Certificate,Qualification",word,080_學位.wav
+運動,Sports,"Music,Exercise,Activity",word,081_運動.wav
+音樂,Music,"Song,Movie,Sports",word,082_音樂.wav
+電影,Movie,"Music,Show,Picture",word,083_電影.wav
+書籍,Books,"Novels,Comics,Movie",word,084_書籍.wav
+畫圖,Painting,"Drawing,Sketching,Art",word,085_畫圖.wav
+旅行,Travel,"Trip,Journey,Dancing",word,086_旅行.wav
+園藝,Gardening,"Farming,Planting,Cooking",word,087_園藝.wav
+料理,Cooking,"Baking,Frying,Fishing",word,088_料理.wav
+釣魚,Fishing,"Boating,Cooking,Swimming",word,089_釣魚.wav
+跳舞,Dancing,"Singing,Gardening,Music",word,090_跳舞.wav
+救命,Help,"Service,Escape,First aid",word,091_救命.wav
+火災,Fire,"Flame,Blaze,Danger",word,092_火災.wav
+警察,Police,"Officer,Detective,Doctor",word,093_警察.wav
+醫生,Doctor,"Medic,Nurse,Paramedic",word,094_醫生.wav
+緊急,Emergency,"Urgent,Danger,Immediate",word,095_緊急.wav
+危險,Danger,"Risk,Threat,Help",word,096_危險.wav
+走去予人追,Escape,"Run,Fire,Danger",word,097_走去予人追.wav
+報案,Report,"First aid,Danger,Alert",word,098_報案.wav
+急救,First aid,"Medicine,CPR,Help",word,099_急救.wav
+地動,Earthquake,"Tremor,Event,Weather",word,100_地動.wav
+天氣,Weather,"Earthquake,Forecast,Temperature",word,101_天氣.wav
+新聞,News,"Report,Update,Books",word,102_新聞.wav
+事件,Event,"Report,Weather,Incident",word,103_事件.wav
+時間,Time,"Hour,Minute,Date",word,104_時間.wav
+日期,Date,"Time,Month,Year",word,105_日期.wav
+色水,Color,"Sound,Shade,Time",word,106_色水.wav
+聲音,Sound,"Color,Tone,Voice",word,107_聲音.wav
+圖畫,Picture,"Color,Movie,Snapshot",word,108_圖畫.wav
+批,Letter,"Mail,Sound,Message",word,109_批.wav
+問題,Question,"Report,Letter,Issue",word,110_問題.wav
