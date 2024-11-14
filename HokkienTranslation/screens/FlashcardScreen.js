@@ -65,7 +65,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
 
-  // For responsive flashcards
+  // For responsive flashcards 
   const direction = useBreakpointValue({
     base: 'column',  
     md: 'row',   
@@ -75,8 +75,16 @@ const FlashcardScreen = ({ route, navigation }) => {
   //width <= 414 ? width * 0.90 : width * 0.90;
   //const cardHeight = height * 0.60; 
 
+  // Visability
+  const { flashcardVisibilityStates } = useComponentVisibility(); 
+  const shouldShowVStack =  // left side back card 
+  flashcardVisibilityStates.definition ||
+  flashcardVisibilityStates.englishDefinition ||
+  flashcardVisibilityStates.hokkienSentence ||
+  flashcardVisibilityStates.chineseSentence ||
+  flashcardVisibilityStates.englishSentence;
+
   const copyToClipboard = (text) => Clipboard.setString(text);
-  const { flashcardVisibilityStates } = useComponentVisibility();
 
   const [deckID, setDeckID] = useState("");
 
@@ -615,9 +623,9 @@ const FlashcardScreen = ({ route, navigation }) => {
                           prompt={flashcards[currentCardIndex].translation}
                         />
                       )}
-                      <HStack spacing={4} direction={direction}>
-                        <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
-                        {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                      <HStack spacing={4} p = {4} direction={direction}>
+                        {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                          {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
                           </Text>}
                           {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
@@ -683,7 +691,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                               onPress={() => copyToClipboard("this does not work")}
                             />
                           </HStack>}
-                        </VStack>
+                        </VStack>}
                         {flashcardVisibilityStates.image && <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Context
@@ -694,11 +702,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                                        // for size per image use: 
                                        size="2xl"  
                                        // for standarized sizes
-                                      //  style={{
+                                      // style={{
                                       //   width: 220,
                                       //   height: 220,
                                       // }}
-                                       resizeMode="contain"/>
+                                       resizeMode="contain"
+                                       />
                               </Box>}
                             {/* </Center> */}
                         </VStack>}
