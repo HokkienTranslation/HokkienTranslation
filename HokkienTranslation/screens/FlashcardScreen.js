@@ -36,6 +36,7 @@ import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
+import { useComponentVisibility } from "./context/ComponentVisibilityContext";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
@@ -75,7 +76,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   //const cardHeight = height * 0.60; 
 
   const copyToClipboard = (text) => Clipboard.setString(text);
-
+  const { flashcardVisibilityStates } = useComponentVisibility();
 
   const [deckID, setDeckID] = useState("");
 

@@ -11,8 +11,13 @@ import { SelectList } from "react-native-dropdown-select-list";
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
   const colors = themes[theme];
-  const { visibilityStates, toggleVisibility } = useComponentVisibility();
-  const { languages, setLanguages } = useLanguage();
+  const { 
+    visibilityStates, 
+    toggleVisibility, 
+    flashcardVisibilityStates, 
+    toggleFlashcardVisibility 
+  } = useComponentVisibility();
+    const { languages, setLanguages } = useLanguage();
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -93,7 +98,7 @@ const SettingsScreen = () => {
         {label}
       </Text>
       <Switch
-        isChecked={visibilityStates[stateKey]}
+        isChecked={flashcardVisibilityStates[stateKey]}
         onToggle={() => toggleFlashcardVisibility(stateKey)}
         onTrackColor={colors.onPrimaryContainer}
         offTrackColor={colors.light}
