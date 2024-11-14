@@ -603,6 +603,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                   shadow={2}
                   p = {4}
                   px={8}
+                  spacing={4} 
                 >
                   {showTranslation ? (
                     <>
@@ -683,22 +684,23 @@ const FlashcardScreen = ({ route, navigation }) => {
                             />
                           </HStack>}
                         </VStack>
-                        {flashcardVisibilityStates.image &&<VStack spacing={4} width={{ base: '100%', md: '50%' }}>
+                        {flashcardVisibilityStates.image && <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Context
                           </Text>
-                            <Center>
-                              <Box p={4} borderRadius="md">
+                            {/* <Center> makes spacing overlap*/} 
+                            {flashcardVisibilityStates.image && <Box spacing={4} p={4} borderRadius="md">
                                 <Image source={require("../assets/temp-image.png")} 
-                                       // for size per image use: size="2xl"  
+                                       // for size per image use: 
+                                       size="2xl"  
                                        // for standarized sizes
-                                       style={{
-                                        width: 280,
-                                        height: 280,
-                                      }}
+                                      //  style={{
+                                      //   width: 220,
+                                      //   height: 220,
+                                      // }}
                                        resizeMode="contain"/>
-                              </Box>
-                            </Center>
+                              </Box>}
+                            {/* </Center> */}
                         </VStack>}
                       </HStack>
                     </>
