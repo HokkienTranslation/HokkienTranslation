@@ -609,29 +609,29 @@ const FlashcardScreen = ({ route, navigation }) => {
                       <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
                         {flashcards[currentCardIndex].translation}
                       </Text>
-                      {languages[1] === "Hokkien" && (
+                      {languages[1] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
                           prompt={flashcards[currentCardIndex].translation}
                         />
                       )}
                       <HStack spacing={4} direction={direction}>
                         <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
-                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                        {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
-                          </Text>
-                          <Text  fontSize="sm" color={colors.onSurface}>
+                          </Text>}
+                          {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
-                          </Text>
-                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          </Text>}
+                          {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             English Definition
-                          </Text>
-                          <Text  fontSize="sm" color={colors.onSurface}>
+                          </Text>}
+                          {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
-                          </Text>
-                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          </Text>}
+                          {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Hokkien Example Sentence
-                          </Text>
-                          <HStack>
+                          </Text>}
+                          {flashcardVisibilityStates.hokkienSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
                               {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
                             </Text>
@@ -645,11 +645,11 @@ const FlashcardScreen = ({ route, navigation }) => {
                               }
                               onPress={() => copyToClipboard("this does not work")}
                             />
-                          </HStack>
-                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          </HStack>}
+                          {flashcardVisibilityStates.chineseSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Chinese Example Sentence
-                          </Text>
-                          <HStack>
+                          </Text>}
+                          {flashcardVisibilityStates.chineseSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
                               {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
                             </Text>
@@ -663,11 +663,11 @@ const FlashcardScreen = ({ route, navigation }) => {
                               }
                               onPress={() => copyToClipboard("this does not work")}
                             />
-                          </HStack>
-                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          </HStack>}
+                          {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             English Example Sentence
-                          </Text>
-                          <HStack>
+                          </Text>}
+                          {flashcardVisibilityStates.englishSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
                               {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
                             </Text>
@@ -681,9 +681,9 @@ const FlashcardScreen = ({ route, navigation }) => {
                               }
                               onPress={() => copyToClipboard("this does not work")}
                             />
-                          </HStack>
+                          </HStack>}
                         </VStack>
-                        <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
+                        {flashcardVisibilityStates.image &&<VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Context
                           </Text>
@@ -692,7 +692,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                 <Image source={require("../assets/temp-image.png")} size="2xl" />
                               </Box>
                             </Center>
-                        </VStack>
+                        </VStack>}
                       </HStack>
                     </>
                   ) : (
