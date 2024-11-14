@@ -688,8 +688,15 @@ const FlashcardScreen = ({ route, navigation }) => {
                             Context
                           </Text>
                             <Center>
-                              <Box p={4}>
-                                <Image source={require("../assets/temp-image.png")} size="2xl" />
+                              <Box p={4} borderRadius="md">
+                                <Image source={require("../assets/temp-image.png")} 
+                                       // for size per image use: size="2xl"  
+                                       // for standarized sizes
+                                       style={{
+                                        width: 280,
+                                        height: 280,
+                                      }}
+                                       resizeMode="contain"/>
                               </Box>
                             </Center>
                         </VStack>}
