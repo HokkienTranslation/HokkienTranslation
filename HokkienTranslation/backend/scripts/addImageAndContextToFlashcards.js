@@ -54,7 +54,7 @@ const uploadBase64Image = async (base64Image, userId, word) => {
       
       const storage = getStorage(); // Assumes Firebase app is already initialized
       console.log(word);
-      const storageRef = ref(storage, `images/${userId}/${word}.jpg`);
+      const storageRef = ref(storage, `images/${userId}/${String(word)}.jpg`);
       
       // Decode the base64 image
       const base64Response = await fetch(base64Image);
@@ -91,7 +91,7 @@ const updateFlashcards = async () => {
 const flashcards = await getFlashcards(db); // Wait for the fetched data
 
 var contextSentence;
-var word;
+var word = "";
 
 for (const flashcard of flashcards) {
     // find if there is a word
