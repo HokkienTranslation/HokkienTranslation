@@ -67,7 +67,7 @@ const FlashcardStack = () => {
         headerRight: () => <FeedbackButton />,
       }}
     >
-      <Stack.Screen name="Category" component={imageContextScriptComponent} />
+      <Stack.Screen name="Category" component={FlashcardCategory} />
       <Stack.Screen name="Flashcard" component={FlashcardScreen} />
       <Stack.Screen name="Quiz" component={QuizScreen} />
       <Stack.Screen name="FlashcardAdd" component={FlashcardAdd} />
