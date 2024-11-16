@@ -98,7 +98,8 @@ for (const flashcard of flashcards) {
     
     contextSentence = undefined;
     downloadURL = undefined;
-    console.log(flashcard);
+    console.log(flashcard.origin);
+    console.log(flashcard.destination);
     word = flashcard.destination.toString(); // english word
     console.log(word) 
     if (flashcard.downloadURL === undefined) {
