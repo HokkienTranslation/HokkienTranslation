@@ -7,7 +7,7 @@ import app, { db } from "../database/Firebase";
 import { generateImage } from "../API/TextToImageService";
 import getContextSentence from "../../screens/components/contextSentence";
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { collection, getDocs, updateDoc } from "firebase/firestore";
+import { collection, getDocs, updateDoc, doc } from "firebase/firestore";
 import getCurrentUser from "../database/GetCurrentUser";
 var currentUser;
 var image;
