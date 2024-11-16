@@ -10,6 +10,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, getDocs, updateDoc } from "firebase/firestore";
 import getCurrentUser from "../database/GetCurrentUser";
 var currentUser;
+var image;
 async function getFlashcards(db) {
   
   currentUser = await getCurrentUser();
