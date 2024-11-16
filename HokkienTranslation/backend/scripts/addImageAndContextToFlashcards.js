@@ -54,7 +54,7 @@ const uploadBase64Image = async (base64Image, userId, word) => {
       
       const storage = getStorage(); // Assumes Firebase app is already initialized
       console.log(word);
-      const storageRef = ref(storage, `images/${userId}/${String(word)}.jpg`);
+      const storageRef = ref(storage, `images/${userId}/${String(word.word)}.jpg`);
       
       // Decode the base64 image
       const base64Response = await fetch(base64Image);
