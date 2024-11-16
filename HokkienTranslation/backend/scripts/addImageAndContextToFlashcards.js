@@ -100,7 +100,7 @@ for (const flashcard of flashcards) {
     downloadURL = undefined;
     word = flashcard.destination.toString(); // english word
     console.log(word) 
-    if (flashcard.downloadURL === undefined) {
+    
     if (word === undefined) {
         console.log("No word found in flashcard")
     }
@@ -134,7 +134,7 @@ for (const flashcard of flashcards) {
 
     }
     }
-}
+
 }
 
 export default updateFlashcards;
