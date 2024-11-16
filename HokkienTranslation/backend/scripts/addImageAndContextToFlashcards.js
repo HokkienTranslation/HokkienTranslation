@@ -3,29 +3,30 @@
 
 // should get all flashcards from database, check if has an downloadurl field do nothing, if not add a context sentence and download url
 
-const firestore = require('@react-native-firebase/firestore');
+import app, { db } from "../database/Firebase";
+import { generateImage } from "../API/TextToImageService";
+import getContextSentence from "../../screens/components/contextSentence";
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { collection, getDocs, updateDoc } from "firebase/firestore";
+import getCurrentUser from "../database/GetCurrentUser";
+var currentUser;
+async function getFlashcards(db) {
+  
+  currentUser = await getCurrentUser();
+  const categoryCol = collection(db, "flashcard");
+  const categorySnapshot = await getDocs(categoryCol);
 
-const getStorage = require("firebase/storage").getStorage;
-const ref = require("firebase/storage").ref;
-const uploadBytes = require("firebase/storage").uploadBytes;
-const getDownloadURL = require("firebase/storage").getDownloadURL;
+  const categoryList = categorySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data()
+  }));
 
-const getContextSentence = require('../../screens/components/contextSentence.js').getContextSentence;
-const generateImage = require("../API/TextToImageService.js").generateImage;
+  //TODO: REMOVE THIS
+  console.log("Print: ", categoryList)
+  
 
-
-const fetchFlashcards = async () => {
-  try {
-    const snapshot = await firestore().collection('flashcard').get();
-    snapshot.forEach(doc => {
-      flashcards.push({ id: doc.id, ...doc.data() });
-    });
-    return flashcards;
-  } catch (error) {
-    console.error("Error fetching flashcards: ", error);
-    return [];
-  }
-};
+  return categoryList;
+}
 
 
 
@@ -86,21 +87,24 @@ var downloadURL;
 //downloadURL = await processImage(contextSentence, currentUser, enteredWord);
 
 const updateFlashcards = async () => {
-const flashcards = await fetchFlashcards(); // Wait for the fetched data
+const flashcards = await getFlashcards(db); // Wait for the fetched data
 
 var contextSentence;
+var word;
 for (const flashcard of flashcards) {
     // find if there is a word
     contextSentence = undefined;
     downloadURL = undefined;
     word = flashcard.destination; // english word
+    console.log(word)
     if (flashcard.downloadURL === undefined) {
     if (word === undefined) {
         console.log("No word found in flashcard")
     }
     else {
-        contextSentence = await getContextSentence(word);
+        contextSentence = await getContextSentence(word={word});
         flashcard.contextSentence = contextSentence;
+
     }
     if (contextSentence === undefined ) {
         console.log("No context sentence generated");
@@ -116,6 +120,14 @@ for (const flashcard of flashcards) {
     else {
         // update the flashcard with the downloadURL
         // update the flashcard with the context sentence
+
+        const flashcardRef = doc(db, "flashcard", flashcard.id);
+        await updateDoc(flashcardRef, {
+            downloadURL: downloadURL,
+            contextSentence: contextSentence
+        });
+        console.log("Flashcard" + {word} + " with download URL and context sentence");
+
 
     }
     }
