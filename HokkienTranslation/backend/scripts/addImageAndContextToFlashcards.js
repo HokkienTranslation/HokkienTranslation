@@ -91,8 +91,12 @@ const flashcards = await getFlashcards(db); // Wait for the fetched data
 
 var contextSentence;
 var word;
+var count = 0;
 for (const flashcard of flashcards) {
     // find if there is a word
+    if (count > 0) {
+      continue;
+    }
     contextSentence = undefined;
     downloadURL = undefined;
     word = flashcard.destination; // english word
@@ -112,6 +116,7 @@ for (const flashcard of flashcards) {
     else {
         downloadURL = await processImage(contextSentence, currentUser, word);
         flashcard.downloadURL = downloadURL;
+        count += 1;
 
     }
     if (downloadURL === undefined) {
@@ -127,7 +132,7 @@ for (const flashcard of flashcards) {
             contextSentence: contextSentence
         });
         console.log("Flashcard" + {word} + " with download URL and context sentence");
-
+  
 
     }
     }
