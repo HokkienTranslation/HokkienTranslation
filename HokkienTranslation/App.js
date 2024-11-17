@@ -19,6 +19,7 @@ import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 import FlashcardAdd from "./screens/FlashcardAdd";
+import imageContextScriptComponent from "./backend/scripts/imageContextScriptComponent";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
