@@ -39,6 +39,8 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import contextSentence from "./components/contextSentence";
+import getContextSentence from "./components/contextSentence";
 // list of categories use api
 
 var index = 0;
@@ -61,6 +63,8 @@ const FlashcardCategory = () => {
 
   // check for auth when getting categories
   async function getCategories(db) {
+  
+  
     const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
 
@@ -71,6 +75,7 @@ const FlashcardCategory = () => {
 
     //TODO: REMOVE THIS
     console.log("Print: ", categoryList)
+    
 
     return categoryList;
   }
@@ -130,6 +135,7 @@ const FlashcardCategory = () => {
 
   
   useEffect(() => {
+    
     if (isFocused) {
        
        getCategories(db).then((categoryList) => {
@@ -157,7 +163,7 @@ const FlashcardCategory = () => {
     if (currentUser === "") {
       fetchUser();
     }
-
+    
     if (index == 0) {
       console.log("Current Category in FlashcardCategory is: ", category); 
       var flashcardList = category.flashcardList;
