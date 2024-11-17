@@ -264,10 +264,12 @@ const FlashcardAdd = ({ route }) => {
               onTrackColor={colors.primary}
             />
           </HStack>
+          <Text> Select at least one flashcard.</Text>
           <TouchableOpacity
             onPress={handleSubmission}
+            disabled={selectedFlashcards.length === 0}
             style={{
-              backgroundColor: "#00FF00",
+              backgroundColor: selectedFlashcards.length === 0 ? "#CCCCCC" : "#00FF00",
               paddingVertical: 15,
               paddingHorizontal: 20,
               borderRadius: 10,

@@ -11,7 +11,7 @@ import {
   Select,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
-import { Animated, Easing } from "react-native";
+import { Animated, Easing, TouchableOpacity} from "react-native";
 import {
   collection,
   getDocs,
@@ -28,6 +28,9 @@ import getCurrentUser from "../backend/database/GetCurrentUser";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechService";
+import TextToSpeech from "./components/TextToSpeech";
+import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -44,10 +47,12 @@ const QuizScreen = ({ route }) => {
   const slideAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(1)).current;
   const { languages } = useLanguage();
-  const [lang1, setLang1] = useState(languages[0]);
-  const [lang2, setLang2] = useState(languages[1]);
+  const [lang1, setLang1] = useState(languages[0]); // choices
+  const [lang2, setLang2] = useState(languages[1]); // question
   const [quizStarted, setQuizStarted] = useState(false);
   const [answerWith, setAnswerWith] = useState(lang1);
+  const [choiceIndex, setChoice] = useState(null);
+  const [hokkienOption, setHokkienOption] = useState("Characters");
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -101,7 +106,7 @@ const QuizScreen = ({ route }) => {
 
         const flashcardListData = flashcardListDoc.data();
         const flashcardIds = flashcardListData.cardList;
-        const flashcards = [];
+        let flashcards = [];
 
         for (const flashcardId of flashcardIds) {
           const flashcardDocRef = doc(db, "flashcard", flashcardId);
@@ -118,6 +123,14 @@ const QuizScreen = ({ route }) => {
 
             if (lang1 === "Hokkien") {
               word = data.origin;
+              if (hokkienOption === "Romanization") {
+                try {
+                  word = await fetchRomanizer(word);
+                } catch (error) {
+                  word = "Error with romanization.";
+                  console.error(error);
+                }
+              }
             }
             if (lang2 === "English") {
               translation = data.destination;
@@ -133,7 +146,11 @@ const QuizScreen = ({ route }) => {
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
                 if (lang1 === "Hokkien") {
-                  return await fetchTranslation(option);
+                  let display = await fetchTranslation(option);
+                  if (hokkienOption === "Romanization") {
+                    display = await fetchRomanizer(display);
+                  }
+                  return display;
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
                   return await translateText(option, lang1); 
@@ -153,6 +170,8 @@ const QuizScreen = ({ route }) => {
           }
         }
 
+        flashcards = shuffleArray(flashcards);
+
         setFlashcards(flashcards);
         setLoading(false);
       } catch (error) {
@@ -168,6 +187,23 @@ const QuizScreen = ({ route }) => {
   };
 
   const handleChoice = async (index) => {
+    setChoice(index);
+    if (lang1 === "Hokkien") {
+      try {
+        console.log("fetching audio for:", flashcards[currentCardIndex].choices[index]);
+        const numeric_tones = await fetchNumericTones(flashcards[currentCardIndex].choices[index]);
+        const audioUrl = await fetchAudioUrl(numeric_tones);
+        if (audioUrl) {
+          const audio = new Audio(audioUrl);
+          audio.play();
+        }
+      } catch (error) {
+        console.error("Error fetching audio URL:", error);
+      }
+    }
+  };
+
+  const handleSubmit = async (index) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
 
@@ -251,10 +287,10 @@ const QuizScreen = ({ route }) => {
             await updateDoc(quizDocRef, {
               scores: existingScores,
             });
+            setUserScores(existingScores[userEmail]);
           } else {
             // If the document does not exist, create it
-            await setDoc(quizDocRef, {
-              scores: {
+            const newScoreDoc = {
                 [userEmail]: [
                   {
                     time: timestamp,
@@ -266,8 +302,11 @@ const QuizScreen = ({ route }) => {
                     },
                   },
                 ],
-              },
-            });
+              };
+            await setDoc(quizDocRef, {
+              scores: newScoreDoc
+              });
+            setUserScores(newScoreDoc[userEmail]);
           }
         } else {
           console.error(
@@ -290,6 +329,7 @@ const QuizScreen = ({ route }) => {
         }, 300);
       }, 1000);
     }
+    setChoice(null);
   };
 
   const showScoreHistory = async (user, flashcardListName) => {
@@ -367,10 +407,9 @@ const QuizScreen = ({ route }) => {
     const choice = flashcards[currentCardIndex].choices[index];
 
     if (selectedAnswer === null) {
-      return {
-        bg: colors.primaryContainer,
-        borderColor: colors.buttonBorder,
-      };
+      return index === choiceIndex 
+        ? {bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder}
+        : {bg: colors.primaryContainer, borderColor: colors.buttonBorder};
     } else if (choice === correctAnswer) {
       return index === selectedAnswer
         ? { bg: "rgba(39, 201, 36, 0.6)", borderColor: "#27c924" }
@@ -405,6 +444,8 @@ const QuizScreen = ({ route }) => {
             selectedValue={answerWith}
             minWidth={200}
             onValueChange={handleAnswerWithChange}
+            accessibilityLabel="Choose Answer Language" 
+            placeholder="Choose Answer Language" 
             _selectedItem={{
               _text: { fontSize: 24 }, 
             }}
@@ -412,6 +453,22 @@ const QuizScreen = ({ route }) => {
             <Select.Item label={lang1} value={lang1} />
             <Select.Item label={lang2} value={lang2} />
           </Select>
+
+          {answerWith === "Hokkien" && (
+            <Select
+              selectedValue={hokkienOption}
+              minWidth={200}
+              onValueChange={(value) => setHokkienOption(value)}
+              accessibilityLabel="Choose Hokkien Answer Type"
+              placeholder="Choose Hokkien Answer Type" 
+              _selectedItem={{
+                _text: { fontSize: 24 },
+              }}
+            >
+              <Select.Item label="Characters" value="Characters" />
+              <Select.Item label="Romanization" value="Romanization" />
+            </Select>
+          )}
         <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
       </VStack>
       </Center>
@@ -433,7 +490,7 @@ const QuizScreen = ({ route }) => {
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
             <VStack space={4} alignItems="stretch" width="90%" mx="auto">
               {userScores && userScores.length > 0 ? (
-                userScores.map((scoreEntry, index) => (
+                userScores.slice().reverse().map((scoreEntry, index) => (
                   <Box
                     key={index}
                     bg={colors.primaryContainer}
@@ -520,8 +577,14 @@ const QuizScreen = ({ route }) => {
               flex={1}
               justifyContent="center"
             >
-              <Text fontSize="2xl" color={colors.onSurface} mb={0}>
+              <Text fontSize="2xl" alignItems={"center"} color={colors.onSurface} mb={0}>
                 {flashcards[currentCardIndex].origin}
+                {"\u00A0\u00A0"}
+                {lang2 === "Hokkien" && (
+                        <TextToSpeech
+                          prompt={flashcards[currentCardIndex].origin}
+                        />
+                      )}
               </Text>
               <VStack space={5} width="100%">
                 <HStack space={9} width="100%">
@@ -621,6 +684,22 @@ const QuizScreen = ({ route }) => {
           </Box>
         </Animated.View>
       </VStack>
+      <TouchableOpacity
+        onPress={() => handleSubmit(choiceIndex)}
+        disabled={choiceIndex === null}
+        style={{
+          backgroundColor: choiceIndex === null ? "#CCCCCC" : colors.onPrimaryContainer,
+          paddingVertical: 10,
+          paddingHorizontal: 20,
+          borderRadius: 10,
+          alignItems: "center",
+          marginTop: 20,
+        }}
+      >
+        <Text style={{ color: "#FFFFFF", fontSize: 16, fontWeight: "bold" }}>
+          Submit
+        </Text>
+      </TouchableOpacity>
       <Text fontSize="lg" color={colors.onSurface} mt={4}>
         Score: {score}
       </Text>
