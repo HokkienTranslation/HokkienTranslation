@@ -1,0 +1,111 @@
+origin,destination,otherOptions1,otherOptions2,otherOptions3,type,romanization,audioUrl
+你好,Hello,Goodbye,Thank you,Please,word,lí hó,../../data/generated_audios/li2 ho2.wav
+再會,Goodbye,Hello,Please,Thank you,word,tsài-huē,../../data/generated_audios/tsai3-hue7.wav
+多謝,Thank you,Hello,Goodbye,Please,word,to-siā,../../data/generated_audios/to1-sia7.wav
+請,Please,Hello,Goodbye,Thank you,word,tshiánn,../../data/generated_audios/tshiann2.wav
+對不住,Sorry,Excuse me,Thank you,Please,word,tuì-put-tsū,../../data/generated_audios/tui3-put4-tsu7.wav
+無要緊,It's okay,Sorry,Thank you,Please,word,bô-iàu-kín,../../data/generated_audios/bo5-iau3-kin2.wav
+早起好,Good morning,Good afternoon,Good night,Hello,word,tsái-khí hó,../../data/generated_audios/tsa2-khi2 ho2.wav
+下昏仔好,Good evening,Good morning,Good bye,Hello,word,e-hng á-hó,../../data/generated_audios/e1-hng1-a2-ho2.wav
+晚安,Good night,Good bye,Good morning,Hello,word,buán-an,../../data/generated_audios/buan2-an1.wav
+再會,See you,Good night,Hello,Please,word,tsài-huē,../../data/generated_audios/tsai3-hue7.wav
+食飯,Eat,Drink,Sleep,Run,word,tsia̍h-pn̄g,../../data/generated_audios/tsiah8-png7.wav
+啉水,Drink,Eat,Sleep,Run,word,lim-tsuí,../../data/generated_audios/lim1 tsui2.wav
+飽,Full,Hungry,Thirsty,Sleepy,word,pá,../../data/generated_audios/pa2.wav
+枵,Hungry,Full,Thirsty,Sleepy,word,iau,../../data/generated_audios/iau1.wav
+菜,Vegetable,Fruit,Meat,Bread,word,tshài,../../data/generated_audios/tshai3.wav
+豬肉,Meat,Vegetable,Fruit,Bread,word,ti-bah,../../data/generated_audios/ti1-bah4.wav
+果子,Fruit,Vegetable,Meat,Bread,word,kué-tsí,../../data/generated_audios/kue2-tsi2.wav
+麵包,Bread,Vegetable,Meat,Fruit,word,mī-pau,../../data/generated_audios/mi7-pau1.wav
+湯,Soup,Water,Juice,Milk,word,thng,../../data/generated_audios/thng1.wav
+奶,Milk,Water,Juice,Soup,word,ni,../../data/generated_audios/ling1.wav
+機場,Airport,Bus station,Train station,Hotel,word,ki-tiûnn,../../data/generated_audios/ki1-tiunn5.wav
+火車,Train,Bus,Car,Bike,word,hué-tshia,../../data/generated_audios/hue2-tshia1.wav
+汽車,Car,Bus,Train,Bike,word,khì-tshia,../../data/generated_audios/khi3-tshia1.wav
+公共汽車,Bus,Car,Train,Bike,word,kong-kiōng-khì-tshia,../../data/generated_audios/kong1-kiong7 khi3-tshia1.wav
+跤踏車,Bike,Car,Train,Bus,word,kha-ta̍h-tshia,../../data/generated_audios/kha1-tah8-tshia1.wav
+船,Boat,Plane,Car,Bus,word,tsûn,../../data/generated_audios/tsun5.wav
+飛機,Plane,Boat,Car,Bus,word,hui-ki,../../data/generated_audios/hui1-ki1.wav
+計程仔,Taxi,Bus,Train,Car,word,kè-tîng-á,../../data/generated_audios/ke3-ting5-a2.wav
+地下鐵,Subway,Train,Bus,Car,word,tē-hā-thih,../../data/generated_audios/te7-ha7-thih4.wav
+酒家,Hotel,Motel,Hostel,Inn,word,tsiú-ka,../../data/generated_audios/tsiu2-ka1.wav
+辦公室,Office,Meeting,Conference room,Cubicle,word,pān-kong-sik,../../data/generated_audios/pan7-kong1-sik4.wav
+會議,Meeting,Conference,Workshop,Report,word,huē-gī,../../data/generated_audios/hue7-gi7.wav
+報告,Report,Meeting,Summary,Outline,word,pò-kò,../../data/generated_audios/po3-ko3.wav
+項目,Project,Task,Colleague,Report,word,hāng-bo̍k,../../data/generated_audios/hang7-bok8.wav
+頭家,Boss,Manager,Supervisor,Leader,word,thâu-ke,../../data/generated_audios/thau5-ke1.wav
+員工,Employee,Worker,Boss,Colleague,word,uân-kang,../../data/generated_audios/uan5-kang1.wav
+同事,Colleague,Teammate,Boss,Employee,word,tông-sū,../../data/generated_audios/tong5 su7.wav
+薪水,Salary,Wage,Contract,Bonus,word,sin-suí,../../data/generated_audios/sin1-sui2.wav
+合約,Contract,Agreement,Salary,Arrangement,word,ha̍p-iok,../../data/generated_audios/hap8-iok4.wav
+任務,Task,Project,Contract,Job,word,jīm-bū,../../data/generated_audios/jim7-bu7.wav
+採買,Shopping,Buying,Selling,Price,word,tshái-bé,../../data/generated_audios/tshai2-be2.wav
+價數,Price,Cost,Value,Discount,word,kè-siàu,../../data/generated_audios/ke3-siau3.wav
+折數,Discount,Sale,Offer,Price,word,tsiat-sòo,../../data/generated_audios/tsiat4-soo3.wav
+俗,Cheap,Expensive,Discount,Price,word,sio̍k,../../data/generated_audios/siok8.wav
+貴,Expensive,Cheap,Price,Discount,word,kuì,../../data/generated_audios/kui3.wav
+質量,Quality,Service,Price,Grade,word,tsit-liōng,../../data/generated_audios/tsit4-liong7.wav
+顧主,Customer,Client,Shopping,Colleague,word,kòo-tsú,../../data/generated_audios/koo3-tsu2.wav
+服務,Service,Shopping,Help,Goods,word,ho̍k-bū,../../data/generated_audios/hok8-bu7.wav
+商品,Goods,Products,Shopping,Refund,word,siong-phín,../../data/generated_audios/siong1-phin2.wav
+退款,Refund,Return,Price,Goods,word,thè-khuán,../../data/generated_audios/the3-khuan2.wav
+醫生,Doctor,Nurse,Surgeon,Pharmacist,word,i-sing,../../data/generated_audios/i1-sing1.wav
+病院,Hospital,Clinic,Medical center,Pharmacy,word,pēnn-īnn,../../data/generated_audios/penn7-inn7.wav
+藥,Medicine,Prescription,Pharmacy,Treatment,word,io̍h,../../data/generated_audios/ioh8.wav
+疼,Pain,Ache,Sore,Health,word,thiànn,../../data/generated_audios/thiann3.wav
+健康,Health,Pain,Medicine,Disease,word,kiān-khong,../../data/generated_audios/kian7-khong1.wav
+病,Disease,Surgery,Medicine,Health,word,pēnn,../../data/generated_audios/penn7.wav
+藥仔店,Pharmacy,Hospital,Medicine,Clinic,word,io̍h-á-tiàm,../../data/generated_audios/ioh8-a2-tiam3.wav
+急救,First aid,CPR,Treatment,Emergency,word,kip-kiù,../../data/generated_audios/kip4-kiu3.wav
+預約,Appointment,Meeting,Doctor,Session,word,ī-iok,../../data/generated_audios/i7-iok4.wav
+手術,Surgery,Medicine,Procedure,Treatment,word,tshiú-su̍t,../../data/generated_audios/tshiu2-sut8.wav
+家庭,Family,Relative,Household,Grandparents,word,ka-tîng,../../data/generated_audios/ka1-ting5.wav
+父親,Father,Brother,Mother,Parent,word,hū-tshin,../../data/generated_audios/hu7-tshin1.wav
+母親,Mother,Brother,Father,Parent,word,bú-tshin,../../data/generated_audios/bo2-tshin1.wav
+兄弟,Brother,Sister,Sibling,Cousin,word,hiann-tī,../../data/generated_audios/hiann1-ti7.wav
+姊妹仔,Sister,Brother,Sibling,Cousin,word,tsí-muē-á,../../data/generated_audios/tsi2-mue7-a2.wav
+夫妻,Spouse,Father,Husband,Wife,word,hu-tshe,../../data/generated_audios/hu1-tshe1.wav
+朋友,Friend,Family,Child,Sister,word,pîng-iú,../../data/generated_audios/ping5-iu2.wav
+囡仔,Child,Sister,Brother,Infant,word,gín-á,../../data/generated_audios/gin2-a2.wav
+親情,Relative,Family,Friend,Child,word,tshin-tsiânn,../../data/generated_audios/tshin1-tsiann5.wav
+公媽,Grandparents,Grandfather,Grandmother,Great-grandparents,word,kong-má,../../data/generated_audios/kong1-ma2.wav
+學校,School,College,University,Hospital,word,ha̍k-hāu,../../data/generated_audios/hak8-hau7.wav
+老師,Teacher,Instructor,Professor,Student,word,lāu-su,../../data/generated_audios/lau7-su1.wav
+學生,Student,Pupil,Scholar,Teacher,word,ha̍k-sing,../../data/generated_audios/hak8-sing1.wav
+冊,Book,Exam,Course,Journal,word,tsheh,../../data/generated_audios/tsheh4.wav
+課程,Course,Class,Book,Program,word,khò-tîng,../../data/generated_audios/kho3-ting5.wav
+考試,Exam,Project,Homework,Grade,word,khó-tshì,../../data/generated_audios/kho2-tshi3.wav
+作業,Homework,Exam,Task,Project,word,tsok-gia̍p,../../data/generated_audios/tsok4-giap8.wav
+教室,Classroom,Office,Study room,Laboratory,word,kàu-sik,../../data/generated_audios/kau3-sik4.wav
+成績,Grade,Price,Quality,Result,word,sîng-tsik,../../data/generated_audios/sing5-tsik4.wav
+學位,Degree,School,Certificate,Qualification,word,ha̍k-uī,../../data/generated_audios/hak8-ui7.wav
+運動,Sports,Music,Exercise,Activity,word,ūn-tōng,../../data/generated_audios/un7-tong7.wav
+音樂,Music,Song,Movie,Sports,word,im-ga̍k,../../data/generated_audios/im1-gak8.wav
+電影,Movie,Music,Show,Picture,word,tiān-iánn,../../data/generated_audios/tian7-iann2.wav
+書籍,Books,Novels,Comics,Movie,word,su-tsi̍k,../../data/generated_audios/su1-tsik8.wav
+畫圖,Painting,Drawing,Sketching,Art,word,uē-tôo,../../data/generated_audios/ue7-too5.wav
+旅行,Travel,Trip,Journey,Dancing,word,lú-hîng,../../data/generated_audios/li2-hing5.wav
+園藝,Gardening,Farming,Planting,Cooking,word,uân-gē,../../data/generated_audios/uan5-ge7.wav
+料理,Cooking,Baking,Frying,Fishing,word,liāu-lí,../../data/generated_audios/liau7-li2.wav
+釣魚,Fishing,Boating,Cooking,Swimming,word,tiò-hî,../../data/generated_audios/tio3-hi5.wav
+跳舞,Dancing,Singing,Gardening,Music,word,thiàu-bú,../../data/generated_audios/thiau3-bu2.wav
+救命,Help,Service,Escape,First aid,word,kiù-miā,../../data/generated_audios/kiu3-mia7.wav
+火災,Fire,Flame,Blaze,Danger,word,hué-tsai,../../data/generated_audios/hue2-tsai1.wav
+警察,Police,Officer,Detective,Doctor,word,kíng-tshat,../../data/generated_audios/king2-tshat4.wav
+醫生,Doctor,Medic,Nurse,Paramedic,word,i-sing,../../data/generated_audios/i1-sing1.wav
+緊急,Emergency,Urgent,Danger,Immediate,word,kín-kip,../../data/generated_audios/kin2-kip4.wav
+危險,Danger,Risk,Threat,Help,word,guî-hiám,../../data/generated_audios/gui5-hiam2.wav
+走去予人追,Escape,Run,Fire,Danger,word,tsáu-khì hōo-lâng tui,../../data/generated_audios/tsau2-khi3 hoo7 lang5 tui1.wav
+報案,Report,First aid,Danger,Alert,word,pò-àn,../../data/generated_audios/po3-an3.wav
+急救,First aid,Medicine,CPR,Help,word,kip-kiù,../../data/generated_audios/kip4-kiu3.wav
+地動,Earthquake,Tremor,Event,Weather,word,tē-tāng,../../data/generated_audios/te7-tang7.wav
+天氣,Weather,Earthquake,Forecast,Temperature,word,thinn-khì,../../data/generated_audios/thinn1-khi3.wav
+新聞,News,Report,Update,Books,word,sin-bûn,../../data/generated_audios/sin1-bun5.wav
+事件,Event,Report,Weather,Incident,word,sū-kiānn,../../data/generated_audios/su7-kiann7.wav
+時間,Time,Hour,Minute,Date,word,sî-kan,../../data/generated_audios/si5-kan1.wav
+日期,Date,Time,Month,Year,word,ji̍t-kî,../../data/generated_audios/jit8-ki5.wav
+色水,Color,Sound,Shade,Time,word,sik-tsuí,../../data/generated_audios/sik4-tsui2.wav
+聲音,Sound,Color,Tone,Voice,word,siann-im,../../data/generated_audios/siann1-im1.wav
+圖畫,Picture,Color,Movie,Snapshot,word,tôo-uē,../../data/generated_audios/too5-ue7.wav
+批,Letter,Mail,Sound,Message,word,phue,../../data/generated_audios/phue1.wav
+問題,Question,Report,Letter,Issue,word,būn-tê,../../data/generated_audios/bun7-te5.wav

@@ -2,7 +2,6 @@
   "name": "hokkientranslation",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
-  "type": "module",
   "scripts": {
     "build": "expo export -p web",
     "start": "expo start",
@@ -22,10 +21,13 @@
     "@react-navigation/native-stack": "^6.9.17",
     "axios": "^1.6.3",
     "csv-parse": "^5.5.6",
+    "csv-parser": "^3.0.0",
     "csv-stringify": "^6.5.1",
+    "csv-writer": "^1.6.0",
     "dotenv": "^16.4.5",
     "expo": "~49.0.15",
     "expo-clipboard": "~4.3.1",
+    "expo-linear-gradient": "~12.3.0",
     "expo-status-bar": "~1.6.0",
     "firebase": "^10.7.1",
     "native-base": "^3.4.28",
@@ -41,8 +43,7 @@
     "react-native-screens": "~3.22.0",
     "react-native-svg": "13.9.0",
     "react-native-web": "~0.19.6",
-    "xlsx": "^0.18.5",
-    "expo-linear-gradient": "~12.3.0"
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
