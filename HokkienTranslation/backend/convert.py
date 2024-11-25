@@ -4,10 +4,7 @@ import pandas as pd
 
 def hokkien_to_audio(sentence, save_directory, index):
     # API URLs and API Key
-    translate_url = '------'
-    romanize_url = "-----"
-    audio_url = "-----"
-    headers = {'API-KEY': 'key-goes-here'}
+    
 
     # Ensure the directory exists
     base_directory = os.path.dirname(__file__)  # Base directory where the script is located
@@ -18,14 +15,14 @@ def hokkien_to_audio(sentence, save_directory, index):
     translate_data = {'sentence': sentence}
     translate_response = requests.post(translate_url, json=translate_data, headers=headers)
     if translate_response.status_code != 200:
-        return "Translation API error", None
+        return "Translation API error", None, None
     romanized_text = translate_response.json()['result']
 
     # Step 2: Romanization -> Numeric tones
     romanize_params = {'text0': romanized_text}
     romanize_response = requests.get(romanize_url, params=romanize_params)
     if romanize_response.status_code != 200:
-        return "Romanization API error", None
+        return "Romanization API error", None, None
     num_tones_text = romanize_response.text
 
     # Step 3: Numeric tones -> Audio
@@ -36,7 +33,7 @@ def hokkien_to_audio(sentence, save_directory, index):
     }
     audio_response = requests.get(audio_url, params=audio_params)
     if audio_response.status_code != 200:
-        return "Audio API error", None
+        return "Audio API error", None, None
 
     # Save the audio file
     filename_prefix = f"{index:03d}_"  # Prefix with the index, padded with zeros
@@ -44,7 +41,7 @@ def hokkien_to_audio(sentence, save_directory, index):
     with open(audio_filename, "wb") as file:
         file.write(audio_response.content)
 
-    return f"Audio file saved as {os.path.basename(audio_filename)}", os.path.basename(audio_filename)
+    return f"Audio file saved as {os.path.basename(audio_filename)}", os.path.basename(audio_filename), romanized_text
 
 # Relative paths for CSV and directory to save audio files
 csv_file_path = "../data/new_flashcard_data_samples.csv"
@@ -53,17 +50,20 @@ audio_save_directory = "../HokkienTranslation/data/audio_files"
 # Load data from CSV
 df = pd.read_csv(csv_file_path)
 
-# List to store audio filenames
+# Lists to store audio filenames and romanized texts
 audio_filenames = []
+romanizations = []
 
 # Process each sentence in the 'origin' column with indexing
 for index, sentence in enumerate(df['origin'], start=1):
-    result, file_name = hokkien_to_audio(sentence, audio_save_directory, index)
+    result, file_name, romanized_text = hokkien_to_audio(sentence, audio_save_directory, index)
     print(result)
     audio_filenames.append(file_name)  # Add filename to the list
+    romanizations.append(romanized_text)  # Add romanization to the list
 
-# Add the filenames as a new column in the DataFrame
+# Add the filenames and romanizations as new columns in the DataFrame
 df['audio_filename'] = audio_filenames
+df['romanization'] = romanizations
 
 # Save the updated DataFrame back to the CSV file
 df.to_csv(csv_file_path, index=False)
