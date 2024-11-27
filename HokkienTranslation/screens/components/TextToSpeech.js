@@ -24,7 +24,7 @@ const TextToSpeech = ({ prompt }) => {
   useEffect(() => {
     async function fetchWav() {
       try {
-        const flashcard = await getStoredHokkien(prompt);
+        const flashcard = await getStoredHokkien(prompt, "Hokkien");
         if (flashcard) {
           console.log(flashcard);
           setNumericTones(flashcard.romanization);
