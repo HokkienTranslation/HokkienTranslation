@@ -91,8 +91,8 @@ export async function translateToThree(query) {
   return { englishInput, chineseInput, hokkienTranslation };
 }
 
-export async function getStoredHokkien(prompt, language) {
-  // language is the language of the prompt
+export async function getStoredHokkien(prompt, searchBy) {
+  // searchBy is "English", "Romanization", "Hokkien", 
   try {
     const flashcardRef = collection(db, 'flashcard');
     // firebase does not allow queries with multiple '!='s
@@ -101,14 +101,18 @@ export async function getStoredHokkien(prompt, language) {
     if (!prompt) {
       return null;
     }
-    if (language === "English") {
+    if (searchBy === "English") {
       q = query(flashcardRef, 
         where('destination', '==', prompt),
         where("audioUrl", "!=", null)); 
-    } else { // Hokkien
+    } else if (searchBy === "Romanization") {
+      q = query(flashcardRef, 
+        where('romanization', '==', prompt),
+        where("audioUrl", "!=", null)); 
+    } else {
       q = query(flashcardRef, 
         where('origin', '==', prompt),
-        where("audioUrl", "!=", null)); 
+        where("audioUrl", "!=", null));
     }
     const querySnapshot = await getDocs(q);
 

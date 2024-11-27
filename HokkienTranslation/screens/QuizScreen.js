@@ -54,6 +54,7 @@ const QuizScreen = ({ route }) => {
   const [answerWith, setAnswerWith] = useState(lang1);
   const [choiceIndex, setChoice] = useState(null);
   const [hokkienOption, setHokkienOption] = useState("Characters");
+  const [optionType, setOptionType] = useState("English");
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -129,7 +130,6 @@ const QuizScreen = ({ route }) => {
                   const flashcard = await getStoredHokkien(word, "Hokkien");
                   if (flashcard) {
                     word = flashcard.romanization;
-                    console.log("Fetched romanization from storage");
                   } else {
                     word = await fetchRomanizer(word);
                   }
@@ -153,24 +153,22 @@ const QuizScreen = ({ route }) => {
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
                 if (lang1 === "Hokkien") {
+                  setOptionType("Hokkien");
                   let display;
-                  console.log("option: ", option);
                   const flashcard = await getStoredHokkien(option, "English");
-                  console.log("flashcard: ", flashcard);
                   if (flashcard) {
                     display = flashcard.origin;
                     if (hokkienOption === "Romanization") {
+                      setOptionType("Romanization");
                       display = flashcard.romanization;
                     }
                   } else {
-                    console.log("API translation for:", option);
                     display = await fetchTranslation(option);
-                    console.log("display: ", display);
                     if (hokkienOption === "Romanization") {
+                      setOptionType("Romanization");
                       display = await fetchRomanizer(display);
                     }
                   }
-                  console.log("display", display);
                   return display;
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
@@ -180,9 +178,7 @@ const QuizScreen = ({ route }) => {
               })
             );
 
-            console.log("translatedOptions: ", translatedOptions);
             const choices = shuffleArray([word, ...translatedOptions]);
-            console.log("choices: ", choices);
 
             flashcards.push({
               id: flashcardDoc.id,
@@ -190,12 +186,10 @@ const QuizScreen = ({ route }) => {
               destination: word,
               choices: choices,
             });
-            console.log("flashcards: ", flashcards);
           }
         }
 
         flashcards = shuffleArray(flashcards);
-        console.log("flashcards 2: ", flashcards);
 
         setFlashcards(flashcards);
         setLoading(false);
@@ -215,18 +209,12 @@ const QuizScreen = ({ route }) => {
     setChoice(index);
     if (lang1 === "Hokkien") {
       try {
-        console.log("flashcards 3:", flashcards);
-        console.log(flashcards[currentCardIndex].choices);
         const option = flashcards[currentCardIndex].choices[index];
-        console.log("option: ", option);
-        const flashcard = await getStoredHokkien(option, "Hokkien");
-        console.log("flashcard: ", flashcard);
+        const flashcard = await getStoredHokkien(option, optionType);
         let audioUrl;
         if (flashcard) {
           audioUrl = flashcard.audioUrl;
-          console.log("Fetched audio from storage");
         } else {
-          console.log("fetching audio for:", option);
           const numeric_tones = await fetchNumericTones(option);
           audioUrl = await fetchAudioUrl(numeric_tones);
         }
