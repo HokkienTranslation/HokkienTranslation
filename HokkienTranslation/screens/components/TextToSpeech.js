@@ -4,6 +4,7 @@ import { Feather } from "@expo/vector-icons";
 // import { TONE_API_URL, SPEECH_API_URL } from "@env";
 import { useTheme } from "../context/ThemeProvider";
 import { fetchNumericTones, fetchAudioUrl } from "../../backend/API/TextToSpeechService";
+import { getStoredHokkien } from "../../backend/database/DatabaseUtils.js";
 
 const TextToSpeech = ({ prompt }) => {
   const { theme, themes } = useTheme();
@@ -23,12 +24,22 @@ const TextToSpeech = ({ prompt }) => {
   useEffect(() => {
     async function fetchWav() {
       try {
-        const numericTones = await fetchNumericTones(prompt);
-        setNumericTones(numericTones);
+        const flashcard = await getStoredHokkien(prompt);
+        if (flashcard) {
+          console.log(flashcard);
+          setNumericTones(flashcard.romanization);
+          setAudioUrl(flashcard.audioUrl);
+          console.log("Fetched audio from storage");
+      } else {
+          const numericTones = await fetchNumericTones(prompt);
+          setNumericTones(numericTones);
 
-        const audioUrl = await fetchAudioUrl(numericTones);
-        setAudioUrl(audioUrl);
-      } catch (error) {
+          const audioUrl = await fetchAudioUrl(numericTones);
+          setAudioUrl(audioUrl);
+      } 
+    }
+    catch (error) {
+        console.log(error);
         setError(error);
       }
     }

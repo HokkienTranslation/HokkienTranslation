@@ -90,3 +90,30 @@ export async function translateToThree(query) {
 
   return { englishInput, chineseInput, hokkienTranslation };
 }
+
+export async function getStoredHokkien(prompt) {
+  try {
+    const flashcardRef = collection(db, 'flashcard');
+    // firebase does not allow queries with multiple '!='s
+    // so this assumes that if it has audioUrl, it has romanization
+    const q = query(flashcardRef, 
+      where('origin', '==', prompt),
+      where("audioUrl", "!=", null)); 
+    const querySnapshot = await getDocs(q);
+
+    if (!querySnapshot.empty) {
+      const flashcard = querySnapshot.docs[0].data();
+      const romanization = flashcard.romanization;
+      const audioUrl = flashcard.audioUrl;
+      if (audioUrl && romanization) {
+        return { audioUrl, romanization };
+      } else {
+        return null;
+      }
+    } else {
+      return null
+    }
+  } catch (error) {
+    throw error;
+  }
+}
