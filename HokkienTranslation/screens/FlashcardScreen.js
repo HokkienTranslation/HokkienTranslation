@@ -560,34 +560,38 @@ const FlashcardScreen = ({ route, navigation }) => {
                 },
               ]}
             >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-                {showTranslation ? (
-                  <>
-                    <Text fontSize="2xl" color={colors.onSurface}>
-                      {flashcards[currentCardIndex].translation}
-                    </Text>
-                    {languages[1] === "Hokkien" && (
-                      <TextToSpeech
-                        prompt={flashcards[currentCardIndex].translation}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex].word}
-                  </Text>
+            <Box
+              width="300px"
+              height="200px"
+              bg={colors.primaryContainer}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={2}
+            >
+            {showTranslation ? (
+              <>
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.translation || "Translation Missing"}
+                </Text>
+                {languages[1] === "Hokkien" && flashcards[currentCardIndex]?.translation && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
                 )}
-              </Box>
+              </>
+            ) : (
+              <>
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.word || "Word Missing"}
+                </Text>
+                {languages[0] === "Hokkien" && flashcards[currentCardIndex]?.word && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].word} />
+                )}
+              </>
+            )}
+            </Box>
             </Animated.View>
           </TouchableOpacity>
+
 
           <HStack space={4} alignItems="center">
             <Pressable
