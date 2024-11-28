@@ -176,7 +176,7 @@ const FlashcardCategory = () => {
 
         //////////////////////////////// auth checking here!11!!!!!!!!!!!!!!!!!!!!!!
         var temp = ref.data();
-        console.log("Temp", temp)
+        // console.log("Temp", temp)
         categoryId = temp.categoryId;
         // console.log(temp)
 

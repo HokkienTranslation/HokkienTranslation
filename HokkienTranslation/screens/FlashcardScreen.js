@@ -357,14 +357,24 @@ const FlashcardScreen = ({ route, navigation }) => {
         return updatedFlashcards;
       });
       const flashcardRef = doc(db, "flashcard", flashcardId);
-      await deleteDoc(flashcardRef);
-      console.log("Flashcard deleted from flashcard collection");
+      const flashcardDoc = await getDoc(flashcardRef);
+      const flashcardData = flashcardDoc.data();
 
+      if (flashcardData.createdBy === currentUser) {
+        await deleteDoc(flashcardRef);
+        console.log("Flashcard deleted from flashcard collection");
+      };
+      
       const flashcardListRef = doc(db, "flashcardList", deckID);
-      await updateDoc(flashcardListRef, {
-        cardList: arrayRemove(flashcardId),
-      });
-      console.log("Flashcard ID removed from current deck's cardList");
+      const flashcardListDoc = await getDoc(flashcardListRef);
+      const flashcardListData = flashcardListDoc.data();
+
+      if (flashcardListData.createdBy === currentUser) {
+        await updateDoc(flashcardListRef, {
+          cardList: arrayRemove(flashcardId),
+        });
+        console.log("Flashcard ID removed from current deck's cardList");
+      };
 
       const categoriesCollectionRef = collection(db, "category");
       const categorySnapshot = await getDocs(categoriesCollectionRef);
@@ -388,7 +398,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             if (flashcardListDoc.exists()) {
               const flashcardListData = flashcardListDoc.data();
 
-              if (flashcardListData.cardList.includes(flashcardId)) {
+              if (flashcardListData.cardList.includes(flashcardId) && flashcardListData.createdBy === currentUser) {
                 const updatedCardList = flashcardListData.cardList.filter(
                   (id) => id !== flashcardId
                 );
