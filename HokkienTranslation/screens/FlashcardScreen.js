@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+
 import {
   Box,
   Text,
@@ -357,24 +358,14 @@ const FlashcardScreen = ({ route, navigation }) => {
         return updatedFlashcards;
       });
       const flashcardRef = doc(db, "flashcard", flashcardId);
-      const flashcardDoc = await getDoc(flashcardRef);
-      const flashcardData = flashcardDoc.data();
+      await deleteDoc(flashcardRef);
+      console.log("Flashcard deleted from flashcard collection");
 
-      if (flashcardData.createdBy === currentUser) {
-        await deleteDoc(flashcardRef);
-        console.log("Flashcard deleted from flashcard collection");
-      };
-      
       const flashcardListRef = doc(db, "flashcardList", deckID);
-      const flashcardListDoc = await getDoc(flashcardListRef);
-      const flashcardListData = flashcardListDoc.data();
-
-      if (flashcardListData.createdBy === currentUser) {
-        await updateDoc(flashcardListRef, {
-          cardList: arrayRemove(flashcardId),
-        });
-        console.log("Flashcard ID removed from current deck's cardList");
-      };
+      await updateDoc(flashcardListRef, {
+        cardList: arrayRemove(flashcardId),
+      });
+      console.log("Flashcard ID removed from current deck's cardList");
 
       const categoriesCollectionRef = collection(db, "category");
       const categorySnapshot = await getDocs(categoriesCollectionRef);
@@ -398,7 +389,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             if (flashcardListDoc.exists()) {
               const flashcardListData = flashcardListDoc.data();
 
-              if (flashcardListData.cardList.includes(flashcardId) && flashcardListData.createdBy === currentUser) {
+              if (flashcardListData.cardList.includes(flashcardId)) {
                 const updatedCardList = flashcardListData.cardList.filter(
                   (id) => id !== flashcardId
                 );
@@ -553,7 +544,9 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Text>
           </Box>
 
+          
           <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
+          
             <Animated.View
               {...panResponder.panHandlers}
               style={[
@@ -570,34 +563,41 @@ const FlashcardScreen = ({ route, navigation }) => {
                 },
               ]}
             >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-                {showTranslation ? (
-                  <>
-                    <Text fontSize="2xl" color={colors.onSurface}>
-                      {flashcards[currentCardIndex].translation}
-                    </Text>
-                    {languages[1] === "Hokkien" && (
-                      <TextToSpeech
-                        prompt={flashcards[currentCardIndex].translation}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex].word}
-                  </Text>
+            <Box
+              width="300px"
+              height="200px"
+              bg={colors.primaryContainer}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={2}
+            >
+            {showTranslation ? (
+              <>
+              
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.translation || "Translation Missing"}
+                </Text>
+                {languages[1] === "Hokkien" && flashcards[currentCardIndex]?.translation && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
                 )}
-              </Box>
+              </>
+            ) : (
+              <>
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.word || "Word Missing"}
+                </Text>
+                {languages[0] === "Hokkien" && flashcards[currentCardIndex]?.word && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].word} />
+                )}
+              </>
+            )}
+            </Box>
             </Animated.View>
           </TouchableOpacity>
+
+          
+
 
           <HStack space={4} alignItems="center">
             <Pressable
