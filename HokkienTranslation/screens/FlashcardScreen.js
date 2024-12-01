@@ -585,18 +585,18 @@ const FlashcardScreen = ({ route, navigation }) => {
               <>
               
                 <Text fontSize="2xl" color={colors.onSurface}>
-                  {flashcards[currentCardIndex]?.translation || "Translation Missing"}
+                  {flashcards[currentCardIndex]?.translation}
                 </Text>
-                {languages[1] === "Hokkien" && flashcards[currentCardIndex]?.translation && (
+                {languages[1] === "Hokkien" && (
                   <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
                 )}
               </>
             ) : (
               <>
                 <Text fontSize="2xl" color={colors.onSurface}>
-                  {flashcards[currentCardIndex]?.word || "Word Missing"}
+                  {flashcards[currentCardIndex]?.word}
                 </Text>
-                {languages[0] === "Hokkien" && flashcards[currentCardIndex]?.word && (
+                {languages[0] === "Hokkien" && (
                   <TextToSpeech prompt={flashcards[currentCardIndex].word} />
                 )}
               </>
