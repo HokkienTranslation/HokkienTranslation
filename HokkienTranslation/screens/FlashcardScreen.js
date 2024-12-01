@@ -364,7 +364,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         await deleteDoc(flashcardRef);
         console.log("Flashcard deleted from flashcard collection");
       };
-      
+
       const flashcardListRef = doc(db, "flashcardList", deckID);
       const flashcardListDoc = await getDoc(flashcardListRef);
       const flashcardListData = flashcardListDoc.data();
@@ -553,7 +553,9 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Text>
           </Box>
 
+          
           <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
+          
             <Animated.View
               {...panResponder.panHandlers}
               style={[
@@ -570,34 +572,41 @@ const FlashcardScreen = ({ route, navigation }) => {
                 },
               ]}
             >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-                {showTranslation ? (
-                  <>
-                    <Text fontSize="2xl" color={colors.onSurface}>
-                      {flashcards[currentCardIndex].translation}
-                    </Text>
-                    {languages[1] === "Hokkien" && (
-                      <TextToSpeech
-                        prompt={flashcards[currentCardIndex].translation}
-                      />
-                    )}
-                  </>
-                ) : (
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex].word}
-                  </Text>
+            <Box
+              width="300px"
+              height="200px"
+              bg={colors.primaryContainer}
+              alignItems="center"
+              justifyContent="center"
+              borderRadius="10px"
+              shadow={2}
+            >
+            {showTranslation ? (
+              <>
+              
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.translation}
+                </Text>
+                {languages[1] === "Hokkien" && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
                 )}
-              </Box>
+              </>
+            ) : (
+              <>
+                <Text fontSize="2xl" color={colors.onSurface}>
+                  {flashcards[currentCardIndex]?.word}
+                </Text>
+                {languages[0] === "Hokkien" && (
+                  <TextToSpeech prompt={flashcards[currentCardIndex].word} />
+                )}
+              </>
+            )}
+            </Box>
             </Animated.View>
           </TouchableOpacity>
+
+          
+
 
           <HStack space={4} alignItems="center">
             <Pressable
