@@ -90,3 +90,24 @@ export async function updateSentenceWithTranslation(
     translationList: translationList,
   });
 }
+
+// Upload audio to google storage
+export async function uploadAudio(filename) {
+  const localPath = `../../data/generated_audios/${filename}`;
+  // console.log(localPath);
+
+  try {
+    const buffer = await readFile(localPath);
+    const imageRef = storageRef(storage, `audios/${filename.split('/').pop()}`);
+    const snapshot = await uploadBytes(imageRef, buffer);
+    // console.log("Uploaded a blob or file!");
+
+    const audioUrl = await getDownloadURL(snapshot.ref);
+    console.log(audioUrl);
+
+    return audioUrl;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw error;
+  }
+}

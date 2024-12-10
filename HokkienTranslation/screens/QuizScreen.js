@@ -31,6 +31,7 @@ import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
+import { getStoredHokkien } from "../backend/database/DatabaseUtils.js";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -53,6 +54,7 @@ const QuizScreen = ({ route }) => {
   const [answerWith, setAnswerWith] = useState(lang1);
   const [choiceIndex, setChoice] = useState(null);
   const [hokkienOption, setHokkienOption] = useState("Characters");
+  const [optionType, setOptionType] = useState("English");
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -125,7 +127,12 @@ const QuizScreen = ({ route }) => {
               word = data.origin;
               if (hokkienOption === "Romanization") {
                 try {
-                  word = await fetchRomanizer(word);
+                  const flashcard = await getStoredHokkien(word, "Hokkien");
+                  if (flashcard) {
+                    word = flashcard.romanization;
+                  } else {
+                    word = await fetchRomanizer(word);
+                  }
                 } catch (error) {
                   word = "Error with romanization.";
                   console.error(error);
@@ -146,9 +153,21 @@ const QuizScreen = ({ route }) => {
             const translatedOptions = await Promise.all(
               data.otherOptions.map(async (option) => {
                 if (lang1 === "Hokkien") {
-                  let display = await fetchTranslation(option);
-                  if (hokkienOption === "Romanization") {
-                    display = await fetchRomanizer(display);
+                  setOptionType("Hokkien");
+                  let display;
+                  const flashcard = await getStoredHokkien(option, "English");
+                  if (flashcard) {
+                    display = flashcard.origin;
+                    if (hokkienOption === "Romanization") {
+                      setOptionType("Romanization");
+                      display = flashcard.romanization;
+                    }
+                  } else {
+                    display = await fetchTranslation(option);
+                    if (hokkienOption === "Romanization") {
+                      setOptionType("Romanization");
+                      display = await fetchRomanizer(display);
+                    }
                   }
                   return display;
                 }
@@ -165,7 +184,7 @@ const QuizScreen = ({ route }) => {
               id: flashcardDoc.id,
               origin: translation,
               destination: word,
-              choices,
+              choices: choices,
             });
           }
         }
@@ -190,9 +209,15 @@ const QuizScreen = ({ route }) => {
     setChoice(index);
     if (lang1 === "Hokkien") {
       try {
-        console.log("fetching audio for:", flashcards[currentCardIndex].choices[index]);
-        const numeric_tones = await fetchNumericTones(flashcards[currentCardIndex].choices[index]);
-        const audioUrl = await fetchAudioUrl(numeric_tones);
+        const option = flashcards[currentCardIndex].choices[index];
+        const flashcard = await getStoredHokkien(option, optionType);
+        let audioUrl;
+        if (flashcard) {
+          audioUrl = flashcard.audioUrl;
+        } else {
+          const numeric_tones = await fetchNumericTones(option);
+          audioUrl = await fetchAudioUrl(numeric_tones);
+        }
         if (audioUrl) {
           const audio = new Audio(audioUrl);
           audio.play();

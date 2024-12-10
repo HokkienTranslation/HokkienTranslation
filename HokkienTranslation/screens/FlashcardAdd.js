@@ -61,15 +61,17 @@ async function getFlashcardsforCategory(db, category) {
     const flashcardRef = doc(db, "flashcard", flashcard);
     const flashcardDoc = await getDoc(flashcardRef);
     const flashcardData = flashcardDoc.data();
-    console.log(flashcardData);
+    // console.log(flashcardData);
     // step could be taken here to ensured we are not accessing other users flashcards
 
-    flashcards.push({
-      word: flashcardData.destination,
-      translation: flashcardData.origin,
-      id: flashcardRef.id,
-    });
-    //console.log(flashcardRef.id)
+    if (flashcardData && flashcardData.destination) {
+      flashcards.push({
+        word: flashcardData.destination,
+        translation: flashcardData.origin,
+        id: flashcardRef.id,
+      });
+    } 
+    // console.log(flashcardRef.id)
   }
 
   // ensure unique flashcard id
