@@ -35,6 +35,7 @@ import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
+import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -428,6 +429,32 @@ const FlashcardScreen = ({ route, navigation }) => {
     }
   };
 
+  const generateOptions = async (options) => {
+    try {
+      const prompt = `Given the word(s): ${options}, what is a related, but very different word in meaning? You must respond with only one word. Do not add any punctuation.`;
+      const response = await callOpenAIChat(prompt);
+      console.log("OpenAI Response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+      return "Error with generating options.";
+    }
+  };
+  
+  const handleAutofill = async () => {
+    const hokkien = await fetchTranslation(enteredTranslation);
+    setEnteredWord(hokkien);
+    const option1 = await generateOptions(enteredTranslation);
+    setOption1(option1);
+    const currentWords = `${enteredTranslation}, ${option1}`;
+    const option2 = await generateOptions(currentWords);
+    setOption2(option2);
+    const currentWords2 = `${currentWords}, ${option2}`;
+    const option3 = await generateOptions(currentWords2);
+    setOption3(option3);
+    setType('word');
+  };
+
   useEffect(() => {
     const fetchAndGenerateFlashcards = async () => {
       try {
@@ -658,14 +685,17 @@ const FlashcardScreen = ({ route, navigation }) => {
             <Modal.Body>
               <VStack space={4}>
                 <Input
-                  placeholder="Enter word"
-                  value={enteredWord}
-                  onChangeText={setEnteredWord}
-                />
-                <Input
-                  placeholder="Enter Translation"
+                  placeholder="Enter English word"
                   value={enteredTranslation}
                   onChangeText={setEnteredTranslation}
+                />
+                <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
+                  Autofill
+                </Button>
+                <Input
+                  placeholder="Enter Hokkien translation"
+                  value={enteredWord}
+                  onChangeText={setEnteredWord}
                 />
                 <Input
                   placeholder="Option 1"
