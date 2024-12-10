@@ -773,7 +773,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                           </Text>
                             {/* <Center> makes spacing overlap*/} 
                             {flashcardVisibilityStates.image && <Box spacing={4} p={4} borderRadius="md">
-                                <Image source={require("../assets/temp-image.png")} 
+                                <Image source={
+                                        flashcards[currentCardIndex]?.downloadURL
+                                           ? { uri: flashcards[currentCardIndex].downloadURL }
+                                        : require("../assets/temp-image.png") // Fallback image
+                                      }
+                                      alt="Flashcard image"
                                        // for size per image use: 
                                        size="2xl"  
                                        // for standarized sizes
