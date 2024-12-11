@@ -268,6 +268,23 @@ const FlashcardScreen = ({ route, navigation }) => {
         "New flashcard ID added to cardList in flashcardList document"
       );
 
+      let word = newFlashcardData.destination;
+      let translation = newFlashcardData.origin;
+
+      if (languages[0] === "Hokkien") {
+        word = newFlashcardData.origin;
+      }
+      if (languages[1] === "English") {
+        translation = newFlashcardData.destination;
+      }
+
+      if (languages[0] !== "English" && languages[0] !== "Hokkien") {
+        word = await translateText(newFlashcardData.destination, languages[0]);
+      }
+      if (languages[1] !== "English" && languages[1] !== "Hokkien") {
+        translation = await translateText(newFlashcardData.destination, languages[1]);
+      }
+
       const updatedFlashcards = [
         ...flashcards,
         {
@@ -278,8 +295,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           type: type,
           createdAt: new Date().toISOString(),
           createdBy: currentUser,
-          word: enteredTranslation,
-          translation: enteredWord,
+          word: word,
+          translation: translation,
         },
       ];
 
@@ -522,7 +539,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     if (flashcardListName) {
       fetchAndGenerateFlashcards();
     }
-  }, [flashcardListName, flashcards, languages]);
+  }, [flashcardListName, languages]);
 
   useEffect(() => {
     //prefill fields
