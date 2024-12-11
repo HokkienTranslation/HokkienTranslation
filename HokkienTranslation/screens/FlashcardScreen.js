@@ -522,7 +522,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     if (flashcardListName) {
       fetchAndGenerateFlashcards();
     }
-  }, [flashcardListName, languages]);
+  }, [flashcardListName, flashcards, languages]);
 
   useEffect(() => {
     //prefill fields
