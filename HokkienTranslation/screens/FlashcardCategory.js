@@ -319,12 +319,16 @@ const FlashcardCategory = () => {
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
-            <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
-              <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
-              <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
-            </TouchableOpacity>
+            {category.createdBy === currentUser &&  (
+            <>
+              <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
+                <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
+                <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
+              </TouchableOpacity>
+            </>
+            )}
           </HStack>
         )}
       </Pressable>
