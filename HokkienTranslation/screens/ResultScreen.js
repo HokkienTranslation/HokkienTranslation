@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import * as Clipboard from "expo-clipboard";
 import {
   ScrollView,
@@ -75,11 +75,17 @@ const ResultScreen = ({ route }) => {
 
   const fetchAndSetRomanization = async (hokkienText, type) => {
     try {
-      const romanizedText = await fetchRomanizer(hokkienText);
-      if (romanizedText) {
-        if (type === 1) setHokkienRomanized(romanizedText);
-        else if (type === 2) setHokkienSentenceRomanized(romanizedText);
-      }
+      // const romanizedText = await fetchRomanizer(hokkienText);
+      // if (romanizedText) {
+        if (type === 1) {
+          const romanizedText = "tsheh4";
+          setHokkienRomanized(romanizedText);
+        }
+        else if (type === 2) {
+          const romanizedText = "khuann1 hit4 pun2 koo3 tsheh4";
+          setHokkienSentenceRomanized(romanizedText);
+        }
+      // }
       updateProgress(0.2);
     } catch (error) {
       console.error(error);
@@ -134,7 +140,18 @@ const ResultScreen = ({ route }) => {
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
-      const result = await CheckDatabase(query);
+      // const result = await CheckDatabase(query);
+      const result = {
+        translation: {
+          hokkienTranslation: "冊",
+          definitions: "1. 書。古代編綴竹簡成冊，後來泛指書籍、簿本。 \n2. 計算套裝書的單位。",
+          englishDefinitions: "1. Book. In ancient times, compilations of bamboo slips were termed as books, later generally referring to books or volumes. \n2. The unit to calculate sets of books.",
+        },
+        sentence: {
+          sentences: ["看彼本古冊。", "Read that ancient book.", "看那本書。"],
+          imageURL: "https://firebasestorage.googleapis.com/v0/b/hokkientranslationapp.appspot.com/o/images%2FID_145.png?alt=media&token=50f6554c-1571-4010-bf21-3454e5a51a71",
+        },
+      }
       updateProgress(0.4);
       if (result.translation && result.sentence) {
         setDataFromDatabase(result);
@@ -152,17 +169,20 @@ const ResultScreen = ({ route }) => {
     checkData();
   }, [hokkienTranslation]);
 
-  useEffect(() => {
-    const loadImage = async () => {
-      const { imgBase64, error } = await generateImage(query);
-      if (error) {
-        console.error(error);
-        return;
-      }
-      setImageUrl(imgBase64);
-    };
-    loadImage();
-  }, []);
+  // useEffect(() => {
+  //   const loadImage = async () => {
+  //     const path = "../data/total_img_125/ID_145.png";
+  //     const imgBase64 = await convertImageToBase64(path);
+  //     const error = null;
+  //     // const { imgBase64, error } = await generateImage(query);
+  //     if (error) {
+  //       console.error(error);
+  //       return;
+  //     }
+  //     setImageUrl(imgBase64);
+  //   };
+  //   loadImage();
+  // }, []);
 
   if (progress < 1.0) {
     return <LoadingScreen progress={progress} />;
