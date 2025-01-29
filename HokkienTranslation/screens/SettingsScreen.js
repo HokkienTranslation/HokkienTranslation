@@ -206,7 +206,7 @@ const SettingsScreen = () => {
                     setSelected={(key) => setLanguages([key, languages[1]])}
                     data={languageList}
                     save="key"
-                    defaultOption={{ key: "English", value: "English" }}
+                    defaultOption={{ key: "Hokkien", value: "Hokkien" }}
                     boxStyles={{ backgroundColor: colors.primaryContainer }}
                     dropdownTextStyles={{ color: colors.onSurface }}
                     inputStyles={{ color: colors.onSurface }}
@@ -230,10 +230,7 @@ const SettingsScreen = () => {
                     setSelected={(key) => setLanguages([languages[0], key])}
                     data={languageList}
                     save="key"
-                    defaultOption={{
-                      key: "Hokkien",
-                      value: "Hokkien",
-                    }}
+                    defaultOption={{ key: "English", value: "English" }}
                     boxStyles={{ backgroundColor: colors.primaryContainer }}
                     dropdownTextStyles={{ color: colors.onSurface }}
                     inputStyles={{ color: colors.onSurface }}

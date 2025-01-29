@@ -33,7 +33,7 @@ If you do not have `expo-cli` run the following command to install:
   npm run web
   ```
 
-## Deployment
+<!-- ## Deployment
 
 To deploy the `HokkienTranslation` project to Vercel, follow these steps:
 
@@ -56,3 +56,4 @@ To deploy the `HokkienTranslation` project to Vercel, follow these steps:
    ```
 
 For more detailed information on publishing websites, refer to the [Expo documentation on publishing websites](https://docs.expo.dev/distribution/publishing-websites/).
+-->

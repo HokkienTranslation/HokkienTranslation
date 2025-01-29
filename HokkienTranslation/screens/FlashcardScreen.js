@@ -44,6 +44,8 @@ import TextToSpeech from "./components/TextToSpeech";
 import  getContextSentence  from "./components/contextSentence";
 import { generateImage } from "../backend/API/TextToImageService";
 import * as Clipboard from "expo-clipboard";
+import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -359,6 +361,23 @@ const FlashcardScreen = ({ route, navigation }) => {
         "New flashcard ID added to cardList in flashcardList document"
       );
 
+      let word = newFlashcardData.destination;
+      let translation = newFlashcardData.origin;
+
+      if (languages[0] === "Hokkien") {
+        word = newFlashcardData.origin;
+      }
+      if (languages[1] === "English") {
+        translation = newFlashcardData.destination;
+      }
+
+      if (languages[0] !== "English" && languages[0] !== "Hokkien") {
+        word = await translateText(newFlashcardData.destination, languages[0]);
+      }
+      if (languages[1] !== "English" && languages[1] !== "Hokkien") {
+        translation = await translateText(newFlashcardData.destination, languages[1]);
+      }
+
       const updatedFlashcards = [
         ...flashcards,
         {
@@ -369,8 +388,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           type: type,
           createdAt: new Date().toISOString(),
           createdBy: currentUser,
-          word: enteredTranslation,
-          translation: enteredWord,
+          word: word,
+          translation: translation,
         },
       ];
 
@@ -518,6 +537,32 @@ const FlashcardScreen = ({ route, navigation }) => {
       setShowConfirmDelete(false);
       setDisableDeleteButton(false);
     }
+  };
+
+  const generateOptions = async (options) => {
+    try {
+      const prompt = `Given the word(s): ${options}, what is a related, but very different word in meaning? You must respond with only one word. Do not add any punctuation.`;
+      const response = await callOpenAIChat(prompt);
+      console.log("OpenAI Response:", response);
+      return response;
+    } catch (error) {
+      console.error("Error:", error);
+      return "Error with generating options.";
+    }
+  };
+  
+  const handleAutofill = async () => {
+    const hokkien = await fetchTranslation(enteredTranslation);
+    setEnteredWord(hokkien);
+    const option1 = await generateOptions(enteredTranslation);
+    setOption1(option1);
+    const currentWords = `${enteredTranslation}, ${option1}`;
+    const option2 = await generateOptions(currentWords);
+    setOption2(option2);
+    const currentWords2 = `${currentWords}, ${option2}`;
+    const option3 = await generateOptions(currentWords2);
+    setOption3(option3);
+    setType('word');
   };
 
   useEffect(() => {
@@ -854,7 +899,7 @@ const FlashcardScreen = ({ route, navigation }) => {
               <Modal.Body>
                 <VStack space={4}>
                   <Input
-                    placeholder="Enter word"
+                    placeholder="Enter English word"
                     value={enteredWord}
                     onChangeText={setEnteredWord}
                   />
@@ -863,6 +908,14 @@ const FlashcardScreen = ({ route, navigation }) => {
                     value={enteredTranslation}
                     onChangeText={setEnteredTranslation}
                   />
+                <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
+                  Autofill
+                </Button>
+                <Input
+                  placeholder="Enter Hokkien translation"
+                  value={enteredWord}
+                  onChangeText={setEnteredWord}
+                />
                   <Input
                     placeholder="Option 1"
                     value={option1}
