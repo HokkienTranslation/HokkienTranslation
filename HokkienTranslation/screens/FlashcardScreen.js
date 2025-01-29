@@ -361,15 +361,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         "New flashcard ID added to cardList in flashcardList document"
       );
 
-      let word = newFlashcardData.destination;
-      let translation = newFlashcardData.origin;
+      // WORD IS ALREADY INIT, leaving this here though
+      // let word = newFlashcardData.destination;
+      // let translation = newFlashcardData.origin;
 
-      if (languages[0] === "Hokkien") {
-        word = newFlashcardData.origin;
-      }
-      if (languages[1] === "English") {
-        translation = newFlashcardData.destination;
-      }
+      // if (languages[0] === "Hokkien") {
+      //   word = newFlashcardData.origin;
+      // }
+      // if (languages[1] === "English") {
+      //   translation = newFlashcardData.destination;
+      // }
 
       if (languages[0] !== "English" && languages[0] !== "Hokkien") {
         word = await translateText(newFlashcardData.destination, languages[0]);
