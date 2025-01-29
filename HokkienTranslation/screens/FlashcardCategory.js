@@ -481,8 +481,8 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    width: "90%",
-    maxWidth: 480,
+    width: "95%",
+    minWidth: 300,
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
