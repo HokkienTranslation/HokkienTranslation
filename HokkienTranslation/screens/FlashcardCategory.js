@@ -18,6 +18,7 @@ import {
   View,
   ScrollView,
   Checkbox,
+  Divider,
 } from "native-base";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -391,7 +392,39 @@ const FlashcardCategory = () => {
             )}
           </HStack>
 
+          {/* Emphasize categories for study */}
           <VStack style={styles.grid}>
+          {display
+            .filter(category => 
+              ["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+            )
+            .map((category, index) => (
+              <CategoryBox
+                key={index}
+                category={category}
+                navigation={navigation}
+              />
+          ))}
+
+          {index === 0 &&  
+          <Divider my={4} bg={colors.surface} />
+          }
+
+          {/* Remaining Categories */}
+          {display
+            .filter(category => 
+              !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+            )
+            .map((category, index) => (
+              <CategoryBox 
+              key={index} 
+              category={category} 
+              navigation={navigation} />
+          ))}
+          {index === 1 && <AddBox />}
+          </VStack>
+
+          {/* <VStack style={styles.grid}>
             {display.map((category, index) => (
               <CategoryBox
                 key={index}
@@ -400,7 +433,7 @@ const FlashcardCategory = () => {
               />
             ))}
             {index === 1 && <AddBox />}
-          </VStack>
+          </VStack> */}
         </Container>
       </Center>
     </ScrollView>
