@@ -306,16 +306,14 @@ const FlashcardCategory = () => {
     };
     return (
       <Pressable
-        style={[styles.categoryBox, isPressed && styles.categoryBoxPressed]}
+        style={[
+          styles.categoryBox,
+          isPressed && styles.categoryBoxPressed,
+          { backgroundColor: colors.categoriesButton }
+        ]}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onPress={() => handleCategoryPress(category, navigation)}
-        style={[
-          isPressed
-            ? [styles.categoryBox, styles.categoryBoxPressed]
-            : styles.categoryBox,
-          { backgroundColor: colors.categoriesButton },
-        ]}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
