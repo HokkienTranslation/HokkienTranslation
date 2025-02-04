@@ -37,4 +37,22 @@ const fetchAudioUrl = async (numericTones) => {
     }
 };
 
-export { fetchNumericTones, fetchAudioUrl };
+const fetchAudioBlob = async (numericTones) => {
+    const params = new URLSearchParams({
+        text1: numericTones,
+        gender: "女聲",
+        accent: "強勢腔（高雄腔）",
+    });
+    const url = `${TEXT_TO_SPEECH_API}?${params.toString()}`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch audio");
+        return await response.blob();
+    } catch (error) {
+        console.error("Error fetching audio URL:", error);
+        throw error;
+    }
+};
+
+export { fetchNumericTones, fetchAudioUrl, fetchAudioBlob };
