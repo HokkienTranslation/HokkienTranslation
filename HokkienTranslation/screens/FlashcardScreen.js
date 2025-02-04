@@ -746,13 +746,13 @@ const FlashcardScreen = ({ route, navigation }) => {
                       <HStack spacing={4} p = {4} direction={direction}>
                         {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
                           {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            English Definition
+                            Definition
                           </Text>}
                           {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
                           </Text>}
                           {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            English Example Sentence
+                            Example Sentence
                           </Text>}
                           {flashcardVisibilityStates.englishSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
@@ -810,7 +810,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                             {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
                       </Text>}
                       {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            Hokkien Example Sentence
+                            Example Sentence
                           </Text>}
                           {flashcardVisibilityStates.hokkienSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
