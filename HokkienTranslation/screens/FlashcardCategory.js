@@ -502,8 +502,8 @@ const styles = StyleSheet.create({
     minWidth: "100%",
   },
   categoryBox: {
-    minWidth: "48%",
-    width: "48%",
+    minWidth: "32%",
+    width: "32%",
     minHeight: 70,
     alignItems: "center",
     justifyContent: "center",
