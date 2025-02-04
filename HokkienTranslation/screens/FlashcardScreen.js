@@ -745,36 +745,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                       )}
                       <HStack spacing={4} p = {4} direction={direction}>
                         {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
-                          {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            Definition
-                          </Text>}
-                          {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
-                            {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
-                          </Text>}
                           {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             English Definition
                           </Text>}
                           {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
                           </Text>}
-                          {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            Hokkien Example Sentence
-                          </Text>}
-                          {flashcardVisibilityStates.hokkienSentence && <HStack>
-                            <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
-                            </Text>
-                            <IconButton
-                              icon={
-                                <Ionicons
-                                  name="copy-outline"
-                                  size={15}
-                                  color={colors.onPrimaryContainer}
-                                />
-                              }
-                              onPress={() => copyToClipboard("this does not work")}
-                            />
-                          </HStack>}
                           {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             English Example Sentence
                           </Text>}
@@ -821,11 +797,37 @@ const FlashcardScreen = ({ route, navigation }) => {
                       </HStack>
                     </>
                   ) : (
-                    <Center>
-                      <Text fontSize="4xl" color={colors.onSurface}>
-                        {flashcards[currentCardIndex].word}
-                      </Text>
-                    </Center>
+                    <VStack>
+                      <Center>
+                        <Text fontSize="4xl" color={colors.onSurface}>
+                          {flashcards[currentCardIndex].word}
+                        </Text>
+                      </Center>
+                      {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Definition
+                      </Text>}
+                      {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
+                      </Text>}
+                      {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Hokkien Example Sentence
+                          </Text>}
+                          {flashcardVisibilityStates.hokkienSentence && <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                      </HStack>}
+                    </VStack>
                   )}
                 </Box>
               </Animated.View>
