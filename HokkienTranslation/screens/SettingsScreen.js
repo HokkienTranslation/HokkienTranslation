@@ -163,7 +163,6 @@ const SettingsScreen = () => {
             <VisibilityToggle label="Definition" stateKey="definition" />
             <VisibilityToggle label="English Definition" stateKey="englishDefinition" />
             <VisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
-            <VisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
             <VisibilityToggle label="English Sentence" stateKey="englishSentence" />
             <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
           </VStack>
@@ -256,7 +255,6 @@ const SettingsScreen = () => {
               <FlashcardVisibilityToggle label="Definition" stateKey="definition" />
               <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" />
               <FlashcardVisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
-              <FlashcardVisibilityToggle label="Chinese Sentence" stateKey="chineseSentence" />
               <FlashcardVisibilityToggle label="English Sentence" stateKey="englishSentence" />
               <FlashcardVisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
             </VStack>

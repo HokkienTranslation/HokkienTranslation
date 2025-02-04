@@ -86,7 +86,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   flashcardVisibilityStates.definition ||
   flashcardVisibilityStates.englishDefinition ||
   flashcardVisibilityStates.hokkienSentence ||
-  flashcardVisibilityStates.chineseSentence ||
   flashcardVisibilityStates.englishSentence;
 
   const copyToClipboard = (text) => Clipboard.setString(text);
@@ -764,24 +763,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                           {flashcardVisibilityStates.hokkienSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
                               {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
-                            </Text>
-                            <IconButton
-                              icon={
-                                <Ionicons
-                                  name="copy-outline"
-                                  size={15}
-                                  color={colors.onPrimaryContainer}
-                                />
-                              }
-                              onPress={() => copyToClipboard("this does not work")}
-                            />
-                          </HStack>}
-                          {flashcardVisibilityStates.chineseSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            Chinese Example Sentence
-                          </Text>}
-                          {flashcardVisibilityStates.chineseSentence && <HStack>
-                            <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.chineseExample || "--这是一个中文的占位符句子。"}
                             </Text>
                             <IconButton
                               icon={
