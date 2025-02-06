@@ -84,7 +84,7 @@ const ResultScreen = ({ route }) => {
       updateProgress(0.2);
     } catch (error) {
       console.error("Error in fetchRomanizer:", error);
-      setErrorMessage(`Failed to fetch Romanization: ${error.message || "Unknown error"}`);
+      setErrorMessage("Failed to fetch Romanization. Please try again later.");
     }
   };
 
@@ -130,7 +130,7 @@ const ResultScreen = ({ route }) => {
         setSubmitted(true);
       } catch (error) {
         console.error("Error submitting feedback: ", error);
-        setErrorMessage(`Failed to submit feedback: ${error.message || "Unknown error occurred"}`);
+        setErrorMessage("Failed to submit feedback. Please try again later.");
       }
     }
   };
@@ -165,7 +165,7 @@ const ResultScreen = ({ route }) => {
         setImageUrl(imgBase64);
       } catch (error) {
         console.error("Error in generateImage:", error);
-        setErrorMessage(`Failed to generate image: ${error.message || "Unknown error"}`);
+        setErrorMessage("Failed to generate image. Please try again later.");
       }
     };
     loadImage();
