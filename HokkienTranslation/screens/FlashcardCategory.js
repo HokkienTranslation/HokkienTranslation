@@ -467,6 +467,7 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 20,
     backgroundColor: "white",
+    justifyContent: "center",
     borderRadius: 10,
     alignItems: "center",
   },
@@ -496,8 +497,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addBox: {
-    minWidth: "48%",
-    width: "48%",
+    minWidth: "32%",
+    width: "32%",
     borderStyle: "dashed",
 
     alignItems: "center",
@@ -514,8 +515,9 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    width: "90%",
-    maxWidth: 480,
+    width: "95%",
+    minWidth: 300,
+    alignItems: "center",  
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -527,17 +529,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  heading: {},
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    minWidth: "100%",
+    justifyContent: "flex-start", 
+    alignSelf: "center",  
+    width: "100%", 
   },
   categoryBox: {
-    minWidth: "48%",
-    width: "48%",
-    minHeight: 70,
+    width: "30%",  
+    height: 120,
+    marginHorizontal: "1.6%",
     alignItems: "center",
     justifyContent: "center",
     borderColor: "#ffffff",
@@ -551,8 +553,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
     position: "relative",
-    textAlignVertical: "center",
   },
+
   categoryBoxPressed: {
     transform: [{ translateY: -5 }],
     shadowColor: "#000",
