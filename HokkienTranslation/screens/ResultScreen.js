@@ -55,6 +55,7 @@ const ResultScreen = ({ route }) => {
   const [feedback, setFeedback] = useState("");
   const [rate, setRate] = useState(null);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const feedbackWords = {
     thumbsUp: [
@@ -82,7 +83,8 @@ const ResultScreen = ({ route }) => {
       }
       updateProgress(0.2);
     } catch (error) {
-      console.error(error);
+      console.error("Error in fetchRomanizer:", error);
+      setErrorMessage(`Failed to fetch Romanization: ${error.message || "Unknown error"}`);
     }
   };
 
@@ -128,6 +130,7 @@ const ResultScreen = ({ route }) => {
         setSubmitted(true);
       } catch (error) {
         console.error("Error submitting feedback: ", error);
+        setErrorMessage(`Failed to submit feedback: ${error.message || "Unknown error occurred"}`);
       }
     }
   };
@@ -154,17 +157,21 @@ const ResultScreen = ({ route }) => {
 
   useEffect(() => {
     const loadImage = async () => {
-      const { imgBase64, error } = await generateImage(query);
-      if (error) {
-        console.error(error);
-        return;
+      try {
+        const { imgBase64, error } = await generateImage(query);
+        if (error) {
+          throw new Error(error); // Throw an error if one exists
+        }
+        setImageUrl(imgBase64);
+      } catch (error) {
+        console.error("Error in generateImage:", error);
+        setErrorMessage(`Failed to generate image: ${error.message || "Unknown error"}`);
       }
-      setImageUrl(imgBase64);
     };
     loadImage();
   }, []);
 
-  if (progress < 1.0) {
+  if (progress < 1.0 && !errorMessage) {
     return <LoadingScreen progress={progress} />;
   }
 
@@ -181,6 +188,33 @@ const ResultScreen = ({ route }) => {
       }}
     >
       <VStack width="90%" maxWidth="400px">
+
+        {errorMessage && (
+          <Box
+            backgroundColor="red.100"
+            borderColor="red.500"
+            borderWidth={1}
+            p={3}
+            mb={3}
+            borderRadius="8"
+            w="100%"
+            alignItems="center"
+          >
+            <Text color="red.600" fontWeight="bold">
+              {errorMessage}
+            </Text>
+            <Button
+              mt={2}
+              variant="outline"
+              borderColor="red.500"
+              _text={{ color: "red.500" }}
+              onPress={() => setErrorMessage(null)} // Clear the error message
+            >
+              Dismiss
+            </Button>
+          </Box>
+        )}
+
         {/* Query */}
         <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
           Query
@@ -207,8 +241,8 @@ const ResultScreen = ({ route }) => {
         </Text>
         {/* Result */}
         {dataFromDatabase &&
-        dataFromDatabase.translation &&
-        dataFromDatabase.sentence ? (
+          dataFromDatabase.translation &&
+          dataFromDatabase.sentence ? (
           <View justifyContent="center" width="100%">
             {/* Hokkien Translation */}
             <HStack>
@@ -236,44 +270,44 @@ const ResultScreen = ({ route }) => {
             {/* Definition */}
             {(visibilityStates.definition ||
               visibilityStates.englishDefinition) && (
-              <Box
-                backgroundColor={colors.primaryContainer}
-                p={3}
-                mb={5}
-                borderRadius="10"
-                w="100%"
-                alignSelf="center"
-              >
-                {visibilityStates.definition && (
-                  <VStack>
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color={colors.onSurface}
-                    >
-                      Definition
-                    </Text>
-                    <Text fontSize="md" my={2} color={colors.onSurface}>
-                      {dataFromDatabase.translation.definitions}
-                    </Text>
-                  </VStack>
-                )}
-                {visibilityStates.englishDefinition && (
-                  <VStack>
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color={colors.onSurface}
-                    >
-                      English Definition
-                    </Text>
-                    <Text fontSize="md" my={2} color={colors.onSurface}>
-                      {dataFromDatabase.translation.englishDefinitions}
-                    </Text>
-                  </VStack>
-                )}
-              </Box>
-            )}
+                <Box
+                  backgroundColor={colors.primaryContainer}
+                  p={3}
+                  mb={5}
+                  borderRadius="10"
+                  w="100%"
+                  alignSelf="center"
+                >
+                  {visibilityStates.definition && (
+                    <VStack>
+                      <Text
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color={colors.onSurface}
+                      >
+                        Definition
+                      </Text>
+                      <Text fontSize="md" my={2} color={colors.onSurface}>
+                        {dataFromDatabase.translation.definitions}
+                      </Text>
+                    </VStack>
+                  )}
+                  {visibilityStates.englishDefinition && (
+                    <VStack>
+                      <Text
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color={colors.onSurface}
+                      >
+                        English Definition
+                      </Text>
+                      <Text fontSize="md" my={2} color={colors.onSurface}>
+                        {dataFromDatabase.translation.englishDefinitions}
+                      </Text>
+                    </VStack>
+                  )}
+                </Box>
+              )}
             {/* Image */}
             {visibilityStates.image && (
               <Box
@@ -305,114 +339,114 @@ const ResultScreen = ({ route }) => {
             {(visibilityStates.hokkienSentence ||
               visibilityStates.chineseSentence ||
               visibilityStates.englishSentence) && (
-              <Box
-                backgroundColor={colors.primaryContainer}
-                p={3}
-                borderRadius="10"
-                w="100%"
-                alignSelf="center"
-              >
-                {/* Hokkien Sentence */}
-                {visibilityStates.hokkienSentence && (
-                  <VStack>
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color={colors.onSurface}
-                    >
-                      Hokkien Example Sentence
-                    </Text>
-                    <HStack alignItems={"center"}>
-                      <BoldWordInSentence
-                        sentence={dataFromDatabase.sentence.sentences[0]}
-                        wordToBold={
-                          dataFromDatabase.translation.hokkienTranslation
-                        }
-                      />
-                      <IconButton
-                        icon={
-                          <Ionicons
-                            name="copy-outline"
-                            size={20}
-                            color={colors.onPrimaryContainer}
-                          />
-                        }
-                        onPress={() =>
-                          copyToClipboard(
-                            dataFromDatabase.sentence.sentences[0]
-                          )
-                        }
-                      />
-                    </HStack>
-                    {visibilityStates.textToSpeech && (
-                      <TextToSpeech prompt={hokkienSentenceRomanized} />
-                    )}
-                  </VStack>
-                )}
-                {/* Chinese Sentence */}
-                {visibilityStates.chineseSentence && (
-                  <VStack>
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color={colors.onSurface}
-                    >
-                      Chinese Example Sentence
-                    </Text>
-                    <HStack alignItems={"center"}>
-                      <Text fontSize="lg" color={colors.onSurface}>
-                        {dataFromDatabase.sentence.sentences[2]}
+                <Box
+                  backgroundColor={colors.primaryContainer}
+                  p={3}
+                  borderRadius="10"
+                  w="100%"
+                  alignSelf="center"
+                >
+                  {/* Hokkien Sentence */}
+                  {visibilityStates.hokkienSentence && (
+                    <VStack>
+                      <Text
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color={colors.onSurface}
+                      >
+                        Hokkien Example Sentence
                       </Text>
-                      <IconButton
-                        icon={
-                          <Ionicons
-                            name="copy-outline"
-                            size={20}
-                            color={colors.onPrimaryContainer}
-                          />
-                        }
-                        onPress={() =>
-                          copyToClipboard(
-                            dataFromDatabase.sentence.sentences[2]
-                          )
-                        }
-                      />
-                    </HStack>
-                  </VStack>
-                )}
-                {/* English Sentence */}
-                {visibilityStates.englishSentence && (
-                  <VStack>
-                    <Text
-                      fontSize="lg"
-                      fontWeight="bold"
-                      color={colors.onSurface}
-                    >
-                      English Example Sentence
-                    </Text>
-                    <HStack alignItems={"center"}>
-                      <Text fontSize="lg" color={colors.onSurface}>
-                        {dataFromDatabase.sentence.sentences[1]}
+                      <HStack alignItems={"center"}>
+                        <BoldWordInSentence
+                          sentence={dataFromDatabase.sentence.sentences[0]}
+                          wordToBold={
+                            dataFromDatabase.translation.hokkienTranslation
+                          }
+                        />
+                        <IconButton
+                          icon={
+                            <Ionicons
+                              name="copy-outline"
+                              size={20}
+                              color={colors.onPrimaryContainer}
+                            />
+                          }
+                          onPress={() =>
+                            copyToClipboard(
+                              dataFromDatabase.sentence.sentences[0]
+                            )
+                          }
+                        />
+                      </HStack>
+                      {visibilityStates.textToSpeech && (
+                        <TextToSpeech prompt={hokkienSentenceRomanized} />
+                      )}
+                    </VStack>
+                  )}
+                  {/* Chinese Sentence */}
+                  {visibilityStates.chineseSentence && (
+                    <VStack>
+                      <Text
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color={colors.onSurface}
+                      >
+                        Chinese Example Sentence
                       </Text>
-                      <IconButton
-                        icon={
-                          <Ionicons
-                            name="copy-outline"
-                            size={20}
-                            color={colors.onPrimaryContainer}
-                          />
-                        }
-                        onPress={() =>
-                          copyToClipboard(
-                            dataFromDatabase.sentence.sentences[1]
-                          )
-                        }
-                      />
-                    </HStack>
-                  </VStack>
-                )}
-              </Box>
-            )}
+                      <HStack alignItems={"center"}>
+                        <Text fontSize="lg" color={colors.onSurface}>
+                          {dataFromDatabase.sentence.sentences[2]}
+                        </Text>
+                        <IconButton
+                          icon={
+                            <Ionicons
+                              name="copy-outline"
+                              size={20}
+                              color={colors.onPrimaryContainer}
+                            />
+                          }
+                          onPress={() =>
+                            copyToClipboard(
+                              dataFromDatabase.sentence.sentences[2]
+                            )
+                          }
+                        />
+                      </HStack>
+                    </VStack>
+                  )}
+                  {/* English Sentence */}
+                  {visibilityStates.englishSentence && (
+                    <VStack>
+                      <Text
+                        fontSize="lg"
+                        fontWeight="bold"
+                        color={colors.onSurface}
+                      >
+                        English Example Sentence
+                      </Text>
+                      <HStack alignItems={"center"}>
+                        <Text fontSize="lg" color={colors.onSurface}>
+                          {dataFromDatabase.sentence.sentences[1]}
+                        </Text>
+                        <IconButton
+                          icon={
+                            <Ionicons
+                              name="copy-outline"
+                              size={20}
+                              color={colors.onPrimaryContainer}
+                            />
+                          }
+                          onPress={() =>
+                            copyToClipboard(
+                              dataFromDatabase.sentence.sentences[1]
+                            )
+                          }
+                        />
+                      </HStack>
+                    </VStack>
+                  )}
+                </Box>
+              )}
           </View>
         ) : (
           <View justifyContent="center" width="100%">

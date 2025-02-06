@@ -1,8 +1,6 @@
 import fs from "fs";
-import path from "path";
 import csvParser from "csv-parser";
-import { createObjectCsvWriter } from "csv-writer";
-import { fetchTranslation } from "../backend/API/HokkienTranslationToolService.js";
+import { fetchTranslation } from "../API/HokkienTranslationToolService.js";
 import { collection, addDoc, doc, query, where, getDocs, updateDoc } from "firebase/firestore";
 import { db } from "./Firebase.js"
 
@@ -31,7 +29,6 @@ const updateContextSentence = async (querySnapshot2, sentenceId) => {
 const processCsv = async () => {
 
     const inputFilePath = "./scripts/sentence_20241018.csv"; 
-    // const inputFilePath = "./scripts/testSentence.csv"; 
     let headers = [];
     let rows = [];
 
