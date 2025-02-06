@@ -55,7 +55,9 @@ const ResultScreen = ({ route }) => {
   const [feedback, setFeedback] = useState("");
   const [rate, setRate] = useState(null);
   const [submitted, setSubmitted] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [romanizerErrorMessage, setRomanizerErrorMessage] = useState(null);
+  const [imageErrorMessage, setImageErrorMessage] = useState(null);
+  const [feedbackErrorMessage, setFeedbackErrorMessage] = useState(null);
 
   const feedbackWords = {
     thumbsUp: [
@@ -84,7 +86,7 @@ const ResultScreen = ({ route }) => {
       updateProgress(0.2);
     } catch (error) {
       console.error("Error in fetchRomanizer:", error);
-      setErrorMessage("Failed to fetch Romanization. Please try again later.");
+      setRomanizerErrorMessage("Failed to fetch Romanization. Please try again later.");
     }
   };
 
@@ -130,7 +132,7 @@ const ResultScreen = ({ route }) => {
         setSubmitted(true);
       } catch (error) {
         console.error("Error submitting feedback: ", error);
-        setErrorMessage("Failed to submit feedback. Please try again later.");
+        setFeedbackErrorMessage("Failed to submit feedback. Please try again later.");
       }
     }
   };
@@ -165,13 +167,13 @@ const ResultScreen = ({ route }) => {
         setImageUrl(imgBase64);
       } catch (error) {
         console.error("Error in generateImage:", error);
-        setErrorMessage("Failed to generate image. Please try again later.");
+        setImageErrorMessage("Failed to generate image. Please try again later.");
       }
     };
     loadImage();
   }, []);
 
-  if (progress < 1.0 && !errorMessage) {
+  if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage) {
     return <LoadingScreen progress={progress} />;
   }
 
@@ -189,7 +191,7 @@ const ResultScreen = ({ route }) => {
     >
       <VStack width="90%" maxWidth="400px">
 
-        {errorMessage && (
+        {(romanizerErrorMessage || imageErrorMessage || feedbackErrorMessage) && (
           <Box
             backgroundColor="red.100"
             borderColor="red.500"
@@ -201,14 +203,24 @@ const ResultScreen = ({ route }) => {
             alignItems="center"
           >
             <Text color="red.600" fontWeight="bold">
-              {errorMessage}
+              {romanizerErrorMessage}
+            </Text>
+            <Text color="red.600" fontWeight="bold">
+              {imageErrorMessage}
+            </Text>
+            <Text color="red.600" fontWeight="bold">
+              {feedbackErrorMessage}
             </Text>
             <Button
               mt={2}
               variant="outline"
               borderColor="red.500"
               _text={{ color: "red.500" }}
-              onPress={() => setErrorMessage(null)} // Clear the error message
+              onPress={() => {
+                setRomanizerErrorMessage(null);
+                setImageErrorMessage(null);
+                setFeedbackErrorMessage(null);
+              }} // Clear the error message
             >
               Dismiss
             </Button>
