@@ -497,11 +497,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addBox: {
-    minWidth: "32%",
-    width: "32%",
+    minWidth: "30%",
+    width: "30%",
     borderStyle: "dashed",
-
+    marginHorizontal: "1.6%",
     alignItems: "center",
+    justifyContent: "center",
     borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
