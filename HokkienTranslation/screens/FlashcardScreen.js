@@ -448,7 +448,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const generateOptions = async (options) => {
     try {
-      const prompt = `Given the word(s): ${options}, what is a related, but very different word in meaning? You must respond with only one word. Do not add any punctuation.`;
+      const prompt = `Given the word(s): ${options}, provide another word that belongs to the same category. The word must be similar in type but not identical. Respond with only one word and no punctuation.`;
       const response = await callOpenAIChat(prompt);
       console.log("OpenAI Response:", response);
       return response;
