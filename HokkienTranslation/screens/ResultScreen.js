@@ -87,6 +87,7 @@ const ResultScreen = ({ route }) => {
     } catch (error) {
       console.error("Error in fetchRomanizer:", error);
       setRomanizerErrorMessage("Failed to fetch Romanization. Please try again later.");
+      updateProgress(0.2);
     }
   };
 
