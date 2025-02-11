@@ -59,6 +59,7 @@ const ResultScreen = ({ route }) => {
   const [imageErrorMessage, setImageErrorMessage] = useState(null);
   const [databaseErrorMessage, setDatabaseErrorMessage] = useState(null);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState(null);
+  const [dismissedError, setDismissedError] = useState(null);
 
   const feedbackWords = {
     thumbsUp: [
@@ -178,7 +179,7 @@ const ResultScreen = ({ route }) => {
     loadImage();
   }, []);
 
-  if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage && !databaseErrorMessage) {
+  if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage && !databaseErrorMessage && !dismissedError) {
     return <LoadingScreen progress={progress} />;
   }
 
@@ -229,6 +230,7 @@ const ResultScreen = ({ route }) => {
                 setImageErrorMessage(null);
                 setFeedbackErrorMessage(null);
                 setDatabaseErrorMessage(null);
+                setDismissedError("Dismissed");
               }} // Clear the error message
             >
               Dismiss
