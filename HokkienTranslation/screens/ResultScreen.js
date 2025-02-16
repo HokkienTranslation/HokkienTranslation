@@ -57,7 +57,9 @@ const ResultScreen = ({ route }) => {
   const [submitted, setSubmitted] = useState(false);
   const [romanizerErrorMessage, setRomanizerErrorMessage] = useState(null);
   const [imageErrorMessage, setImageErrorMessage] = useState(null);
+  const [databaseErrorMessage, setDatabaseErrorMessage] = useState(null);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState(null);
+  const [dismissedError, setDismissedError] = useState(null);
 
   const feedbackWords = {
     thumbsUp: [
@@ -83,11 +85,9 @@ const ResultScreen = ({ route }) => {
         if (type === 1) setHokkienRomanized(romanizedText);
         else if (type === 2) setHokkienSentenceRomanized(romanizedText);
       }
-      updateProgress(0.2);
     } catch (error) {
       console.error("Error in fetchRomanizer:", error);
       setRomanizerErrorMessage("Failed to fetch Romanization. Please try again later.");
-      updateProgress(0.2);
     }
   };
 
@@ -140,19 +140,24 @@ const ResultScreen = ({ route }) => {
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
-      const result = await CheckDatabase(query);
-      updateProgress(0.4);
-      if (result.translation && result.sentence) {
-        setDataFromDatabase(result);
-        setHokkienTranslation(result.translation.hokkienTranslation);
-        await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
-        updateProgress(0.2);
-        await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-        updateProgress(0.2);
-      } else {
-        setHokkienTranslation(result.threeTranslations.hokkienTranslation);
-        await fetchAndSetRomanization(hokkienTranslation, 1);
-        updateProgress(0.6);
+      try {
+        const result = await CheckDatabase(query);
+        updateProgress(0.4);
+        if (result.translation && result.sentence) {
+          setDataFromDatabase(result);
+          setHokkienTranslation(result.translation.hokkienTranslation);
+          await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
+          updateProgress(0.4);
+          await fetchAndSetRomanization(result.sentence.sentences[0], 2);
+          updateProgress(0.2);
+        } else {
+          setHokkienTranslation(result.threeTranslations.hokkienTranslation);
+          await fetchAndSetRomanization(hokkienTranslation, 1);
+          updateProgress(0.6);
+        }
+      } catch (error) {
+          console.error("Error checking database: ", error);
+          setDatabaseErrorMessage("Failed to check database. Please try again later.");
       }
     };
     checkData();
@@ -174,7 +179,7 @@ const ResultScreen = ({ route }) => {
     loadImage();
   }, []);
 
-  if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage) {
+  if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage && !databaseErrorMessage && !dismissedError) {
     return <LoadingScreen progress={progress} />;
   }
 
@@ -192,7 +197,7 @@ const ResultScreen = ({ route }) => {
     >
       <VStack width="90%" maxWidth="400px">
 
-        {(romanizerErrorMessage || imageErrorMessage || feedbackErrorMessage) && (
+        {(romanizerErrorMessage || imageErrorMessage || feedbackErrorMessage || databaseErrorMessage) && (
           <Box
             backgroundColor="red.100"
             borderColor="red.500"
@@ -212,6 +217,9 @@ const ResultScreen = ({ route }) => {
             <Text color="red.600" fontWeight="bold">
               {feedbackErrorMessage}
             </Text>
+            <Text color="red.600" fontWeight="bold">
+              {databaseErrorMessage}
+            </Text>
             <Button
               mt={2}
               variant="outline"
@@ -221,6 +229,8 @@ const ResultScreen = ({ route }) => {
                 setRomanizerErrorMessage(null);
                 setImageErrorMessage(null);
                 setFeedbackErrorMessage(null);
+                setDatabaseErrorMessage(null);
+                setDismissedError("Dismissed");
               }} // Clear the error message
             >
               Dismiss
