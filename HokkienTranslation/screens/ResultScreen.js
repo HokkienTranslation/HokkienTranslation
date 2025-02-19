@@ -46,6 +46,7 @@ const ResultScreen = ({ route }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
+  const [hokkienSentence, setHokkienSentence] = useState("");
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
   const { visibilityStates } = useComponentVisibility();
@@ -146,6 +147,7 @@ const ResultScreen = ({ route }) => {
         if (result.translation && result.sentence) {
           setDataFromDatabase(result);
           setHokkienTranslation(result.translation.hokkienTranslation);
+          setHokkienSentence(result.sentence.sentences[0]);
           await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
           updateProgress(0.4);
           await fetchAndSetRomanization(result.sentence.sentences[0], 2);
@@ -288,7 +290,7 @@ const ResultScreen = ({ route }) => {
               />
             </HStack>
             {visibilityStates.textToSpeech && (
-              <TextToSpeech prompt={hokkienRomanized} />
+              <TextToSpeech prompt={hokkienTranslation} type={'translation'} />
             )}
             {/* Definition */}
             {(visibilityStates.definition ||
@@ -402,7 +404,7 @@ const ResultScreen = ({ route }) => {
                         />
                       </HStack>
                       {visibilityStates.textToSpeech && (
-                        <TextToSpeech prompt={hokkienSentenceRomanized} />
+                        <TextToSpeech prompt={hokkienSentence} type={'sentence'} /> 
                       )}
                     </VStack>
                   )}
@@ -489,7 +491,7 @@ const ResultScreen = ({ route }) => {
               />
             </HStack>
             {visibilityStates.textToSpeech && (
-              <TextToSpeech prompt={hokkienRomanized} />
+              <TextToSpeech prompt={hokkienTranslation} type={'translation'} />
             )}
             {visibilityStates.image && (
               <Box

@@ -634,7 +634,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     {flashcards[currentCardIndex]?.translation}
                   </Text>
                   {languages[1] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
+                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
                   )}
                 </>
               ) : (
@@ -643,7 +643,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     {flashcards[currentCardIndex]?.word}
                   </Text>
                   {languages[0] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].word} />
+                    <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'}/>
                   )}
                 </>
               )}

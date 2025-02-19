@@ -31,7 +31,7 @@ import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
-import { getStoredHokkien } from "../backend/database/DatabaseUtils.js";
+import { getStoredHokkienFlashcard } from "../backend/database/DatabaseUtils.js";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -53,7 +53,7 @@ const QuizScreen = ({ route }) => {
   const [quizStarted, setQuizStarted] = useState(false);
   const [answerWith, setAnswerWith] = useState(lang1);
   const [choiceIndex, setChoice] = useState(null);
-  const [hokkienOption, setHokkienOption] = useState("Characters");
+  const [hokkienOption, setHokkienOption] = useState("Romanization");
   const [optionType, setOptionType] = useState("English");
 
   const flashcardListName = route.params.flashcardListName;
@@ -127,7 +127,7 @@ const QuizScreen = ({ route }) => {
               word = data.origin;
               if (hokkienOption === "Romanization") {
                 try {
-                  const flashcard = await getStoredHokkien(word, "Hokkien");
+                  const flashcard = await getStoredHokkienFlashcard(word, "Hokkien");
                   if (flashcard) {
                     word = flashcard.romanization;
                   } else {
@@ -155,7 +155,7 @@ const QuizScreen = ({ route }) => {
                 if (lang1 === "Hokkien") {
                   setOptionType("Hokkien");
                   let display;
-                  const flashcard = await getStoredHokkien(option, "English");
+                  const flashcard = await getStoredHokkienFlashcard(option, "English");
                   if (flashcard) {
                     display = flashcard.origin;
                     if (hokkienOption === "Romanization") {
@@ -210,7 +210,7 @@ const QuizScreen = ({ route }) => {
     if (lang1 === "Hokkien") {
       try {
         const option = flashcards[currentCardIndex].choices[index];
-        const flashcard = await getStoredHokkien(option, optionType);
+        const flashcard = await getStoredHokkienFlashcard(option, optionType);
         let audioUrl;
         if (flashcard) {
           audioUrl = flashcard.audioUrl;
@@ -608,6 +608,7 @@ const QuizScreen = ({ route }) => {
                 {lang2 === "Hokkien" && (
                         <TextToSpeech
                           prompt={flashcards[currentCardIndex].origin}
+                          type={'flashcard'}
                         />
                       )}
               </Text>

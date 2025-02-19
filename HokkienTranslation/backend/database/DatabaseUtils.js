@@ -91,7 +91,7 @@ export async function translateToThree(query) {
   return { englishInput, chineseInput, hokkienTranslation };
 }
 
-export async function getStoredHokkien(prompt, searchBy) {
+export async function getStoredHokkienFlashcard(prompt, searchBy) {
   // searchBy is "English", "Romanization", "Hokkien", 
   try {
     const flashcardRef = collection(db, 'flashcard');
@@ -123,6 +123,54 @@ export async function getStoredHokkien(prompt, searchBy) {
       const origin = flashcard.origin;
       if (audioUrl && romanization) {
         return { audioUrl, romanization, origin };
+      } else {
+        return null;
+      }
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.log("Error getting stored Hokkien: ", error);
+    throw error;
+  }
+}
+
+export async function getStoredHokkienTranslation(prompt, collectionName) {
+  // collection is "translation" or "sentence"
+  try {
+    if (collectionName !== "translation" && collectionName !== "sentence") {
+      console.log("Invalid collection name");
+      return null;
+    }
+    
+    const flashcardRef = collection(db, collectionName);
+
+    // firebase does not allow queries with multiple '!='s
+    // so this assumes that if it has audioUrl, it has romanization
+    let q;
+    if (!prompt) {
+      return null;
+    }
+    
+    if (collectionName === "translation") {
+      q = query(flashcardRef, 
+        where('hokkienTranslation', '==', prompt),
+        where("audioUrl", "!=", null)); 
+    } else {
+      q = query(flashcardRef, 
+        where('sentences', 'array-contains', prompt),
+        where("audioUrl", "!=", null));
+    }
+    const querySnapshot = await getDocs(q);
+    // console.log("query", querySnapshot);
+
+    if (!querySnapshot.empty) {
+      const translation = querySnapshot.docs[0].data();
+      // console.log("translation", translation);
+      const romanization = translation.romanization;
+      const audioUrl = translation.audioUrl;
+      if (audioUrl && romanization) {
+        return { audioUrl, romanization };
       } else {
         return null;
       }
