@@ -218,9 +218,10 @@ const FlashcardCategory = () => {
     const deckName = category.name;
     console.log("Deckname", deckName)
     const categoryIdToPass = categoryId || category.categoryId;
+    const createdBy = category.createdBy;
     console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
-    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass, createdBy });
   };
 
   const CategoryBox = ({ category, navigation }) => {

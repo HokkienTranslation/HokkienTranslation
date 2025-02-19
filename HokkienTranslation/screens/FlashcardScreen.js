@@ -60,6 +60,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
 
   const [deckID, setDeckID] = useState("");
 
@@ -130,6 +131,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       }
     };
 
+    console.log("Route", route);
+    console.log("route params", route.params);
     fetchDeckID();
   }, [flashcardListName]);
 
@@ -569,16 +572,19 @@ const FlashcardScreen = ({ route, navigation }) => {
                 title="Create"
                 onPress={() => setShowNewFlashcard(true)}
                 iconName="add"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Update"
                 onPress={() => setShowUpdates(true)}
                 iconName="pencil"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Delete"
                 onPress={() => setShowConfirmDelete(true)}
                 iconName="trash"
+                isDisabled={createdBy === "starter_words"}
               />
             </HStack>
 

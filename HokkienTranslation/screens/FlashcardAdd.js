@@ -266,7 +266,7 @@ const FlashcardAdd = ({ route }) => {
               onTrackColor={colors.primary}
             />
           </HStack>
-          <Text> Select at least one flashcard.</Text>
+          <Text>Select at least one base flashcard. You can create custom flashcards on the next page.</Text>
           <TouchableOpacity
             onPress={handleSubmission}
             disabled={selectedFlashcards.length === 0}
