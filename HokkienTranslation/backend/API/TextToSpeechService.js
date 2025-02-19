@@ -7,6 +7,13 @@ const fetchNumericTones = async (prompt) => {
 
     try {
         const response = await fetch(url);
+        
+        if (!response.ok) {
+            // console.error(`Error: ${response.status} - ${response.statusText}`);
+            // throw new Error(`HTTP error! Status: ${response.status}`);
+            throw new Error(`Failed to fetch numeric tones. Please try again later.`);
+        }
+
         let numeric_tones = await response.text();
         if (numeric_tones.endsWith(".")) {
         numeric_tones = numeric_tones.slice(0, -1);
@@ -28,6 +35,9 @@ const fetchAudioUrl = async (numericTones) => {
 
     try {
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch audio URL. Please try again later.`);
+        }
         const data = await response.blob();
         const blob = new Blob([data], { type: "audio/wav" });
         return window.URL.createObjectURL(blob);

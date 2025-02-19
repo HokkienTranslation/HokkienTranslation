@@ -162,11 +162,11 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
         where("audioUrl", "!=", null));
     }
     const querySnapshot = await getDocs(q);
-    console.log("query", querySnapshot);
+    // console.log("query", querySnapshot);
 
     if (!querySnapshot.empty) {
       const translation = querySnapshot.docs[0].data();
-      console.log("translation", translation);
+      // console.log("translation", translation);
       const romanization = translation.romanization;
       const audioUrl = translation.audioUrl;
       if (audioUrl && romanization) {
