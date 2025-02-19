@@ -12,6 +12,7 @@ import {
   Button,
   ScrollView,
   Switch,
+  Tooltip
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -567,6 +568,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         />
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
+          <Tooltip label="You can't modify starter decks" placement="top" isOpen={createdBy === "starter_words"}>
             <HStack space={4}>
               <CrudButtons
                 title="Create"
@@ -587,6 +589,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                 isDisabled={createdBy === "starter_words"}
               />
             </HStack>
+            </Tooltip>
 
             <Box
               position="absolute"
