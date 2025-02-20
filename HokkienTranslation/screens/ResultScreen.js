@@ -138,11 +138,13 @@ const ResultScreen = ({ route }) => {
       }
     }
   };
+
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
       try {
         const result = await CheckDatabase(query);
+        console.log("Result: ", result);
         updateProgress(0.4);
         if (result.translation && result.sentence) {
           setDataFromDatabase(result);
