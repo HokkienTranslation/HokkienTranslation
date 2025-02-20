@@ -38,6 +38,8 @@ import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
+import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -243,6 +245,10 @@ const FlashcardScreen = ({ route, navigation }) => {
         return;
       }
 
+      const romanization = await fetchNumericTones(enteredWord);
+      const audioBlob = await fetchAudioBlob(romanization);
+      const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
+
       console.log("Current user is ", currentUser);
       console.log("Current categoryId is ", categoryId);
       console.log("Current deckID is ", deckID);
@@ -255,6 +261,8 @@ const FlashcardScreen = ({ route, navigation }) => {
         categoryId: categoryId,
         createdAt: serverTimestamp(),
         createdBy: currentUser,
+        romanization: romanization,
+        audioUrl: audioUrl,
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
@@ -302,6 +310,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           createdBy: currentUser,
           word: word,
           translation: translation,
+          romanization: romanization,
+          audioUrl: audioUrl,
         },
       ];
 
