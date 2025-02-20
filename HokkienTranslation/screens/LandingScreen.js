@@ -55,9 +55,9 @@ const LandingPage = ({ navigation }) => {
         <Animated.View style={{ opacity: fadeAnim, alignItems: "center", width: "80%"}}>
           <Image source={require("../assets/logo.png")} alt="Logo" size="2xl" marginBottom={-15}/>
           <VStack space={1} alignItems="center">
-            <Text fontSize="4xl" fontWeight="bold" color={colors.onPrimaryContainer} textAlign="center">
+            {/* <Text fontSize="4xl" fontWeight="bold" color={colors.onPrimaryContainer} textAlign="center">
               LangLearn
-            </Text>
+            </Text> */}
             <Text fontSize="2xl"  fontWeight="bold" color={colors.onSurface} textAlign="center">
               Hokkien Translation & Education Tool
             </Text>
