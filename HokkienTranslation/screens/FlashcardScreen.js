@@ -64,6 +64,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
   const createdBy = route.params.createdBy || "";
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
 
   const [deckID, setDeckID] = useState("");
 
@@ -190,6 +191,13 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     position.setValue({ x: 0, y: 0 });
   }, [currentCardIndex, flashcards]);
+
+  useEffect(() => {
+    if (tooltipOpen) {
+      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [tooltipOpen]); 
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -578,7 +586,12 @@ const FlashcardScreen = ({ route, navigation }) => {
         />
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
-          <Tooltip label="You can't modify starter decks" placement="top" isOpen={createdBy === "starter_words"}>
+          <Tooltip 
+            label="You can't modify starter decks" 
+            placement="top" 
+            isOpen={tooltipOpen}
+            bg={colors.onPrimaryContainer}
+          >
             <HStack space={4}>
               <CrudButtons
                 title="Create"
