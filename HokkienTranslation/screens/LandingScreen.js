@@ -33,7 +33,7 @@ const LandingPage = ({ navigation }) => {
     >
       <ImageBackground
         source={require("../assets/background.png")}
-        style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+        style={{ flex: 1, justifyContent: "flex-start", alignItems: "center" }}
       >
 
       <Box
@@ -52,9 +52,12 @@ const LandingPage = ({ navigation }) => {
           alignItems="center"
           width="100%"
         > */}
-        <Animated.View style={{ opacity: fadeAnim, alignItems: "center", width: "80%", marginTop: "-20%"}}>
-          <Image source={require("../assets/logo.png")} alt="Logo" size="2xl" />
-          <VStack space={2} alignItems="center">
+        <Animated.View style={{ opacity: fadeAnim, alignItems: "center", width: "80%"}}>
+          <Image source={require("../assets/logo.png")} alt="Logo" size="2xl" marginBottom={-15}/>
+          <VStack space={1} alignItems="center">
+            <Text fontSize="4xl" fontWeight="bold" color={colors.onPrimaryContainer} textAlign="center">
+              LangLearn
+            </Text>
             <Text fontSize="2xl"  fontWeight="bold" color={colors.onSurface} textAlign="center">
               Hokkien Translation & Education Tool
             </Text>
