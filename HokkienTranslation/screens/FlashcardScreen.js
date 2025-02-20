@@ -12,6 +12,7 @@ import {
   Button,
   ScrollView,
   Switch,
+  Tooltip
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,6 +38,8 @@ import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
+import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -60,6 +63,8 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
 
   const [deckID, setDeckID] = useState("");
 
@@ -130,6 +135,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       }
     };
 
+    console.log("Route", route);
+    console.log("route params", route.params);
     fetchDeckID();
   }, [flashcardListName]);
 
@@ -185,6 +192,13 @@ const FlashcardScreen = ({ route, navigation }) => {
     position.setValue({ x: 0, y: 0 });
   }, [currentCardIndex, flashcards]);
 
+  useEffect(() => {
+    if (tooltipOpen) {
+      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [tooltipOpen]); 
+
   const handleNext = (gestureState = null) => {
     const value = {
       x: gestureState?.dx > 0 ? 500 : -500,
@@ -239,6 +253,10 @@ const FlashcardScreen = ({ route, navigation }) => {
         return;
       }
 
+      const romanization = await fetchNumericTones(enteredWord);
+      const audioBlob = await fetchAudioBlob(romanization);
+      const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
+
       console.log("Current user is ", currentUser);
       console.log("Current categoryId is ", categoryId);
       console.log("Current deckID is ", deckID);
@@ -251,6 +269,8 @@ const FlashcardScreen = ({ route, navigation }) => {
         categoryId: categoryId,
         createdAt: serverTimestamp(),
         createdBy: currentUser,
+        romanization: romanization,
+        audioUrl: audioUrl,
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
@@ -298,6 +318,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           createdBy: currentUser,
           word: word,
           translation: translation,
+          romanization: romanization,
+          audioUrl: audioUrl,
         },
       ];
 
@@ -564,23 +586,33 @@ const FlashcardScreen = ({ route, navigation }) => {
         />
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
+          <Tooltip 
+            label="You can't modify starter decks" 
+            placement="top" 
+            isOpen={tooltipOpen}
+            bg={colors.onPrimaryContainer}
+          >
             <HStack space={4}>
               <CrudButtons
                 title="Create"
                 onPress={() => setShowNewFlashcard(true)}
                 iconName="add"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Update"
                 onPress={() => setShowUpdates(true)}
                 iconName="pencil"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Delete"
                 onPress={() => setShowConfirmDelete(true)}
                 iconName="trash"
+                isDisabled={createdBy === "starter_words"}
               />
             </HStack>
+            </Tooltip>
 
             <Box
               position="absolute"
