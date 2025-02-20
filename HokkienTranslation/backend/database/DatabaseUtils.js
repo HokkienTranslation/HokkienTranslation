@@ -13,6 +13,7 @@ import { fetchTranslation } from "../API/HokkienTranslationToolService.js";
 
 const app = firebase;
 const db = getFirestore(app);
+
 // Function to check if user input already in database
 export async function checkIfTranslationExists(englishInput, chineseInput) {
   const collectionName = "translation";
@@ -75,6 +76,7 @@ export async function translateToThree(query) {
   const inputLanguage = determineLanguage(query);
   let englishInput = "";
   let chineseInput = "";
+  let hokkienTranslation = "";
 
   if (inputLanguage === "ZH") {
     englishInput = await fetchTranslation(query, "EN");
@@ -84,8 +86,16 @@ export async function translateToThree(query) {
   } else if (inputLanguage === "EN") {
     englishInput = query;
   }
-  chineseInput = await fetchTranslation(query, "ZH");
-  const hokkienTranslation = await fetchTranslation(query, "HAN");
+
+  const stored = await getStoredHokkienTranslation(query, "translation")
+  hokkienTranslation = stored?.hokkienTranslation;
+  chineseInput = stored?.chineseInput;
+
+  if (!hokkienTranslation) {
+    // console.log("Fetching translation from API");
+    chineseInput = await fetchTranslation(query, "ZH");
+    hokkienTranslation = await fetchTranslation(query, "HAN");
+  }
   // console.log(englishInput, chineseInput, hokkienTranslation);
 
   return { englishInput, chineseInput, hokkienTranslation };
@@ -130,7 +140,7 @@ export async function getStoredHokkienFlashcard(prompt, searchBy) {
       return null;
     }
   } catch (error) {
-    console.log("Error getting stored Hokkien: ", error);
+    console.error("Error getting stored Hokkien: ", error);
     throw error;
   }
 }
@@ -139,7 +149,7 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
   // collection is "translation" or "sentence"
   try {
     if (collectionName !== "translation" && collectionName !== "sentence") {
-      console.log("Invalid collection name");
+      console.error("Invalid collection name");
       return null;
     }
     
@@ -151,8 +161,14 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
     if (!prompt) {
       return null;
     }
+
+    const lang = determineLanguage(prompt);
     
-    if (collectionName === "translation") {
+    if (collectionName === "translation" && lang === "EN") {
+      q = query(flashcardRef, 
+        where('englishInput', '==', prompt),
+        where("audioUrl", "!=", null));
+    } else if (collectionName === "translation") { // hokkien characters
       q = query(flashcardRef, 
         where('hokkienTranslation', '==', prompt),
         where("audioUrl", "!=", null)); 
@@ -162,15 +178,16 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
         where("audioUrl", "!=", null));
     }
     const querySnapshot = await getDocs(q);
-    // console.log("query", querySnapshot);
 
     if (!querySnapshot.empty) {
       const translation = querySnapshot.docs[0].data();
       // console.log("translation", translation);
+      const hokkienTranslation = translation.hokkienTranslation;
+      const chineseInput = translation.chineseInput;
       const romanization = translation.romanization;
       const audioUrl = translation.audioUrl;
       if (audioUrl && romanization) {
-        return { audioUrl, romanization };
+        return { hokkienTranslation, chineseInput, audioUrl, romanization };
       } else {
         return null;
       }
@@ -178,7 +195,7 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
       return null;
     }
   } catch (error) {
-    console.log("Error getting stored Hokkien: ", error);
+    console.error("Error getting stored Hokkien: ", error);
     throw error;
   }
 }

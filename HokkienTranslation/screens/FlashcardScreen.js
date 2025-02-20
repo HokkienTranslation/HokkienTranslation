@@ -80,7 +80,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       const response = await callOpenAIChat(
         `Translate ${text} to ${language}. You must respond with only the translation.`
       );
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -121,9 +121,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     const deckDoc = querySnapshot.docs[0];
     const deckID = deckDoc.id;
-    console.log("Deck ID:", deckID);
-    console.log("Current category in FlashcardScreen is:", categoryId);
-    console.log("Current deck is:", flashcardListName);
+    // console.log("Deck ID:", deckID);
+    // console.log("Current category in FlashcardScreen is:", categoryId);
+    // console.log("Current deck is:", flashcardListName);
     return deckID;
   };
 
@@ -135,8 +135,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       }
     };
 
-    console.log("Route", route);
-    console.log("route params", route.params);
     fetchDeckID();
   }, [flashcardListName]);
 
@@ -162,7 +160,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           ...doc.data(),
         }));
 
-        console.log("Flashcards with IDs:", flashcardsWithIDs);
+        // console.log("Flashcards with IDs:", flashcardsWithIDs);
         setFlashcards(flashcardsWithIDs);
       } else {
         console.log("Deck not found.");
@@ -257,9 +255,9 @@ const FlashcardScreen = ({ route, navigation }) => {
       const audioBlob = await fetchAudioBlob(romanization);
       const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
 
-      console.log("Current user is ", currentUser);
-      console.log("Current categoryId is ", categoryId);
-      console.log("Current deckID is ", deckID);
+      // console.log("Current user is ", currentUser);
+      // console.log("Current categoryId is ", categoryId);
+      // console.log("Current deckID is ", deckID);
 
       const newFlashcardData = {
         origin: enteredWord,
@@ -274,11 +272,11 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
-      console.log("FlashcardRef", flashcardRef);
+      // console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
 
       const newFlashcardID = flashcardRef.id;
-      console.log("Flashcard created successfully with ID:", newFlashcardID);
+      // console.log("Flashcard created successfully with ID:", newFlashcardID);
 
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
@@ -473,7 +471,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     try {
       const prompt = `Given the word(s): ${options}, provide another word that belongs to the same category. The word must be similar in type but not identical. Respond with only one word and no punctuation.`;
       const response = await callOpenAIChat(prompt);
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
