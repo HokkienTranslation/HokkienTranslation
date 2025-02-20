@@ -144,7 +144,6 @@ const ResultScreen = ({ route }) => {
       setProgress(0);
       try {
         const result = await CheckDatabase(query);
-        console.log("Result: ", result);
         updateProgress(0.4);
         if (result.translation && result.sentence) {
           setDataFromDatabase(result);

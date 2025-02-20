@@ -92,7 +92,7 @@ export async function translateToThree(query) {
   chineseInput = stored?.chineseInput;
 
   if (!hokkienTranslation) {
-    console.log("Fetching translation from API");
+    // console.log("Fetching translation from API");
     chineseInput = await fetchTranslation(query, "ZH");
     hokkienTranslation = await fetchTranslation(query, "HAN");
   }
@@ -140,7 +140,7 @@ export async function getStoredHokkienFlashcard(prompt, searchBy) {
       return null;
     }
   } catch (error) {
-    console.log("Error getting stored Hokkien: ", error);
+    console.error("Error getting stored Hokkien: ", error);
     throw error;
   }
 }
@@ -149,7 +149,7 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
   // collection is "translation" or "sentence"
   try {
     if (collectionName !== "translation" && collectionName !== "sentence") {
-      console.log("Invalid collection name");
+      console.error("Invalid collection name");
       return null;
     }
     
@@ -195,7 +195,7 @@ export async function getStoredHokkienTranslation(prompt, collectionName) {
       return null;
     }
   } catch (error) {
-    console.log("Error getting stored Hokkien: ", error);
+    console.error("Error getting stored Hokkien: ", error);
     throw error;
   }
 }
