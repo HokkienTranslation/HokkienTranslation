@@ -13,7 +13,7 @@ const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
   const colors = themes[theme];
   const { visibilityStates, toggleVisibility } = useComponentVisibility();
-  const { languages, setLanguages } = useLanguage();
+  const { languages, setLanguages, toggleLanguages } = useLanguage();
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -55,6 +55,17 @@ const SettingsScreen = () => {
         <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
         <Text style={{ fontSize: 16, color: colors.onSurface }}>
           {themeName}
+        </Text>
+      </HStack>
+    </Pressable>
+  );
+
+  const LanguageOption = ({ language, iconName }) => (
+    <Pressable onPress={toggleLanguages} hitSlop={10}>
+      <HStack space={2} alignItems="center">
+        <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
+        <Text style={{ fontSize: 16, color: colors.onSurface }}>
+          {language}
         </Text>
       </HStack>
     </Pressable>
@@ -131,6 +142,34 @@ const SettingsScreen = () => {
                 color: colors.onSurface,
               }}
             >
+              Flashcard Front Language
+            </Text>
+
+            <VStack space={2} alignItems="start">
+              <LanguageOption
+                language="Hokkien"
+                iconName={
+                  languages[0] === "Hokkien" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+              <LanguageOption
+                language="English"
+                iconName={
+                  languages[0] === "English" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+            </VStack>
+          </VStack>
+
+          {/* old language drop-down menus for multiple languages */}
+          {/* <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
               Flashcard Language Options (Not for Home Page)
             </Text>
             <HStack space={2} alignItems="center">
@@ -173,7 +212,7 @@ const SettingsScreen = () => {
             {errorMessage ? (
               <Text style={{ color: "red" }}>{errorMessage}</Text>
             ) : null}
-          </VStack>
+          </VStack> */}
 
           {/* Models section */}
           <VStack space={2}>
