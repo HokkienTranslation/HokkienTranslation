@@ -504,6 +504,7 @@ const styles = StyleSheet.create({
   addBox: {
     minWidth: "30%",
     width: "30%",
+    height: 120,
     borderStyle: "dashed",
     marginHorizontal: "1.6%",
     alignItems: "center",
