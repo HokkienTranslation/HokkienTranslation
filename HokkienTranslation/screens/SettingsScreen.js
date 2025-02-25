@@ -7,6 +7,7 @@ import { useLanguage } from "./context/LanguageProvider";
 import { useComponentVisibility } from "./context/ComponentVisibilityContext";
 import SignOut from "./Signout"; // Adjust the path if necessary
 import { SelectList } from "react-native-dropdown-select-list";
+import { useBreakpointValue } from "native-base";
 
 const SettingsScreen = () => {
   const { theme, toggleTheme, themes } = useTheme();
@@ -52,6 +53,11 @@ const SettingsScreen = () => {
    // { key: "Turkish", value: "Turkish" },
    // { key: "Vietnamese", value: "Vietnamese" },
   ];
+
+  const stackDirection = useBreakpointValue({
+    base: "column",
+    md: "row",    
+  });
 
   const ThemeOption = ({ themeName, iconName }) => (
     <Pressable onPress={toggleTheme} hitSlop={10}>
@@ -119,7 +125,7 @@ const SettingsScreen = () => {
           padding: 20,
         }}
       >
-        <VStack space={4} w="90%" alignSelf="center">
+        <VStack space={4} w="90%" p={4} alignSelf="center">
           {/* Appearance section */}
           <VStack space={2}>
             <Text
@@ -149,7 +155,7 @@ const SettingsScreen = () => {
           </VStack>
 
           {/* Models section */}
-          <VStack space={2}>
+          <VStack space={2} >
             <Text
               style={{
                 fontSize: 18,
@@ -187,13 +193,14 @@ const SettingsScreen = () => {
               >
                 Language Options
             </Text>
-            <HStack space = {2}>
+            <HStack space={2} flexDirection={stackDirection}>
               <Box 
                 flex={1} 
                 bg={colors.primaryContainer}
                 borderRadius="10px"
                 p={4}
-                >
+                my={2}
+              >
                 <HStack space={2} alignItems="center">
                   <Text
                     color={colors.onSurface}
