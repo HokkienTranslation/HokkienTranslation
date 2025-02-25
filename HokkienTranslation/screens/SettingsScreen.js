@@ -120,6 +120,7 @@ const SettingsScreen = () => {
         style={{
           flex: 1,
           width: "100%",
+          minWidth: 300,
           alignItems: "flex-start",
           backgroundColor: colors.surface,
           padding: 20,
@@ -200,6 +201,7 @@ const SettingsScreen = () => {
                 borderRadius="10px"
                 p={4}
                 my={2}
+                minWidth={300}
               >
                 <HStack space={2} alignItems="center">
                   <Text
@@ -224,6 +226,7 @@ const SettingsScreen = () => {
                 bg={colors.primaryContainer}
                 borderRadius="10px"
                 p={4}
+                minWidth={300}
               >
                 <HStack space={2} alignItems="center">
                   <Text
