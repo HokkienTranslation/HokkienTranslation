@@ -4,9 +4,9 @@ import { Feather } from "@expo/vector-icons";
 // import { TONE_API_URL, SPEECH_API_URL } from "@env";
 import { useTheme } from "../context/ThemeProvider";
 import { fetchNumericTones, fetchAudioUrl } from "../../backend/API/TextToSpeechService";
-import { getStoredHokkien } from "../../backend/database/DatabaseUtils.js";
+import { getStoredHokkienFlashcard, getStoredHokkienTranslation } from "../../backend/database/DatabaseUtils.js";
 
-const TextToSpeech = ({ prompt }) => {
+const TextToSpeech = ({ prompt, type }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [error, setError] = useState();
@@ -24,12 +24,18 @@ const TextToSpeech = ({ prompt }) => {
   useEffect(() => {
     async function fetchWav() {
       try {
-        const flashcard = await getStoredHokkien(prompt, "Hokkien");
+        let flashcard;
+        if (type === 'flashcard') {
+          // console.log("Fetching flashcard from storage");
+          flashcard = await getStoredHokkienFlashcard(prompt, "Hokkien");
+        } else if (type === 'translation' || type === 'sentence') {
+          // console.log("Fetching translation from storage", prompt, type);
+          flashcard = await getStoredHokkienTranslation(prompt, type);
+        }
         if (flashcard) {
-          console.log(flashcard);
           setNumericTones(flashcard.romanization);
           setAudioUrl(flashcard.audioUrl);
-          console.log("Fetched audio from storage");
+          // console.log("Fetched audio from storage");
       } else {
           const numericTones = await fetchNumericTones(prompt);
           setNumericTones(numericTones);
@@ -47,7 +53,7 @@ const TextToSpeech = ({ prompt }) => {
     if (prompt) {
       fetchWav();
     }
-  }, [prompt]);
+  }, [prompt, type]);
 
   const playAudio = () => {
     if (audioUrl) {

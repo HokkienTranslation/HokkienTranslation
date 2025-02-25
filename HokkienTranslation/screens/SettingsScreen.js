@@ -64,6 +64,17 @@ const SettingsScreen = () => {
     </Pressable>
   );
 
+  const LanguageOption = ({ language, iconName }) => (
+    <Pressable onPress={toggleLanguages} hitSlop={10}>
+      <HStack space={2} alignItems="center">
+        <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
+        <Text style={{ fontSize: 16, color: colors.onSurface }}>
+          {language}
+        </Text>
+      </HStack>
+    </Pressable>
+  );
+
   const VisibilityToggle = ({ label, stateKey }) => (
     <HStack
       p={3}
@@ -168,7 +179,35 @@ const SettingsScreen = () => {
           </VStack>
 
           {/* Language section */}
-           <VStack space={2}>
+          <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
+              Flashcard Front Language
+            </Text>
+
+            <VStack space={2} alignItems="start">
+              <LanguageOption
+                language="Hokkien"
+                iconName={
+                  languages[0] === "Hokkien" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+              <LanguageOption
+                language="English"
+                iconName={
+                  languages[0] === "English" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+            </VStack>
+          </VStack>
+
+          {/* old language drop-down menus for multiple languages */}
+          {/* <VStack space={2}>
             <Text
               style={{
                 fontSize: 18,
@@ -187,77 +226,78 @@ const SettingsScreen = () => {
               >
                 Language Options
             </Text>
-            <HStack space = {2}>
-              <Box 
-                flex={1} 
-                bg={colors.primaryContainer}
-                borderRadius="10px"
-                p={4}
-                >
-                <HStack space={2} alignItems="center">
-                  <Text
-                    color={colors.onSurface}
-                    style={{ marginRight: 10, fontSize: 16 }}
-                  >
-                    Front Card Language:
-                  </Text>
-                  <SelectList
-                    setSelected={(key) => setLanguages([key, languages[1]])}
-                    data={languageList}
-                    save="key"
-                    defaultOption={{ key: "Hokkien", value: "Hokkien" }}
-                    boxStyles={{ backgroundColor: colors.primaryContainer }}
-                    dropdownTextStyles={{ color: colors.onSurface }}
-                    inputStyles={{ color: colors.onSurface }}
-                  />
-                </HStack>
-              </Box>
-              <Box 
-                flex={1} 
-                bg={colors.primaryContainer}
-                borderRadius="10px"
-                p={4}
-              >
-                <HStack space={2} alignItems="center">
-                  <Text
-                    color={colors.onSurface}
-                    style={{ marginRight: 10, fontSize: 16 }}
-                  >
-                    Back Card Language:
-                  </Text>
-                  <SelectList
-                    setSelected={(key) => setLanguages([languages[0], key])}
-                    data={languageList}
-                    save="key"
-                    defaultOption={{ key: "English", value: "English" }}
-                    boxStyles={{ backgroundColor: colors.primaryContainer }}
-                    dropdownTextStyles={{ color: colors.onSurface }}
-                    inputStyles={{ color: colors.onSurface }}
-                  />
-                </HStack>
-                {errorMessage ? (
-                  <Text style={{ color: "red" }}>{errorMessage}</Text>
-                ) : null}
-              </Box>
-            </HStack>
-            {/* flashcard screen visibility */}
-            <VStack space={2}>
+            <HStack space={2} alignItems="center">
               <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "bold",
-                  color: colors.onSurface,
-                }}
+                color={colors.onSurface}
+                style={{ marginRight: 10, fontSize: 16 }}
               >
-                Display Options
+                Language 1 (card front):
               </Text>
-              <FlashcardVisibilityToggle label="Image" stateKey="image" />
-              <FlashcardVisibilityToggle label="Definition" stateKey="definition" />
-              <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" />
-              <FlashcardVisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
-              <FlashcardVisibilityToggle label="English Sentence" stateKey="englishSentence" />
-              <FlashcardVisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
-            </VStack>
+              <SelectList
+                setSelected={(key) => setLanguages([key, languages[1]])}
+                data={languageList}
+                save="key"
+                defaultOption={{ key: "Hokkien", value: "Hokkien" }}
+                boxStyles={{ backgroundColor: colors.surface }}
+                dropdownTextStyles={{ color: colors.onSurface }}
+                inputStyles={{ color: colors.onSurface }}
+              />
+            </HStack>
+            <HStack space={2} alignItems="center">
+              <Text
+                color={colors.onSurface}
+                style={{ marginRight: 10, fontSize: 16 }}
+              >
+                Language 2 (card back):
+              </Text>
+              <SelectList
+                setSelected={(key) => setLanguages([languages[0], key])}
+                data={languageList}
+                save="key"
+                defaultOption={{
+                  key: "English",
+                  value: "English",
+                }}
+                boxStyles={{ backgroundColor: colors.surface }}
+                dropdownTextStyles={{ color: colors.onSurface }}
+                inputStyles={{ color: colors.onSurface }}
+              />
+            </HStack>
+            {errorMessage ? (
+              <Text style={{ color: "red" }}>{errorMessage}</Text>
+            ) : null}
+          </VStack> */}
+
+          {/* Models section */}
+          <VStack space={2}>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                color: colors.onSurface,
+              }}
+            >
+              Display Options
+            </Text>
+            <VisibilityToggle label="Image" stateKey="image" />
+            <VisibilityToggle label="Definition" stateKey="definition" />
+            <VisibilityToggle
+              label="English Definition"
+              stateKey="englishDefinition"
+            />
+            <VisibilityToggle
+              label="Hokkien Sentence"
+              stateKey="hokkienSentence"
+            />
+            <VisibilityToggle
+              label="Chinese Sentence"
+              stateKey="chineseSentence"
+            />
+            <VisibilityToggle
+              label="English Sentence"
+              stateKey="englishSentence"
+            />
+            <VisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
           </VStack>
 
           {/* Sign Out section */}

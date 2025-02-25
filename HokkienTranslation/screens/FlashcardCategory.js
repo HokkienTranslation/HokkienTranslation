@@ -18,6 +18,7 @@ import {
   View,
   ScrollView,
   Checkbox,
+  Divider,
 } from "native-base";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -223,9 +224,10 @@ const FlashcardCategory = () => {
     const deckName = category.name;
     console.log("Deckname", deckName)
     const categoryIdToPass = categoryId || category.categoryId;
+    const createdBy = category.createdBy;
     console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
-    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass, createdBy });
   };
 
   const CategoryBox = ({ category, navigation }) => {
@@ -395,7 +397,39 @@ const FlashcardCategory = () => {
             )}
           </HStack>
 
+          {/* Emphasize categories for study */}
           <VStack style={styles.grid}>
+          {display
+            .filter(category => 
+              ["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+            )
+            .map((category, index) => (
+              <CategoryBox
+                key={index}
+                category={category}
+                navigation={navigation}
+              />
+          ))}
+
+          {index === 0 &&  
+          <Divider my={4} bg={colors.surface} />
+          }
+
+          {/* Remaining Categories */}
+          {display
+            .filter(category => 
+              !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+            )
+            .map((category, index) => (
+              <CategoryBox 
+              key={index} 
+              category={category} 
+              navigation={navigation} />
+          ))}
+          {index === 1 && <AddBox />}
+          </VStack>
+
+          {/* <VStack style={styles.grid}>
             {display.map((category, index) => (
               <CategoryBox
                 key={index}
@@ -404,7 +438,7 @@ const FlashcardCategory = () => {
               />
             ))}
             {index === 1 && <AddBox />}
-          </VStack>
+          </VStack> */}
         </Container>
       </Center>
     </ScrollView>
@@ -438,6 +472,7 @@ const styles = StyleSheet.create({
     width: 300,
     padding: 20,
     backgroundColor: "white",
+    justifyContent: "center",
     borderRadius: 10,
     alignItems: "center",
   },
@@ -467,11 +502,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addBox: {
-    minWidth: "48%",
-    width: "48%",
+    minWidth: "30%",
+    width: "30%",
     borderStyle: "dashed",
-
+    marginHorizontal: "1.6%",
     alignItems: "center",
+    justifyContent: "center",
     borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
@@ -487,6 +523,7 @@ const styles = StyleSheet.create({
   container: {
     width: "95%",
     minWidth: 300,
+    alignItems: "center",  
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -498,17 +535,17 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 10,
   },
-  heading: {},
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between",
-    minWidth: "100%",
+    justifyContent: "flex-start", 
+    alignSelf: "center",  
+    width: "100%", 
   },
   categoryBox: {
-    minWidth: "48%",
-    width: "48%",
-    minHeight: 70,
+    width: "30%",  
+    height: 120,
+    marginHorizontal: "1.6%",
     alignItems: "center",
     justifyContent: "center",
     borderColor: "#ffffff",
@@ -522,8 +559,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
     position: "relative",
-    textAlignVertical: "center",
   },
+
   categoryBoxPressed: {
     transform: [{ translateY: -5 }],
     shadowColor: "#000",

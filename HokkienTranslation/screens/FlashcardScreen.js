@@ -15,6 +15,7 @@ import {
   IconButton,
   ScrollView,
   Switch,
+  Tooltip
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -45,7 +46,8 @@ import  getContextSentence  from "./components/contextSentence";
 import { generateImage } from "../backend/API/TextToImageService";
 import * as Clipboard from "expo-clipboard";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
-
+import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
+import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -69,6 +71,8 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
 
   // For responsive flashcards 
   const direction = useBreakpointValue({
@@ -104,7 +108,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       const response = await callOpenAIChat(
         `Translate ${text} to ${language}. You must respond with only the translation.`
       );
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -145,9 +149,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     const deckDoc = querySnapshot.docs[0];
     const deckID = deckDoc.id;
-    console.log("Deck ID:", deckID);
-    console.log("Current category in FlashcardScreen is:", categoryId);
-    console.log("Current deck is:", flashcardListName);
+    // console.log("Deck ID:", deckID);
+    // console.log("Current category in FlashcardScreen is:", categoryId);
+    // console.log("Current deck is:", flashcardListName);
     return deckID;
   };
   
@@ -184,7 +188,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           ...doc.data(),
         }));
 
-        console.log("Flashcards with IDs:", flashcardsWithIDs);
+        // console.log("Flashcards with IDs:", flashcardsWithIDs);
         setFlashcards(flashcardsWithIDs);
       } else {
         console.log("Deck not found.");
@@ -213,6 +217,13 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     position.setValue({ x: 0, y: 0 });
   }, [currentCardIndex, flashcards]);
+
+  useEffect(() => {
+    if (tooltipOpen) {
+      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [tooltipOpen]); 
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -268,9 +279,13 @@ const FlashcardScreen = ({ route, navigation }) => {
         return;
       }
 
-      console.log("Current user is ", currentUser);
-      console.log("Current categoryId is ", categoryId);
-      console.log("Current deckID is ", deckID);
+      const romanization = await fetchNumericTones(enteredWord);
+      const audioBlob = await fetchAudioBlob(romanization);
+      const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
+
+      // console.log("Current user is ", currentUser);
+      // console.log("Current categoryId is ", categoryId);
+      // console.log("Current deckID is ", deckID);
       var word = enteredWord;
       console.log(enteredWord);
       var contextSentence = await getContextSentence(word={word});
@@ -342,14 +357,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         categoryId: categoryId,
         createdAt: serverTimestamp(),
         createdBy: currentUser,
+        romanization: romanization,
+        audioUrl: audioUrl,
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
-      console.log("FlashcardRef", flashcardRef);
+      // console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
 
       const newFlashcardID = flashcardRef.id;
-      console.log("Flashcard created successfully with ID:", newFlashcardID);
+      // console.log("Flashcard created successfully with ID:", newFlashcardID);
 
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
@@ -390,6 +407,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           createdBy: currentUser,
           word: word,
           translation: translation,
+          romanization: romanization,
+          audioUrl: audioUrl,
         },
       ];
 
@@ -541,9 +560,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const generateOptions = async (options) => {
     try {
-      const prompt = `Given the word(s): ${options}, what is a related, but very different word in meaning? You must respond with only one word. Do not add any punctuation.`;
+      const prompt = `Given the word(s): ${options}, provide another word that belongs to the same category. The word must be similar in type but not identical. Respond with only one word and no punctuation.`;
       const response = await callOpenAIChat(prompt);
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
