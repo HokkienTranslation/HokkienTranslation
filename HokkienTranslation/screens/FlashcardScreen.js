@@ -201,8 +201,8 @@ const FlashcardScreen = ({ route, navigation }) => {
                             secondSentence = sentenceData.sentences?.[1] || "";
                         }
                     }
-                    return {
-                      id: flashcardDoc.id,
+                    return { // Must explicitly state word and translation, id gets overwritten despite 
+                      id: flashcardDoc.id, // this
                         ...flashcardData,
                         word: flashcardData.origin || "", 
                         translation: flashcardData.destination || "",
