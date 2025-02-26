@@ -10,11 +10,14 @@ import {
   Select,
   Modal,
   Button,
+  Image,
+  useBreakpointValue,
+  IconButton,
   ScrollView,
   Switch,
   Tooltip
 } from "native-base";
-import { TouchableOpacity, Animated, PanResponder } from "react-native";
+import { TouchableOpacity, Animated, PanResponder, Dimensions } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {
   doc,
@@ -30,13 +33,18 @@ import {
   deleteDoc,
   arrayRemove,
 } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
+import { useComponentVisibility } from "./context/ComponentVisibilityContext";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
+import  getContextSentence  from "./components/contextSentence";
+import { generateImage } from "../backend/API/TextToImageService";
+import * as Clipboard from "expo-clipboard";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
 import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
@@ -65,6 +73,26 @@ const FlashcardScreen = ({ route, navigation }) => {
   const categoryId = route.params.categoryId || "";
   const createdBy = route.params.createdBy || "";
   const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
+
+  // For responsive flashcards 
+  const direction = useBreakpointValue({
+    base: 'column',  
+    md: 'row',   
+  });
+  const { height, width } = Dimensions.get("window");
+  const cardWidth = width * 0.90;
+  //width <= 414 ? width * 0.90 : width * 0.90;
+  //const cardHeight = height * 0.60; 
+
+  // Visability
+  const { flashcardVisibilityStates } = useComponentVisibility(); 
+  const shouldShowVStack =  // left side back card 
+  flashcardVisibilityStates.definition ||
+  flashcardVisibilityStates.englishDefinition ||
+  flashcardVisibilityStates.hokkienSentence ||
+  flashcardVisibilityStates.englishSentence;
+
+  const copyToClipboard = (text) => Clipboard.setString(text);
 
   const [deckID, setDeckID] = useState("");
 
@@ -126,7 +154,7 @@ const FlashcardScreen = ({ route, navigation }) => {
     // console.log("Current deck is:", flashcardListName);
     return deckID;
   };
-
+  
   useEffect(() => {
     const fetchDeckID = async () => {
       const id = await getDeckIDByName(flashcardListName);
@@ -140,33 +168,58 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
-      const deckCollection = collection(db, "flashcardList");
-      const deckQuery = query(deckCollection, where("name", "==", deckName));
-      const querySnapshot = await getDocs(deckQuery);
+        const deckCollection = collection(db, "flashcardList");
+        const deckQuery = query(deckCollection, where("name", "==", deckName));
+        const querySnapshot = await getDocs(deckQuery);
 
-      if (!querySnapshot.empty) {
-        const deckDoc = querySnapshot.docs[0];
-        const flashcardIDs = deckDoc.data().cardList || [];
+        if (!querySnapshot.empty) {
+            const deckDoc = querySnapshot.docs[0];
+            const flashcardIDs = deckDoc.data().cardList || [];
 
-        const flashcardCollection = collection(db, "flashcard");
-        const flashcardQuery = query(
-          flashcardCollection,
-          where("__name__", "in", flashcardIDs)
-        );
-        const flashcardSnapshot = await getDocs(flashcardQuery);
+            const flashcardCollection = collection(db, "flashcard");
+            const flashcardQuery = query(
+                flashcardCollection,
+                where("__name__", "in", flashcardIDs)
+            );
+            const flashcardSnapshot = await getDocs(flashcardQuery);
 
-        const flashcardsWithIDs = flashcardSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+            const flashcardsWithSentences = await Promise.all(
+                flashcardSnapshot.docs.map(async (flashcardDoc) => {
+                    const flashcardData = flashcardDoc.data();
+                    const contextSentenceId = flashcardData.contextSentence;
 
-        // console.log("Flashcards with IDs:", flashcardsWithIDs);
-        setFlashcards(flashcardsWithIDs);
-      } else {
-        console.log("Deck not found.");
-      }
+                    let firstSentence = "";
+                    let secondSentence = "";
+
+                    if (contextSentenceId) {
+                        const sentenceRef = doc(db, "sentence", contextSentenceId);
+                        const sentenceDoc = await getDoc(sentenceRef);
+
+                        if (sentenceDoc.exists()) {
+                            const sentenceData = sentenceDoc.data();
+                            firstSentence = sentenceData.sentences?.[0] || "";
+                            secondSentence = sentenceData.sentences?.[1] || "";
+                        }
+                    }
+                    return { // Must explicitly state word and translation, id gets overwritten despite 
+                      id: flashcardDoc.id, // this
+                        ...flashcardData,
+                        word: flashcardData.origin || "", 
+                        translation: flashcardData.destination || "",
+                        contextSentenceId,
+                        firstSentence,
+                        secondSentence,
+                    };
+                })
+            );
+
+            setFlashcards(flashcardsWithSentences);
+            console.log("Updated flashcards:", flashcardsWithSentences);
+        } else {
+            console.log("Deck not found.");
+        }
     } catch (error) {
-      console.error("Error fetching flashcards:", error);
+        console.error("Error fetching flashcards:", error);
     }
   };
 
@@ -258,9 +311,71 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("Current user is ", currentUser);
       // console.log("Current categoryId is ", categoryId);
       // console.log("Current deckID is ", deckID);
-
+      var word = enteredWord;
+      console.log(enteredWord);
+      var contextSentence = await getContextSentence(word={word});
+      var image;
+      const fetchImage = async (prompt) => {
+        try {
+          const { imgBase64, error } = await generateImage(prompt);
+          if (imgBase64) {
+            image = `data:image/jpeg;base64,${imgBase64}`;
+            console.log("Image fetched successfully");
+            return image; // Return the image to pass it directly to uploadBase64Image
+          } else if (error) {
+            console.log(error);
+          }
+        } catch (error) {
+          console.log("Error fetching image:", error);
+        }
+      };
+      
+      const uploadBase64Image = async (base64Image, userId, word) => {
+        try {
+          console.log("Uploading image for user:", userId);
+          
+          const storage = getStorage(); // Assumes Firebase app is already initialized
+          console.log(word);
+          const storageRef = ref(storage, `images/${userId}/${word}.jpg`);
+          
+          // Decode the base64 image
+          const base64Response = await fetch(base64Image);
+          const imageBlob = await base64Response.blob();
+          
+          // Upload the image to Firebase Storage
+          const snapshot = await uploadBytes(storageRef, imageBlob);
+          
+          // Get the download URL
+          const downloadURL = await getDownloadURL(snapshot.ref);
+          console.log("Image uploaded successfully, URL:", downloadURL);
+          
+          return downloadURL; // Return URL for further usage
+        } catch (error) {
+          console.error("Error uploading the image:", error);
+        }
+      };
+      
+      // Usage example
+      const processImage = async (contextSentence, currentUser, word) => {
+        const base64Image = await fetchImage(contextSentence);
+        if (base64Image) {
+          const downloadURL = await uploadBase64Image(base64Image, currentUser, word);
+          console.log("Final download URL:", downloadURL);
+          return downloadURL;
+        }
+      };
+      var downloadURL;
+      // Call the function with necessary parameters
+      // works just noting a bug, enteredword reads as object object as opposed to the actual word, idk why tha is
+      downloadURL = await processImage(contextSentence, currentUser, enteredWord);
+      if (downloadURL === null) {
+        console.log("Error, download URL is null");
+      }
+      console.log(downloadURL)
       const newFlashcardData = {
         origin: enteredWord,
+        contextSentence: contextSentence,
+        iamgeURL: downloadURL,
         destination: enteredTranslation,
         otherOptions: [option1, option2, option3],
         type: type,
@@ -287,15 +402,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         "New flashcard ID added to cardList in flashcardList document"
       );
 
-      let word = newFlashcardData.destination;
-      let translation = newFlashcardData.origin;
+      // WORD IS ALREADY INIT, leaving this here though
+      // let word = newFlashcardData.destination;
+      // let translation = newFlashcardData.origin;
 
-      if (languages[0] === "Hokkien") {
-        word = newFlashcardData.origin;
-      }
-      if (languages[1] === "English") {
-        translation = newFlashcardData.destination;
-      }
+      // if (languages[0] === "Hokkien") {
+      //   word = newFlashcardData.origin;
+      // }
+      // if (languages[1] === "English") {
+      //   translation = newFlashcardData.destination;
+      // }
 
       if (languages[0] !== "English" && languages[0] !== "Hokkien") {
         word = await translateText(newFlashcardData.destination, languages[0]);
@@ -584,44 +700,41 @@ const FlashcardScreen = ({ route, navigation }) => {
         />
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
-          <Tooltip 
-            label="You can't modify starter decks" 
-            placement="top" 
-            isOpen={tooltipOpen}
-            bg={colors.onPrimaryContainer}
-          >
             <HStack space={4}>
               <CrudButtons
                 title="Create"
                 onPress={() => setShowNewFlashcard(true)}
                 iconName="add"
-                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Update"
                 onPress={() => setShowUpdates(true)}
                 iconName="pencil"
-                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Delete"
                 onPress={() => setShowConfirmDelete(true)}
                 iconName="trash"
-                isDisabled={createdBy === "starter_words"}
               />
             </HStack>
-            </Tooltip>
 
             <Box
               position="absolute"
-              top="74px"
-              width="299px"
-              height="199px"
+              top="75px"
+              width = "auto"
+              maxWidth = {cardWidth}
+              //{{ base: '100%', md: '50%' }}
+              minWidth="300px"
+              height= "auto"
+              //{{ base: 'auto', md: '50%' }}
+              minHeight="199px"
+              //maxHeight="400px"
               bg={colors.darkerPrimaryContainer}
               alignItems="center"
               justifyContent="center"
               borderRadius="10px"
               shadow={1}
+              p={4}
               zIndex={-1}
             >
               <Text fontSize="2xl" color={colors.onSurface}>
@@ -629,9 +742,7 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Text>
             </Box>
 
-            
             <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
-            
               <Animated.View
                 {...panResponder.panHandlers}
                 style={[
@@ -648,41 +759,123 @@ const FlashcardScreen = ({ route, navigation }) => {
                   },
                 ]}
               >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-              {showTranslation ? (
-                <>
+                <Box
                 
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.translation}
-                  </Text>
-                  {languages[1] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
+                  width= "auto"
+                  maxWidth = {cardWidth}
+                  minWidth="300px"
+                  height= "auto"
+                  //{{ base: 'auto', md: '50%' }}
+                  minHeight="200px"
+                  //maxHeight="400px"
+                  bg={colors.primaryContainer}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="10px"
+                  shadow={2}
+                  p = {4}
+                  px={8}
+                  spacing={4} 
+                >
+                  {showTranslation ? (
+                    <>
+                      <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
+                        {flashcards[currentCardIndex].translation}
+                      </Text>
+                      {languages[1] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
+                        <TextToSpeech
+                          prompt={flashcards[currentCardIndex].translation}
+                        />
+                      )}
+                      <HStack spacing={4} p = {4} direction={direction}>
+                        {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                          {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Definition
+                          </Text>}
+                          {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
+                          </Text>}
+                          {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Example Sentence
+                          </Text>}
+                          {flashcardVisibilityStates.englishSentence && <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.secondSentence|| "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                          </HStack>}
+                        </VStack>}
+                        {flashcardVisibilityStates.image && <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Context
+                          </Text>
+                            {/* <Center> makes spacing overlap*/} 
+                            {flashcardVisibilityStates.image && <Box spacing={4} p={4} borderRadius="md">
+                                <Image source={
+                                        flashcards[currentCardIndex]?.downloadURL
+                                           ? { uri: flashcards[currentCardIndex].downloadURL }
+                                        : require("../assets/temp-image.png") // Fallback image
+                                      }
+                                      alt="Flashcard image"
+                                       // for size per image use: 
+                                       size="2xl"  
+                                       // for standarized sizes
+                                      // style={{
+                                      //   width: 220,
+                                      //   height: 220,
+                                      // }}
+                                       resizeMode="contain"
+                                       />
+                              </Box>}
+                            {/* </Center> */}
+                        </VStack>}
+                      </HStack>
+                    </>
+                  ) : (
+                    <VStack>
+                      <Center>
+                        <Text fontSize="4xl" color={colors.onSurface}>
+                          {flashcards[currentCardIndex].word}
+                        </Text>
+                      </Center>
+                      {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Definition
+                      </Text>}
+                      {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
+                            {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
+                      </Text>}
+                      {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Example Sentence
+                          </Text>}
+                          {flashcardVisibilityStates.hokkienSentence && <HStack>
+                            <Text  fontSize="sm" color={colors.onSurface}>
+                              {flashcards[currentCardIndex]?.firstSentence || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
+                            </Text>
+                            <IconButton
+                              icon={
+                                <Ionicons
+                                  name="copy-outline"
+                                  size={15}
+                                  color={colors.onPrimaryContainer}
+                                />
+                              }
+                              onPress={() => copyToClipboard("this does not work")}
+                            />
+                      </HStack>}
+                    </VStack>
                   )}
-                </>
-              ) : (
-                <>
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.word}
-                  </Text>
-                  {languages[0] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'}/>
-                  )}
-                </>
-              )}
-              </Box>
+                </Box>
               </Animated.View>
             </TouchableOpacity>
-
-            
-
 
             <HStack space={4} alignItems="center">
               <Pressable
@@ -735,17 +928,22 @@ const FlashcardScreen = ({ route, navigation }) => {
                 <VStack space={4}>
                   <Input
                     placeholder="Enter English word"
-                    value={enteredTranslation}
-                    onChangeText={setEnteredTranslation}
-                  />
-                  <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
-                    Autofill
-                  </Button>
-                  <Input
-                    placeholder="Enter Hokkien translation"
                     value={enteredWord}
                     onChangeText={setEnteredWord}
                   />
+                  <Input
+                    placeholder="Enter Translation"
+                    value={enteredTranslation}
+                    onChangeText={setEnteredTranslation}
+                  />
+                <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
+                  Autofill
+                </Button>
+                <Input
+                  placeholder="Enter Hokkien translation"
+                  value={enteredWord}
+                  onChangeText={setEnteredWord}
+                />
                   <Input
                     placeholder="Option 1"
                     value={option1}
