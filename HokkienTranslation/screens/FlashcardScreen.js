@@ -69,6 +69,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [translatedText, setTranslatedText] = useState("");
   //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const translateText = async (text, language) => {
     try {
@@ -161,8 +162,9 @@ const FlashcardScreen = ({ route, navigation }) => {
         console.log("Deck not found.");
       }
     } catch (error) {
-      console.error("Error fetching flashcards:", error);
-    }
+      console.error("Error fetching flashcards:", error.message);
+      setErrorMessage("Error fetching flashcards. Please try again later");
+    } 
   };
 
   useEffect(() => {
@@ -215,7 +217,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       toValue: { x: 0, y: 0 },
       duration: 500,
       useNativeDriver: true,
-    }).start(() => {});
+    }).start(() => { });
   };
 
   const handleFlip = () => {
@@ -316,31 +318,34 @@ const FlashcardScreen = ({ route, navigation }) => {
       handleSoftRefresh();
     } catch (error) {
       console.error("Error creating flashcard:", error.message);
-      alert(`Failed to create flashcard: ${error.message}`);
+      setErrorMessage("Error creating flashcard. Please try again later.");
+    } finally {
+      setShowNewFlashcard(false);
     }
   };
 
   const handleUpdate = async () => {
-    const flashcardID = flashcards[currentCardIndex].id;
+    try {
+      const flashcardID = flashcards[currentCardIndex].id;
 
-    if (!enteredWord || !enteredTranslation || !type) {
-      alert("Please fill out all required fields");
-      return;
-    }
+      if (!enteredWord || !enteredTranslation || !type) {
+        alert("Please fill out all required fields");
+        return;
+      }
 
-    const flashcardRef = doc(db, "flashcard", flashcardID);
-    await updateDoc(flashcardRef, {
-      origin: enteredWord,
-      destination: enteredTranslation,
-      otherOptions: [option1, option2, option3],
-      type: type,
-      updatedAt: serverTimestamp(),
-    });
+      const flashcardRef = doc(db, "flashcard", flashcardID);
+      await updateDoc(flashcardRef, {
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        updatedAt: serverTimestamp(),
+      });
 
-    setFlashcards((prevFlashcards) =>
-      prevFlashcards.map((flashcard, index) =>
-        index === currentCardIndex
-          ? {
+      setFlashcards((prevFlashcards) =>
+        prevFlashcards.map((flashcard, index) =>
+          index === currentCardIndex
+            ? {
               ...flashcard,
               origin: enteredWord,
               destination: enteredTranslation,
@@ -349,10 +354,15 @@ const FlashcardScreen = ({ route, navigation }) => {
               word: enteredTranslation,
               translation: enteredWord,
             }
-          : flashcard
-      )
-    );
-    setShowUpdates(false);
+            : flashcard
+        )
+      );
+    } catch (error) {
+      console.error("Error updating flashcard:", error.message);
+      setErrorMessage("Error updating flashcard. Please try again later.");
+    } finally {
+      setShowUpdates(false);
+    }
   };
 
   const handlePermaDelete = async () => {
@@ -440,7 +450,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       handleSoftRefresh();
     } catch (error) {
       console.error("Error deleting flashcard:", error.message);
-      alert(`Failed to delete flashcard: ${error.message}`);
+      setErrorMessage("Failed to delete flashcard. Please try again later.");
     } finally {
       setShowConfirmDelete(false);
       setDisableDeleteButton(false);
@@ -458,7 +468,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       return "Error with generating options.";
     }
   };
-  
+
   const handleAutofill = async () => {
     const hokkien = await fetchTranslation(enteredTranslation);
     setEnteredWord(hokkien);
@@ -562,6 +572,34 @@ const FlashcardScreen = ({ route, navigation }) => {
           colors={colors}
           flashcardListName={flashcardListName}
         />
+
+        {errorMessage && (
+          <Box
+            backgroundColor="red.100"
+            borderColor="red.500"
+            borderWidth={1}
+            p={3}
+            mb={3}
+            borderRadius="8"
+            w="100%"
+            alignItems="center"
+          >
+            <Text color="red.600" fontWeight="bold">
+              {errorMessage}
+            </Text>
+            <Button
+              mt={2}
+              variant="outline"
+              borderColor="red.500"
+              _text={{ color: "red.500" }}
+              onPress={() => setErrorMessage(null)} // Clear error message
+            >
+              Dismiss
+            </Button>
+          </Box>
+        )}
+        
+
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
             <HStack space={4}>
@@ -599,9 +637,9 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Text>
             </Box>
 
-            
+
             <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
-            
+
               <Animated.View
                 {...panResponder.panHandlers}
                 style={[
@@ -618,40 +656,40 @@ const FlashcardScreen = ({ route, navigation }) => {
                   },
                 ]}
               >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-              {showTranslation ? (
-                <>
-                
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.translation}
-                  </Text>
-                  {languages[1] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
+                <Box
+                  width="300px"
+                  height="200px"
+                  bg={colors.primaryContainer}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="10px"
+                  shadow={2}
+                >
+                  {showTranslation ? (
+                    <>
+
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.translation}
+                      </Text>
+                      {languages[1] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.word}
+                      </Text>
+                      {languages[0] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].word} />
+                      )}
+                    </>
                   )}
-                </>
-              ) : (
-                <>
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.word}
-                  </Text>
-                  {languages[0] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].word} />
-                  )}
-                </>
-              )}
-              </Box>
+                </Box>
               </Animated.View>
             </TouchableOpacity>
 
-            
+
 
 
             <HStack space={4} alignItems="center">
