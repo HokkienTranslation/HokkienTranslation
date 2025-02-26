@@ -168,33 +168,58 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
-      const deckCollection = collection(db, "flashcardList");
-      const deckQuery = query(deckCollection, where("name", "==", deckName));
-      const querySnapshot = await getDocs(deckQuery);
+        const deckCollection = collection(db, "flashcardList");
+        const deckQuery = query(deckCollection, where("name", "==", deckName));
+        const querySnapshot = await getDocs(deckQuery);
 
-      if (!querySnapshot.empty) {
-        const deckDoc = querySnapshot.docs[0];
-        const flashcardIDs = deckDoc.data().cardList || [];
+        if (!querySnapshot.empty) {
+            const deckDoc = querySnapshot.docs[0];
+            const flashcardIDs = deckDoc.data().cardList || [];
 
-        const flashcardCollection = collection(db, "flashcard");
-        const flashcardQuery = query(
-          flashcardCollection,
-          where("__name__", "in", flashcardIDs)
-        );
-        const flashcardSnapshot = await getDocs(flashcardQuery);
+            const flashcardCollection = collection(db, "flashcard");
+            const flashcardQuery = query(
+                flashcardCollection,
+                where("__name__", "in", flashcardIDs)
+            );
+            const flashcardSnapshot = await getDocs(flashcardQuery);
 
-        const flashcardsWithIDs = flashcardSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+            const flashcardsWithSentences = await Promise.all(
+                flashcardSnapshot.docs.map(async (flashcardDoc) => {
+                    const flashcardData = flashcardDoc.data();
+                    const contextSentenceId = flashcardData.contextSentence;
 
-        // console.log("Flashcards with IDs:", flashcardsWithIDs);
-        setFlashcards(flashcardsWithIDs);
-      } else {
-        console.log("Deck not found.");
-      }
+                    let firstSentence = "";
+                    let secondSentence = "";
+
+                    if (contextSentenceId) {
+                        const sentenceRef = doc(db, "sentence", contextSentenceId);
+                        const sentenceDoc = await getDoc(sentenceRef);
+
+                        if (sentenceDoc.exists()) {
+                            const sentenceData = sentenceDoc.data();
+                            firstSentence = sentenceData.sentences?.[0] || "";
+                            secondSentence = sentenceData.sentences?.[1] || "";
+                        }
+                    }
+                    return {
+                      id: flashcardDoc.id,
+                        ...flashcardData,
+                        word: flashcardData.origin || "", 
+                        translation: flashcardData.destination || "",
+                        contextSentenceId,
+                        firstSentence,
+                        secondSentence,
+                    };
+                })
+            );
+
+            setFlashcards(flashcardsWithSentences);
+            console.log("Updated flashcards:", flashcardsWithSentences);
+        } else {
+            console.log("Deck not found.");
+        }
     } catch (error) {
-      console.error("Error fetching flashcards:", error);
+        console.error("Error fetching flashcards:", error);
     }
   };
 
@@ -775,7 +800,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                           </Text>}
                           {flashcardVisibilityStates.englishSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.englishExample || "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
+                              {flashcards[currentCardIndex]?.secondSentence|| "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
                             </Text>
                             <IconButton
                               icon={
@@ -833,7 +858,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                           </Text>}
                           {flashcardVisibilityStates.hokkienSentence && <HStack>
                             <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.hokkienExample || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
+                              {flashcards[currentCardIndex]?.firstSentence || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
                             </Text>
                             <IconButton
                               icon={
