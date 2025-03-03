@@ -87,8 +87,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   // Visability
   const { flashcardVisibilityStates } = useComponentVisibility(); 
   const shouldShowVStack =  // left side back card 
-  flashcardVisibilityStates.definition ||
-  flashcardVisibilityStates.englishDefinition ||
+  // flashcardVisibilityStates.definition ||
+  // flashcardVisibilityStates.englishDefinition ||
   flashcardVisibilityStates.hokkienSentence ||
   flashcardVisibilityStates.englishSentence;
 
@@ -315,6 +315,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       console.log(enteredWord);
       var contextSentence = await getContextSentence(word={word});
       var image;
+
       const fetchImage = async (prompt) => {
         try {
           const { imgBase64, error } = await generateImage(prompt);
@@ -789,12 +790,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                       )}
                       <HStack spacing={4} p = {4} direction={direction}>
                         {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
-                          {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                          {/* {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
                           </Text>}
                           {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
-                          </Text>}
+                          </Text>} */}
                           {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Example Sentence
                           </Text>}
@@ -819,7 +820,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                             Context
                           </Text>
                             {/* <Center> makes spacing overlap*/} 
-                            {flashcardVisibilityStates.image && <Box spacing={4} p={4} borderRadius="md">
+                            {flashcardVisibilityStates.image && <Box spacing={2} p={2} borderRadius="md">
                                 <Image source={
                                         flashcards[currentCardIndex]?.downloadURL
                                            ? { uri: flashcards[currentCardIndex].downloadURL }
@@ -827,7 +828,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
-                                       size="2xl"  
+                                       size="xl"  
                                        // for standarized sizes
                                       // style={{
                                       //   width: 220,
@@ -847,12 +848,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                           {flashcards[currentCardIndex].word}
                         </Text>
                       </Center>
-                      {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                      {/* {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
-                      </Text>}
-                      {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
+                      </Text>} */}
+                      {/* {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
-                      </Text>}
+                      </Text>} */}
                       {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Example Sentence
                           </Text>}

@@ -262,8 +262,8 @@ const SettingsScreen = () => {
                 Display Options
               </Text>
               <FlashcardVisibilityToggle label="Image" stateKey="image" />
-              <FlashcardVisibilityToggle label="Definition" stateKey="definition" />
-              <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" />
+              {/* <FlashcardVisibilityToggle label="Definition" stateKey="definition" /> */}
+              {/* <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" /> */}
               <FlashcardVisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
               <FlashcardVisibilityToggle label="English Sentence" stateKey="englishSentence" />
               <FlashcardVisibilityToggle label="Pronunciation" stateKey="textToSpeech" />
