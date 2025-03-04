@@ -311,6 +311,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("Current user is ", currentUser);
       // console.log("Current categoryId is ", categoryId);
       // console.log("Current deckID is ", deckID);
+
       var word = enteredWord;
       console.log(enteredWord);
       var contextSentence = await getContextSentence(word={word});
@@ -373,6 +374,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         console.log("Error, download URL is null");
       }
       console.log(downloadURL)
+
       const newFlashcardData = {
         origin: enteredWord,
         contextSentence: contextSentence,
@@ -701,23 +703,33 @@ const FlashcardScreen = ({ route, navigation }) => {
         />
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
+            <Tooltip 
+              label="You can't modify starter decks" 
+              placement="top" 
+              isOpen={tooltipOpen}
+              bg={colors.onPrimaryContainer}
+            >
             <HStack space={4}>
               <CrudButtons
                 title="Create"
                 onPress={() => setShowNewFlashcard(true)}
                 iconName="add"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Update"
                 onPress={() => setShowUpdates(true)}
                 iconName="pencil"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Delete"
                 onPress={() => setShowConfirmDelete(true)}
                 iconName="trash"
+                isDisabled={createdBy === "starter_words"}
               />
             </HStack>
+            </Tooltip>
 
             <Box
               position="absolute"
@@ -811,7 +823,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                   color={colors.onPrimaryContainer}
                                 />
                               }
-                              onPress={() => copyToClipboard("this does not work")}
+                              onPress={() => copyToClipboard(flashcards[currentCardIndex]?.secondSentence)}
                             />
                           </HStack>}
                         </VStack>}
@@ -854,7 +866,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                       {/* {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
                       </Text>} */}
-                      {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                      {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface} style={{ marginTop: 10 }}>
                             Example Sentence
                           </Text>}
                           {flashcardVisibilityStates.hokkienSentence && <HStack>
@@ -869,7 +881,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                   color={colors.onPrimaryContainer}
                                 />
                               }
-                              onPress={() => copyToClipboard("this does not work")}
+                              onPress={() => copyToClipboard(flashcards[currentCardIndex]?.firstSentence)}
                             />
                       </HStack>}
                     </VStack>
@@ -927,16 +939,11 @@ const FlashcardScreen = ({ route, navigation }) => {
               <Modal.Header>Create new flashcard</Modal.Header>
               <Modal.Body>
                 <VStack space={4}>
-                  <Input
-                    placeholder="Enter English word"
-                    value={enteredWord}
-                    onChangeText={setEnteredWord}
-                  />
-                  <Input
-                    placeholder="Enter Translation"
-                    value={enteredTranslation}
-                    onChangeText={setEnteredTranslation}
-                  />
+                <Input
+                  placeholder="Enter English word"
+                  value={enteredTranslation}
+                  onChangeText={setEnteredTranslation}
+                />
                 <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
                   Autofill
                 </Button>
