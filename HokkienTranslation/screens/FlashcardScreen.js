@@ -44,10 +44,10 @@ import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
 import  getContextSentence  from "./components/contextSentence";
 import { generateImage } from "../backend/API/TextToImageService";
-import * as Clipboard from "expo-clipboard";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
 import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
+import ExampleSentence from "./components/ExampleSentence";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -91,8 +91,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   // flashcardVisibilityStates.englishDefinition ||
   flashcardVisibilityStates.hokkienSentence ||
   flashcardVisibilityStates.englishSentence;
-
-  const copyToClipboard = (text) => Clipboard.setString(text);
 
   const [deckID, setDeckID] = useState("");
 
@@ -800,6 +798,8 @@ const FlashcardScreen = ({ route, navigation }) => {
                           prompt={flashcards[currentCardIndex].translation}
                         />
                       )}
+
+                      {languages[0] === "Hokkien"  ? (
                       <HStack spacing={4} p = {4} direction={direction}>
                         {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
                           {/* {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
@@ -808,24 +808,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                           {flashcardVisibilityStates.englishDefinition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.englishDefinition || "1. Lorem ipsum"}
                           </Text>} */}
-                          {flashcardVisibilityStates.englishSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
-                            Example Sentence
-                          </Text>}
-                          {flashcardVisibilityStates.englishSentence && <HStack>
-                            <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.secondSentence|| "Lorem ipsum dolor sit amet, consectetur adipiscing elit."}
-                            </Text>
-                            <IconButton
-                              icon={
-                                <Ionicons
-                                  name="copy-outline"
-                                  size={15}
-                                  color={colors.onPrimaryContainer}
-                                />
-                              }
-                              onPress={() => copyToClipboard(flashcards[currentCardIndex]?.secondSentence)}
-                            />
-                          </HStack>}
+                        {flashcardVisibilityStates.englishSentence && flashcards[currentCardIndex]?.secondSentence && (
+                          <ExampleSentence 
+                            sentence={flashcards[currentCardIndex]?.secondSentence}
+                            audio={false}
+                          />
+                        )}
                         </VStack>}
                         {flashcardVisibilityStates.image && <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
                           <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
@@ -840,7 +828,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
-                                       size="xl"  
+                                       size="2xl"  
                                        // for standarized sizes
                                       // style={{
                                       //   width: 220,
@@ -852,6 +840,44 @@ const FlashcardScreen = ({ route, navigation }) => {
                             {/* </Center> */}
                         </VStack>}
                       </HStack>
+                      ) : (
+                        <HStack spacing={4} p = {4} direction={direction}>
+                        {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                        {flashcardVisibilityStates.hokkienSentence && flashcards[currentCardIndex]?.firstSentence && (
+                          <ExampleSentence 
+                            sentence={flashcards[currentCardIndex]?.firstSentence}
+                            audio={flashcardVisibilityStates.textToSpeech}
+                          />
+                        )}
+                        </VStack>}
+                        {flashcardVisibilityStates.image && <VStack spacing={4} width={{ base: '100%', md: '50%' }}>
+                          <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
+                            Context
+                          </Text>
+                            {/* <Center> makes spacing overlap*/} 
+                            {flashcardVisibilityStates.image && <Box spacing={2} p={2} borderRadius="md">
+                                <Image source={
+                                        flashcards[currentCardIndex]?.downloadURL
+                                           ? { uri: flashcards[currentCardIndex].downloadURL }
+                                        : require("../assets/temp-image.png") // Fallback image
+                                      }
+                                      alt="Flashcard image"
+                                       // for size per image use: 
+                                       size="2xl"  
+                                       // for standarized sizes
+                                      // style={{
+                                      //   width: 220,
+                                      //   height: 220,
+                                      // }}
+                                       resizeMode="contain"
+                                       />
+                              </Box>}
+                            {/* </Center> */}
+                        </VStack>}
+                      </HStack>
+                      )
+                    }
+                      
                     </>
                   ) : (
                     <VStack>
@@ -859,32 +885,41 @@ const FlashcardScreen = ({ route, navigation }) => {
                         <Text fontSize="4xl" color={colors.onSurface}>
                           {flashcards[currentCardIndex].word}
                         </Text>
+                        {languages[0] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
+                        <TextToSpeech
+                          prompt={flashcards[currentCardIndex].word}
+                          type="flashcard"
+                        />
+                        )}
                       </Center>
+
+                      {languages[0] === "Hokkien"  ? (
+                        <>
                       {/* {flashcardVisibilityStates.definition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
-                      </Text>} */}
-                      {/* {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
+                      </Text>}
+                      {flashcardVisibilityStates.definition && <Text  fontSize="sm" color={colors.onSurface}>
                             {flashcards[currentCardIndex]?.definition || "1.「啊啊啊啊」"}
                       </Text>} */}
-                      {flashcardVisibilityStates.hokkienSentence && <Text fontSize="md" fontWeight="bold" color={colors.onSurface} style={{ marginTop: 10 }}>
-                            Example Sentence
-                          </Text>}
-                          {flashcardVisibilityStates.hokkienSentence && <HStack>
-                            <Text  fontSize="sm" color={colors.onSurface}>
-                              {flashcards[currentCardIndex]?.firstSentence || "--啊啊啊啊」啊啊啊啊」啊啊啊啊」啊啊啊啊」"}
-                            </Text>
-                            <IconButton
-                              icon={
-                                <Ionicons
-                                  name="copy-outline"
-                                  size={15}
-                                  color={colors.onPrimaryContainer}
-                                />
-                              }
-                              onPress={() => copyToClipboard(flashcards[currentCardIndex]?.firstSentence)}
-                            />
-                      </HStack>}
-                    </VStack>
+                      {flashcardVisibilityStates.hokkienSentence && flashcards[currentCardIndex]?.firstSentence && (
+                        <ExampleSentence 
+                          sentence={flashcards[currentCardIndex]?.firstSentence}
+                          audio={flashcardVisibilityStates.textToSpeech}
+                        />
+                      )}
+                      </>
+                      ) : (
+                        <>
+                      {flashcardVisibilityStates.englishSentence && flashcards[currentCardIndex]?.secondSentence && (
+                        <ExampleSentence 
+                          sentence={flashcards[currentCardIndex]?.secondSentence}
+                          audio={false}
+                        />
+                      )}
+                      </>
+                      )
+                    }
+                  </VStack>
                   )}
                 </Box>
               </Animated.View>
