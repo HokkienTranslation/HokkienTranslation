@@ -46,6 +46,7 @@ const ResultScreen = ({ route }) => {
   const { query } = route.params;
   const [hokkienTranslation, setHokkienTranslation] = useState("");
   const [hokkienRomanized, setHokkienRomanized] = useState("");
+  const [hokkienSentence, setHokkienSentence] = useState("");
   const [hokkienSentenceRomanized, setHokkienSentenceRomanized] = useState("");
   const [dataFromDatabase, setDataFromDatabase] = useState(null);
   const { visibilityStates } = useComponentVisibility();
@@ -78,18 +79,19 @@ const ResultScreen = ({ route }) => {
     ],
   };
 
-  const fetchAndSetRomanization = async (hokkienText, type) => {
-    try {
-      const romanizedText = await fetchRomanizer(hokkienText);
-      if (romanizedText) {
-        if (type === 1) setHokkienRomanized(romanizedText);
-        else if (type === 2) setHokkienSentenceRomanized(romanizedText);
-      }
-    } catch (error) {
-      console.error("Error in fetchRomanizer:", error);
-      setRomanizerErrorMessage("Failed to fetch Romanization. Please try again later.");
-    }
-  };
+  // not used right now
+  // const fetchAndSetRomanization = async (hokkienText, type) => {
+  //   try {
+  //     const romanizedText = await fetchRomanizer(hokkienText);
+  //     if (romanizedText) {
+  //       if (type === 1) setHokkienRomanized(romanizedText);
+  //       else if (type === 2) setHokkienSentenceRomanized(romanizedText);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error in fetchRomanizer:", error);
+  //     setRomanizerErrorMessage("Failed to fetch Romanization. Please try again later.");
+  //   }
+  // };
 
   const BoldWordInSentence = ({ sentence, wordToBold }) => {
     if (!wordToBold) return <Text>{sentence}</Text>;
@@ -137,27 +139,33 @@ const ResultScreen = ({ route }) => {
       }
     }
   };
+
   useEffect(() => {
     const checkData = async () => {
       setProgress(0);
       try {
+        updateProgress(0.2);
         const result = await CheckDatabase(query);
-        updateProgress(0.4);
-        if (result.translation && result.sentence) {
+        updateProgress(0.2);
+        if (!result) {
+          updateProgress(0.6);
+          throw new Error("Failed to get translation.");
+        } else if (result.translation && result.sentence) {
           setDataFromDatabase(result);
           setHokkienTranslation(result.translation.hokkienTranslation);
-          await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
+          setHokkienSentence(result.sentence.sentences[0]);
+          // await fetchAndSetRomanization(result.translation.hokkienTranslation, 1);
           updateProgress(0.4);
-          await fetchAndSetRomanization(result.sentence.sentences[0], 2);
-          updateProgress(0.2);
+          // await fetchAndSetRomanization(result.sentence.sentences[0], 2);
+          // updateProgress(0.2);
         } else {
           setHokkienTranslation(result.threeTranslations.hokkienTranslation);
-          await fetchAndSetRomanization(hokkienTranslation, 1);
-          updateProgress(0.6);
+          // await fetchAndSetRomanization(hokkienTranslation, 1);
+          updateProgress(0.4);
         }
       } catch (error) {
-          console.error("Error checking database: ", error);
-          setDatabaseErrorMessage("Failed to check database. Please try again later.");
+          console.error("Error checking database/getting translation: ", error);
+          setDatabaseErrorMessage("Failed to get translation. Please try again later.");
       }
     };
     checkData();
@@ -171,13 +179,19 @@ const ResultScreen = ({ route }) => {
           throw new Error(error); // Throw an error if one exists
         }
         setImageUrl(imgBase64);
+        updateProgress(0.2);
       } catch (error) {
         console.error("Error in generateImage:", error);
         setImageErrorMessage("Failed to generate image. Please try again later.");
       }
     };
-    loadImage();
-  }, []);
+
+    if (hokkienTranslation && !dataFromDatabase?.sentence?.imageURL) {
+      loadImage(); // wait for database before loading image
+    } else if (hokkienTranslation) {
+      updateProgress(0.2);
+    }
+  }, [hokkienTranslation, dataFromDatabase]);
 
   if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage && !databaseErrorMessage && !dismissedError) {
     return <LoadingScreen progress={progress} />;
@@ -288,7 +302,7 @@ const ResultScreen = ({ route }) => {
               />
             </HStack>
             {visibilityStates.textToSpeech && (
-              <TextToSpeech prompt={hokkienRomanized} />
+              <TextToSpeech prompt={hokkienTranslation} type={'translation'} />
             )}
             {/* Definition */}
             {(visibilityStates.definition ||
@@ -402,7 +416,7 @@ const ResultScreen = ({ route }) => {
                         />
                       </HStack>
                       {visibilityStates.textToSpeech && (
-                        <TextToSpeech prompt={hokkienSentenceRomanized} />
+                        <TextToSpeech prompt={hokkienSentence} type={'sentence'} /> 
                       )}
                     </VStack>
                   )}
@@ -489,7 +503,7 @@ const ResultScreen = ({ route }) => {
               />
             </HStack>
             {visibilityStates.textToSpeech && (
-              <TextToSpeech prompt={hokkienRomanized} />
+              <TextToSpeech prompt={hokkienTranslation} type={'translation'} />
             )}
             {visibilityStates.image && (
               <Box

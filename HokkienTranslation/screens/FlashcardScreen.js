@@ -12,6 +12,7 @@ import {
   Button,
   ScrollView,
   Switch,
+  Tooltip
 } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
@@ -37,8 +38,9 @@ import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
+import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 import { initializeLeitnerBox } from "../backend/database/LeitnerSystemHelpers.js";
-
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
@@ -61,6 +63,8 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const flashcardListId = route.params.flashcardListId || "";
   const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
 
   const [deckID, setDeckID] = useState("");
 
@@ -77,7 +81,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       const response = await callOpenAIChat(
         `Translate ${text} to ${language}. You must respond with only the translation.`
       );
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -118,9 +122,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     const deckDoc = querySnapshot.docs[0];
     const deckID = deckDoc.id;
-    console.log("Deck ID:", deckID);
-    console.log("Current category in FlashcardScreen is:", categoryId);
-    console.log("Current deck is:", flashcardListName);
+    // console.log("Deck ID:", deckID);
+    // console.log("Current category in FlashcardScreen is:", categoryId);
+    // console.log("Current deck is:", flashcardListName);
     return deckID;
   };
 
@@ -157,7 +161,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           ...doc.data(),
         }));
 
-        console.log("Flashcards with IDs:", flashcardsWithIDs);
+        // console.log("Flashcards with IDs:", flashcardsWithIDs);
         setFlashcards(flashcardsWithIDs);
       } else {
         console.log("Deck not found.");
@@ -187,6 +191,13 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     position.setValue({ x: 0, y: 0 });
   }, [currentCardIndex, flashcards]);
+
+  useEffect(() => {
+    if (tooltipOpen) {
+      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      return () => clearTimeout(timer);
+    }
+  }, [tooltipOpen]); 
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -242,9 +253,13 @@ const FlashcardScreen = ({ route, navigation }) => {
         return;
       }
 
-      console.log("Current user is ", currentUser);
-      console.log("Current categoryId is ", categoryId);
-      console.log("Current deckID is ", deckID);
+      const romanization = await fetchNumericTones(enteredWord);
+      const audioBlob = await fetchAudioBlob(romanization);
+      const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
+
+      // console.log("Current user is ", currentUser);
+      // console.log("Current categoryId is ", categoryId);
+      // console.log("Current deckID is ", deckID);
 
       const newFlashcardData = {
         origin: enteredWord,
@@ -254,10 +269,12 @@ const FlashcardScreen = ({ route, navigation }) => {
         categoryId: categoryId,
         createdAt: serverTimestamp(),
         createdBy: currentUser,
+        romanization: romanization,
+        audioUrl: audioUrl,
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
-      console.log("FlashcardRef", flashcardRef);
+      // console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
 
       const newFlashcardID = flashcardRef.id;
@@ -304,6 +321,8 @@ const FlashcardScreen = ({ route, navigation }) => {
           createdBy: currentUser,
           word: word,
           translation: translation,
+          romanization: romanization,
+          audioUrl: audioUrl,
         },
       ];
 
@@ -463,9 +482,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   const generateOptions = async (options) => {
     try {
-      const prompt = `Given the word(s): ${options}, what is a related, but very different word in meaning? You must respond with only one word. Do not add any punctuation.`;
+      const prompt = `Given the word(s): ${options}, provide another word that belongs to the same category. The word must be similar in type but not identical. Respond with only one word and no punctuation.`;
       const response = await callOpenAIChat(prompt);
-      console.log("OpenAI Response:", response);
+      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error:", error);
@@ -606,23 +625,33 @@ const FlashcardScreen = ({ route, navigation }) => {
 
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
+          <Tooltip 
+            label="You can't modify starter decks" 
+            placement="top" 
+            isOpen={tooltipOpen}
+            bg={colors.onPrimaryContainer}
+          >
             <HStack space={4}>
               <CrudButtons
                 title="Create"
                 onPress={() => setShowNewFlashcard(true)}
                 iconName="add"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Update"
                 onPress={() => setShowUpdates(true)}
                 iconName="pencil"
+                isDisabled={createdBy === "starter_words"}
               />
               <CrudButtons
                 title="Delete"
                 onPress={() => setShowConfirmDelete(true)}
                 iconName="trash"
+                isDisabled={createdBy === "starter_words"}
               />
             </HStack>
+            </Tooltip>
 
             <Box
               position="absolute"
@@ -660,36 +689,36 @@ const FlashcardScreen = ({ route, navigation }) => {
                   },
                 ]}
               >
-                <Box
-                  width="300px"
-                  height="200px"
-                  bg={colors.primaryContainer}
-                  alignItems="center"
-                  justifyContent="center"
-                  borderRadius="10px"
-                  shadow={2}
-                >
-                  {showTranslation ? (
-                    <>
-
-                      <Text fontSize="2xl" color={colors.onSurface}>
-                        {flashcards[currentCardIndex]?.translation}
-                      </Text>
-                      {languages[1] === "Hokkien" && (
-                        <TextToSpeech prompt={flashcards[currentCardIndex].translation} />
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <Text fontSize="2xl" color={colors.onSurface}>
-                        {flashcards[currentCardIndex]?.word}
-                      </Text>
-                      {languages[0] === "Hokkien" && (
-                        <TextToSpeech prompt={flashcards[currentCardIndex].word} />
-                      )}
-                    </>
+              <Box
+                width="300px"
+                height="200px"
+                bg={colors.primaryContainer}
+                alignItems="center"
+                justifyContent="center"
+                borderRadius="10px"
+                shadow={2}
+              >
+              {showTranslation ? (
+                <>
+                
+                  <Text fontSize="2xl" color={colors.onSurface}>
+                    {flashcards[currentCardIndex]?.translation}
+                  </Text>
+                  {languages[1] === "Hokkien" && (
+                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
                   )}
-                </Box>
+                </>
+              ) : (
+                <>
+                  <Text fontSize="2xl" color={colors.onSurface}>
+                    {flashcards[currentCardIndex]?.word}
+                  </Text>
+                  {languages[0] === "Hokkien" && (
+                    <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'}/>
+                  )}
+                </>
+              )}
+              </Box>
               </Animated.View>
             </TouchableOpacity>
 

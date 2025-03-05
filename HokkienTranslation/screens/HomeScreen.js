@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import * as Progress from "react-native-progress";
 import {
@@ -61,13 +62,18 @@ export default function HomeScreen({ navigation }) {
     console.log("user points", userPoints);
     setUserLevel(level);
     setUserPoints(points);
-    setLevelProgress(points / (level * 100));
+    setLevelProgress((points - ((level - 1) * 100)) / 100);
   };
 
   useEffect(() => {
     fetchRandomInputs();
-    fetchUserLevelPointsProgress();
-  }, [userPoints, userLevel, levelProgress]);
+  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserLevelPointsProgress();
+    }, [])
+  );
 
   return (
     <ScrollView

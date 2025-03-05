@@ -1,6 +1,6 @@
-import { db } from "./Firebase.js";
-import { fetchNumericTones, fetchAudioBlob } from "../API/TextToSpeechService.js";
-import { fetchRomanizer } from "../API/HokkienHanziRomanizerService.js";
+import { db } from "../Firebase.js";
+import { fetchNumericTones, fetchAudioBlob } from "../../API/TextToSpeechService.js";
+import { fetchRomanizer } from "../../API/HokkienHanziRomanizerService.js";
 import {
     collection,
     doc,
@@ -14,7 +14,7 @@ import {
     arrayUnion,
     writeBatch,
   } from "firebase/firestore";
-import { uploadAudioFromBlob } from "./Database.js";
+import { uploadAudioFromBlob } from "../Database.js";
 
 async function updateDictionary() {
     const translationsRef = collection(db, 'translation');
