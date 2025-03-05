@@ -11,7 +11,7 @@ import {
   Select,
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
-import { Animated, Easing, TouchableOpacity} from "react-native";
+import { Animated, Easing, TouchableOpacity } from "react-native";
 import {
   collection,
   getDocs,
@@ -19,6 +19,7 @@ import {
   getDoc,
   updateDoc,
   setDoc,
+  arrayUnion,
   serverTimestamp,
   where,
   query,
@@ -32,6 +33,7 @@ import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechSer
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import { getStoredHokkien } from "../backend/database/DatabaseUtils.js";
+import { countPointsByFlashcard, updateLeitnerBox, appendToLearnedDecks, updateUserPoints, isFirstTimeQuiz } from "../backend/database/LeitnerSystemHelpers.js";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -55,6 +57,8 @@ const QuizScreen = ({ route }) => {
   const [choiceIndex, setChoice] = useState(null);
   const [hokkienOption, setHokkienOption] = useState("Characters");
   const [optionType, setOptionType] = useState("English");
+  const [beFirstTimeQuiz, setBeFirstTimeQuiz] = useState(false);
+  const [totalPoints, setTotalPoints] = useState(0);
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -106,6 +110,11 @@ const QuizScreen = ({ route }) => {
           return;
         }
 
+        const user = await getCurrentUser();
+        const userEmail = user;
+        const firstTime = await isFirstTimeQuiz(userEmail, flashcardListName);
+        console.log("First time quiz: ", firstTime);
+        setBeFirstTimeQuiz(firstTime);
         const flashcardListData = flashcardListDoc.data();
         const flashcardIds = flashcardListData.cardList;
         let flashcards = [];
@@ -116,7 +125,7 @@ const QuizScreen = ({ route }) => {
 
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
-            
+
             let translation = data.origin; // question (Hokkien)
             let word = data.destination; // answer (English)
 
@@ -172,7 +181,7 @@ const QuizScreen = ({ route }) => {
                   return display;
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
-                  return await translateText(option, lang1); 
+                  return await translateText(option, lang1);
                 }
                 return option;
               })
@@ -232,11 +241,23 @@ const QuizScreen = ({ route }) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
 
+    const user = await getCurrentUser();
+    const userEmail = user;
+
     const isCorrect =
       flashcards[currentCardIndex].choices[index] ===
       flashcards[currentCardIndex].destination;
+
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
+      var addPoints = await countPointsByFlashcard(userEmail, flashcards[currentCardIndex].id, true);
+      const updatedTotalPoints = totalPoints + addPoints;
+      console.log("Updated totalPoints (expected):", updatedTotalPoints);
+      setTotalPoints(updatedTotalPoints);
+      await updateLeitnerBox(userEmail, flashcards[currentCardIndex].id, true);
+
+    } else {
+      await updateLeitnerBox(userEmail, flashcards[currentCardIndex].id, false);
     }
 
     setFlashcardScores({
@@ -245,6 +266,8 @@ const QuizScreen = ({ route }) => {
     });
 
     if (currentCardIndex === flashcards.length - 1) {
+      const finalPoints = totalPoints + addPoints;
+      console.log("Quiz ended. Final points before firebase update: ", finalPoints);
       // Last flashcard, update quiz scores and show history
       try {
         const user = await getCurrentUser();
@@ -260,6 +283,12 @@ const QuizScreen = ({ route }) => {
           collection(db, "flashcardQuiz"),
           where("flashcardListId", "==", flashcardListName)
         );
+
+        await updateUserPoints(userEmail, finalPoints);
+        if (beFirstTimeQuiz) {
+          await updateUserPoints(userEmail, 30);
+          await appendToLearnedDecks(userEmail, flashcardListName);
+        };
 
         const quizQuerySnapshot = await getDocs(quizQuery);
         const scores = quizQuerySnapshot.docs[0].data().scores[userEmail];
@@ -316,29 +345,27 @@ const QuizScreen = ({ route }) => {
           } else {
             // If the document does not exist, create it
             const newScoreDoc = {
-                [userEmail]: [
-                  {
-                    time: timestamp,
-                    totalScore:
-                      (score + (isCorrect ? 1 : 0)) / flashcards.length,
-                    flashcardScores: {
-                      ...flashcardScores,
-                      [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
-                    },
+              [userEmail]: [
+                {
+                  time: timestamp,
+                  totalScore:
+                    (score + (isCorrect ? 1 : 0)) / flashcards.length,
+                  flashcardScores: {
+                    ...flashcardScores,
+                    [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
                   },
-                ],
-              };
+                },
+              ],
+            };
             await setDoc(quizDocRef, {
               scores: newScoreDoc
-              });
-            setUserScores(newScoreDoc[userEmail]);
+            });
           }
         } else {
           console.error(
             "No flashcardQuiz document found with the given flashcardListName."
           );
         }
-
         showScoreHistory(userEmail, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
@@ -369,9 +396,8 @@ const QuizScreen = ({ route }) => {
     return (
       <VStack space={4} alignItems="center">
         {Object.entries(flashcardScores).map(([flashcardId, score]) => (
-          <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${
-            score ? "Correct" : "Incorrect"
-          }`}</Text>
+          <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${score ? "Correct" : "Incorrect"
+            }`}</Text>
         ))}
       </VStack>
     );
@@ -432,9 +458,9 @@ const QuizScreen = ({ route }) => {
     const choice = flashcards[currentCardIndex].choices[index];
 
     if (selectedAnswer === null) {
-      return index === choiceIndex 
-        ? {bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder}
-        : {bg: colors.primaryContainer, borderColor: colors.buttonBorder};
+      return index === choiceIndex
+        ? { bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder }
+        : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
     } else if (choice === correctAnswer) {
       return index === selectedAnswer
         ? { bg: "rgba(39, 201, 36, 0.6)", borderColor: "#27c924" }
@@ -460,19 +486,19 @@ const QuizScreen = ({ route }) => {
         <VStack space={4} alignItems="center">
           <Text
             style={{
-            fontSize: 24,
-            fontWeight: "bold",
-            color: colors.onSurface,
+              fontSize: 24,
+              fontWeight: "bold",
+              color: colors.onSurface,
             }}>Answer with:
           </Text>
           <Select
             selectedValue={answerWith}
             minWidth={200}
             onValueChange={handleAnswerWithChange}
-            accessibilityLabel="Choose Answer Language" 
-            placeholder="Choose Answer Language" 
+            accessibilityLabel="Choose Answer Language"
+            placeholder="Choose Answer Language"
             _selectedItem={{
-              _text: { fontSize: 24 }, 
+              _text: { fontSize: 24 },
             }}
           >
             <Select.Item label={lang1} value={lang1} />
@@ -485,7 +511,7 @@ const QuizScreen = ({ route }) => {
               minWidth={200}
               onValueChange={(value) => setHokkienOption(value)}
               accessibilityLabel="Choose Hokkien Answer Type"
-              placeholder="Choose Hokkien Answer Type" 
+              placeholder="Choose Hokkien Answer Type"
               _selectedItem={{
                 _text: { fontSize: 24 },
               }}
@@ -494,12 +520,12 @@ const QuizScreen = ({ route }) => {
               <Select.Item label="Romanization" value="Romanization" />
             </Select>
           )}
-        <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
-      </VStack>
+          <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
+        </VStack>
       </Center>
     );
   }
-  
+
   if (!flashcards.length) {
     return (
       <Center flex={1} px="3" background={colors.surface}>
@@ -514,6 +540,17 @@ const QuizScreen = ({ route }) => {
         <Box width="100%" height="100%">
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
             <VStack space={4} alignItems="stretch" width="90%" mx="auto">
+
+              {/* Show total points earned in the quiz */}
+              <Text fontSize="lg" color={colors.onSurface} bold textAlign="center">
+                You earned {totalPoints} points in this quiz!
+              </Text>
+              {isFirstTimeQuiz && (
+              <Text fontSize="md" color={colors.onSurface} textAlign="center" mt={2}>
+                This is the first time you completed this quiz so you earned 30 points extra!
+              </Text>
+            )}
+
               {userScores && userScores.length > 0 ? (
                 userScores.slice().reverse().map((scoreEntry, index) => (
                   <Box
@@ -606,10 +643,10 @@ const QuizScreen = ({ route }) => {
                 {flashcards[currentCardIndex].origin}
                 {"\u00A0\u00A0"}
                 {lang2 === "Hokkien" && (
-                        <TextToSpeech
-                          prompt={flashcards[currentCardIndex].origin}
-                        />
-                      )}
+                  <TextToSpeech
+                    prompt={flashcards[currentCardIndex].origin}
+                  />
+                )}
               </Text>
               <VStack space={5} width="100%">
                 <HStack space={9} width="100%">

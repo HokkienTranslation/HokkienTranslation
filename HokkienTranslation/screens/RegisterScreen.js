@@ -6,6 +6,7 @@ import { CommonActions } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../backend/database/Firebase";
 import { useTheme } from "./context/ThemeProvider";
+import { initializeLeitnerBoxesForUser, initializePointLevelProgress } from "../backend/database/LeitnerSystemHelpers.js";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -25,25 +26,36 @@ export default function RegisterScreen({ navigation }) {
     }).start();
   }, [fadeAnim]);
   
-  const registerWithEmail = () => {
+  const registerWithEmail = async () => { 
     if (password !== passwordConfirmation) {
       setMessage("Passwords don't match!");
       return;
     }
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        setMessage("Successfully registered!");
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{ name: "Main" }],
-          })
-        );
-      })
-      .catch((error) => {
-        const errorMessage = error.message;
-        setMessage(errorMessage);
-      });
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      setMessage("Successfully registered!");
+
+      // Call initializePointLevelProgress after successful registration
+      await initializePointLevelProgress(user.email);
+      console.log("PointLevelProgress initialized for ", user.email);
+  
+      // Call initializeLeitnerBoxesForUser after successful registration
+      await initializeLeitnerBoxesForUser(user.email);
+      console.log("Leitner Boxes initialized for ", user.email);
+  
+      // Navigate to Main screen
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        })
+      );
+    } catch (error) {
+      setMessage(error.message);
+      console.error("Registration Error:", error);
+    }
   };
 
   return (

@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Ionicons } from "@expo/vector-icons";
+import * as Progress from "react-native-progress";
 import {
   Box,
   Input,
   IconButton,
   ScrollView,
   VStack,
+  HStack,
   Button,
   Wrap,
   Flex,
@@ -16,12 +18,17 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import { getUserLevel, getUserPoints } from "../backend/database/LeitnerSystemHelpers.js";
 
 export default function HomeScreen({ navigation }) {
   const [queryText, setQueryText] = useState("");
   const [randomInputs, setRandomInputs] = useState([]);
+  const [userLevel, setUserLevel] = useState(null);
+  const [userPoints, setUserPoints] = useState(null);
+  const [levelProgress, setLevelProgress] = useState(null);
   const { theme, themes } = useTheme();
   const colors = themes[theme];
+  const pointsPerLevel = 100;
 
   // console.log("Current User: ", getCurrentUser());
 
@@ -45,9 +52,22 @@ export default function HomeScreen({ navigation }) {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
+  const fetchUserLevelPointsProgress = async () => {
+    const user = await getCurrentUser();
+    const userEmail = user;
+    const level = await getUserLevel(userEmail, pointsPerLevel);
+    const points = await getUserPoints(userEmail);
+    console.log("user level: ", userLevel);
+    console.log("user points", userPoints);
+    setUserLevel(level);
+    setUserPoints(points);
+    setLevelProgress(points / (level * 100));
+  };
+
   useEffect(() => {
     fetchRandomInputs();
-  }, []);
+    fetchUserLevelPointsProgress();
+  }, [userPoints, userLevel, levelProgress]);
 
   return (
     <ScrollView
@@ -60,9 +80,29 @@ export default function HomeScreen({ navigation }) {
         <Box
           w="80%"
           flexDirection="row"
-          justifyContent="flex-end"
+          justifyContent="space-between"
           alignItems="center"
         >
+
+          {/* Wrap Level Text and Progress Bar in an HStack */}
+          <HStack alignItems="center" space={4} flex={1}>
+            <Text fontSize="2xl" color={colors.onSurface} bold>
+              Level {userLevel !== null ? userLevel : "Loading..."}:
+            </Text>
+
+            <Progress.Bar
+              progress={levelProgress}
+              width={window.width}  // Adjust width so it fits next to the text
+              borderRadius={24}
+              height={24}
+              color={colors.primaryContainer}
+            />
+
+            <Text fontSize="md" color={colors.onSurface} bold>
+              {userPoints}/{userLevel * 100}
+            </Text>
+          </HStack>
+
           <IconButton
             icon={
               <Ionicons
@@ -140,6 +180,6 @@ export default function HomeScreen({ navigation }) {
           </Box>
         )}
       </VStack>
-    </ScrollView>
+    </ScrollView >
   );
 }

@@ -37,6 +37,7 @@ import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
+import { initializeLeitnerBox } from "../backend/database/LeitnerSystemHelpers.js";
 
 const FlashcardScreen = ({ route, navigation }) => {
   const { theme, themes } = useTheme();
@@ -261,6 +262,9 @@ const FlashcardScreen = ({ route, navigation }) => {
 
       const newFlashcardID = flashcardRef.id;
       console.log("Flashcard created successfully with ID:", newFlashcardID);
+
+      // Initialize Leitner Box
+      await initializeLeitnerBox(currentUser, newFlashcardID);
 
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {

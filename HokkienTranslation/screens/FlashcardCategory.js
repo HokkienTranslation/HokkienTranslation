@@ -40,6 +40,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import { weightedScoreByDeck } from "../backend/database/LeitnerSystemHelpers.js";
 // list of categories use api
 
 var index = 0;
@@ -118,7 +119,7 @@ const FlashcardCategory = () => {
 
     return flashcards;
   }
-  
+
   const fetchUser = async () => {
     try {
       const user = await getCurrentUser();
@@ -129,29 +130,29 @@ const FlashcardCategory = () => {
   };
 
 
-  
+
   useEffect(() => {
     if (isFocused) {
-       
-       getCategories(db).then((categoryList) => {
+
+      getCategories(db).then((categoryList) => {
         categories = categoryList;
         console.log("Categories: ", categories);
         setDisplay(categoryList);
-       }).catch((error) => {
+      }).catch((error) => {
         console.error("Error fetching categories: ", error);
-       });
-       getFlashcardList(db)
-      .then((flashcardList) => {
-        alldecks = flashcardList;
-      })
-      .catch((error) => {
-        console.error("Error fetching flashcardList: ", error);
       });
-       index = 0
+      getFlashcardList(db)
+        .then((flashcardList) => {
+          alldecks = flashcardList;
+        })
+        .catch((error) => {
+          console.error("Error fetching flashcardList: ", error);
+        });
+      index = 0
     }
   }, [isFocused]);
 
-  
+
 
   const handleCategoryPress = async (category, navigation) => {
     // for flashcard lists/decks
@@ -160,7 +161,7 @@ const FlashcardCategory = () => {
     }
 
     if (index == 0) {
-      console.log("Current Category in FlashcardCategory is: ", category); 
+      console.log("Current Category in FlashcardCategory is: ", category);
       var flashcardList = category.flashcardList;
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
@@ -171,7 +172,7 @@ const FlashcardCategory = () => {
 
         // Await the document snapshot
         const ref = await getDoc(docRef);
-        
+
         deckID = ref.id;
         // console.log(ref.data())
 
@@ -182,8 +183,11 @@ const FlashcardCategory = () => {
         // console.log(temp)
 
         if (temp.createdBy === currentUser || temp.shared) {
-          decks.push({ id: ref.id, ...temp });
+          let unfamiliarityScore = await weightedScoreByDeck(currentUser, deckID);
+          decks.push({ id: ref.id, ...temp, unfamiliarityScore });
         }
+        // 🔥 Sort decks by unfamiliarity (higher score first)
+        decks.sort((a, b) => b.unfamiliarityScore - a.unfamiliarityScore);
 
         index = 1;
       }
@@ -197,7 +201,7 @@ const FlashcardCategory = () => {
 
     // update API here
     var flashCardList = category.cardList;
-    console.log("List of Flashcards: ", flashCardList); 
+    console.log("List of Flashcards: ", flashCardList);
 
     for (const card of flashCardList) {
       // console.log(card);
@@ -218,9 +222,10 @@ const FlashcardCategory = () => {
     const deckName = category.name;
     console.log("Deckname", deckName)
     const categoryIdToPass = categoryId || category.categoryId;
+    const createdBy = category.createdBy;
     console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
-    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass, createdBy });
   };
 
   const CategoryBox = ({ category, navigation }) => {
@@ -283,7 +288,7 @@ const FlashcardCategory = () => {
       console.log("FlashcardList: ", flashcardList);
       flashcardList.splice(flashcardList.indexOf(category.name), 1);
 
-      // update caategory
+      // update category
       await updateDoc(categoryRef2, {
         flashcardList: flashcardList,
       });
@@ -320,15 +325,15 @@ const FlashcardCategory = () => {
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
-            {category.createdBy === currentUser &&  (
-            <>
-              <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
-                <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
-                <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
-              </TouchableOpacity>
-            </>
+            {category.createdBy === currentUser && (
+              <>
+                <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
+                  <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
+                  <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
+                </TouchableOpacity>
+              </>
             )}
           </HStack>
         )}
@@ -336,7 +341,7 @@ const FlashcardCategory = () => {
     );
   };
 
-  const AddBox = ({}) => {
+  const AddBox = ({ }) => {
     const [isPressed, setIsPressed] = useState(false);
 
     const addFlashcard = () => {
@@ -349,7 +354,7 @@ const FlashcardCategory = () => {
       <Pressable
         style={[
           styles.addBox,
-          {borderColor: colors.onSurface},
+          { borderColor: colors.onSurface },
           isPressed && styles.categoryBoxPressed,
           { backgroundColor: colors.categoriesBox },
         ]}
@@ -394,7 +399,7 @@ const FlashcardCategory = () => {
 
           {/* Emphasize categories for study */}
           <VStack style={styles.grid}>
-          {display
+            {/*{display
             .filter(category => 
               ["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
             )
@@ -408,20 +413,20 @@ const FlashcardCategory = () => {
 
           {index === 0 &&  
           <Divider my={4} bg={colors.surface} />
-          }
+          }*/}
 
-          {/* Remaining Categories */}
-          {display
-            .filter(category => 
-              !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
-            )
-            .map((category, index) => (
-              <CategoryBox 
-              key={index} 
-              category={category} 
-              navigation={navigation} />
-          ))}
-          {index === 1 && <AddBox />}
+            {/* Remaining Categories */}
+            {display
+              .filter(category =>
+                !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+              )
+              .map((category, index) => (
+                <CategoryBox
+                  key={index}
+                  category={category}
+                  navigation={navigation} />
+              ))}
+            {index === 1 && <AddBox />}
           </VStack>
 
           {/* <VStack style={styles.grid}>
@@ -497,11 +502,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addBox: {
-    minWidth: "32%",
-    width: "32%",
+    minWidth: "30%",
+    width: "30%",
     borderStyle: "dashed",
-
+    marginHorizontal: "1.6%",
     alignItems: "center",
+    justifyContent: "center",
     borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
@@ -517,7 +523,7 @@ const styles = StyleSheet.create({
   container: {
     width: "95%",
     minWidth: 300,
-    alignItems: "center",  
+    alignItems: "center",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -532,12 +538,12 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start", 
-    alignSelf: "center",  
-    width: "100%", 
+    justifyContent: "flex-start",
+    alignSelf: "center",
+    width: "100%",
   },
   categoryBox: {
-    width: "30%",  
+    width: "30%",
     height: 120,
     marginHorizontal: "1.6%",
     alignItems: "center",
