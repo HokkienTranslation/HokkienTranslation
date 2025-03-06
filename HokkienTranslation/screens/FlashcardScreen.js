@@ -802,7 +802,8 @@ const FlashcardScreen = ({ route, navigation }) => {
 
                       {languages[0] === "Hokkien"  ? (
                       <HStack spacing={4} p = {4} direction={direction}>
-                        {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                        {shouldShowVStack && 
+                        <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
                           {/* {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
                           </Text>}
