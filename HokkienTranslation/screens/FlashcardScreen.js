@@ -860,7 +860,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                 <Image source={
                                         flashcards[currentCardIndex]?.downloadURL
                                            ? { uri: flashcards[currentCardIndex].downloadURL }
-                                        : require("../assets/temp-image.png") // Fallback image
+                                        : require("../assets/image-not-available.png") // Fallback image
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
@@ -888,7 +888,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                         </Text>
                         {languages[0] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
-                          prompt={flashcards[currentCardIndex].word}
+                          prompt={flashcards[currentCardIndex].word}  // no if stetement
                           type="flashcard"
                         />
                         )}
