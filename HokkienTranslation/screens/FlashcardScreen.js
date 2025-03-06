@@ -661,6 +661,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                 ...flashcard,
                 word,
                 translation,
+                contextSentence, 
               };
             })
           );
@@ -791,7 +792,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                   {showTranslation ? (
                     <>
                       <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
-                        {flashcards[currentCardIndex].translation}
+                        {languages[1] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination}
                       </Text>
                       {languages[1] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
@@ -883,7 +884,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                     <VStack>
                       <Center>
                         <Text fontSize="4xl" color={colors.onSurface}>
-                          {flashcards[currentCardIndex].word}
+                          {languages[0] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination}
                         </Text>
                         {languages[0] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
