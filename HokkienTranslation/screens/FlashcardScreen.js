@@ -796,7 +796,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                       </Text>
                       {languages[1] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
-                          prompt={flashcards[currentCardIndex].translation}
+                          prompt={languages[1] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination} 
                         />
                       )}
 
