@@ -18,7 +18,7 @@ const SettingsScreen = () => {
     flashcardVisibilityStates, 
     toggleFlashcardVisibility 
   } = useComponentVisibility();
-    const { languages, setLanguages } = useLanguage();
+    const { languages, setLanguages, toggleLanguages } = useLanguage();
   const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
@@ -65,6 +65,17 @@ const SettingsScreen = () => {
         <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
         <Text style={{ fontSize: 16, color: colors.onSurface }}>
           {themeName}
+        </Text>
+      </HStack>
+    </Pressable>
+  );
+
+  const LanguageOption = ({ language, iconName }) => (
+    <Pressable onPress={toggleLanguages} hitSlop={10}>
+      <HStack space={2} alignItems="center">
+        <Ionicons name={iconName} size={24} color={colors.onPrimaryContainer} />
+        <Text style={{ fontSize: 16, color: colors.onSurface }}>
+          {language}
         </Text>
       </HStack>
     </Pressable>
@@ -192,9 +203,23 @@ const SettingsScreen = () => {
                   color: colors.onSurface,
                 }}
               >
-                Language Options
+                Front Card Language
             </Text>
-            <HStack space={2} flexDirection={stackDirection}>
+            <VStack space={2} alignItems="start">
+              <LanguageOption
+                language="Hokkien"
+                iconName={
+                  languages[0] === "Hokkien" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+              <LanguageOption
+                language="English"
+                iconName={
+                  languages[0] === "English" ? "radio-button-on" : "radio-button-off"
+                }
+              />
+            </VStack>
+            {/* <HStack space={2} flexDirection={stackDirection}>
               <Box 
                 flex={1} 
                 bg={colors.primaryContainer}
@@ -249,7 +274,7 @@ const SettingsScreen = () => {
                   <Text style={{ color: "red" }}>{errorMessage}</Text>
                 ) : null}
               </Box>
-            </HStack>
+            </HStack> */}
             {/* flashcard screen visibility */}
             <VStack space={2}>
               <Text
@@ -262,8 +287,8 @@ const SettingsScreen = () => {
                 Display Options
               </Text>
               <FlashcardVisibilityToggle label="Image" stateKey="image" />
-              <FlashcardVisibilityToggle label="Definition" stateKey="definition" />
-              <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" />
+              {/* <FlashcardVisibilityToggle label="Definition" stateKey="definition" /> */}
+              {/* <FlashcardVisibilityToggle label="English Definition" stateKey="englishDefinition" /> */}
               <FlashcardVisibilityToggle label="Hokkien Sentence" stateKey="hokkienSentence" />
               <FlashcardVisibilityToggle label="English Sentence" stateKey="englishSentence" />
               <FlashcardVisibilityToggle label="Pronunciation" stateKey="textToSpeech" />

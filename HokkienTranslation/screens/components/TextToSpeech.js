@@ -6,7 +6,7 @@ import { useTheme } from "../context/ThemeProvider";
 import { fetchNumericTones, fetchAudioUrl } from "../../backend/API/TextToSpeechService";
 import { getStoredHokkienFlashcard, getStoredHokkienTranslation } from "../../backend/database/DatabaseUtils.js";
 
-const TextToSpeech = ({ prompt, type }) => {
+const TextToSpeech = ({ prompt, type = "flashcard", fontSize = "lg" }) => {
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const [error, setError] = useState();
@@ -68,7 +68,7 @@ const TextToSpeech = ({ prompt, type }) => {
 
   return (
     <HStack alignItems="center">
-      <Text fontSize="lg" color={colors.onSurfaceVariant}>
+      <Text fontSize={fontSize} color={colors.onSurfaceVariant}>
         [{numericTones}]
       </Text>
       <IconButton
