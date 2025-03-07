@@ -65,6 +65,11 @@ export default function HomeScreen({ navigation }) {
     setLevelProgress((points - ((level - 1) * 100)) / 100);
   };
 
+  const fetchUserFlashcardProgress = async () => {
+    const user = await getCurrentUser();
+    const userEmail = user;
+  };
+
   useEffect(() => {
     fetchRandomInputs();
   }, [])

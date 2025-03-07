@@ -11,7 +11,10 @@ import {
     initializePointLevelProgress,
     appendToLearnedDecks,
     isFirstTimeQuiz,
-    getUserPoints
+    getUserPoints,
+    countBox1Flashcards,
+    countBox2Flashcards,
+    countBox3Flashcards,
 } from "./backend/database/LeitnerSystemHelpers.js";
 
 // ✅ Initialize Firebase App (Replace with your Firebase config)
@@ -80,9 +83,13 @@ const runTests = async () => {
         console.log(firstTime1); // Expected: true
         console.log(firstTime2); // Expected: false
         */
-        console.log("\n📈 [5] Calculating Weighted Score for Deck...");
-        const score = await getUserPoints("jasmine_test@mail.utoronto.ca")
-        console.log("📊 Level: ", score);
+        console.log("\n📈 [12] Counting flashcards...");
+        const box1 = await countBox1Flashcards('jasmine_test@mail.utoronto.ca');
+        const box2 = await countBox2Flashcards('jasmine_test@mail.utoronto.ca');
+        const box3 = await countBox3Flashcards('jasmine_test@mail.utoronto.ca');
+        console.log("📊 box1: ", box1);
+        console.log("📊 box2: ", box2);
+        console.log("📊 box3: ", box3);
 
         console.log("Test done.")
 

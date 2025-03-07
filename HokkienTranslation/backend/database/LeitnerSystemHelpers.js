@@ -231,6 +231,57 @@ export const getUserPoints = async (userId) => {
     }
 };
 
+/* Function for getting how many flashcards a user has learned (box 3). */
+export const countBox3Flashcards = async (userId) => {
+    try {
+        const q = query(
+            collection(db, "leitnerBoxes"),
+            where("userId", "==", userId),
+            where("boxNum", "==", 3)
+        );
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.size;
+
+    } catch (error) {
+        console.error("Error counting box 3 flashcards:", error);
+        return null;
+    }
+};
+
+/* Function for getting how many flashcards a user has learned (box 3). */
+export const countBox2Flashcards = async (userId) => {
+    try {
+        const q = query(
+            collection(db, "leitnerBoxes"),
+            where("userId", "==", userId),
+            where("boxNum", "==", 2)
+        );
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.size;
+
+    } catch (error) {
+        console.error("Error counting box 2 flashcards:", error);
+        return null;
+    }
+};
+
+/* Function for getting how many flashcards a user has learned (box 3). */
+export const countBox1Flashcards = async (userId) => {
+    try {
+        const q = query(
+            collection(db, "leitnerBoxes"),
+            where("userId", "==", userId),
+            where("boxNum", "==", 1)
+        );
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.size;
+
+    } catch (error) {
+        console.error("Error counting box 1 flashcards:", error);
+        return null;
+    }
+};
+
 /* Function for initializing LeitnerBoxes for users when they just registered. */
 export const initializeLeitnerBoxesForUser = async (userId) => {
     try {
