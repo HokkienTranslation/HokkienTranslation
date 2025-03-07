@@ -198,6 +198,7 @@ const QuizScreen = ({ route }) => {
       } catch (error) {
         console.error("Error fetching flashcards: ", error);
         setErrorMessage("Error fetching flashcards. Please try again later.");
+        setLoading(false);
       }
     };
 
@@ -463,6 +464,33 @@ const QuizScreen = ({ route }) => {
     return (
       <Center flex={1} px="3" background={colors.surface}>
         <VStack space={4} alignItems="center">
+
+          {errorMessage && (
+            <Box
+              backgroundColor="red.100"
+              borderColor="red.500"
+              borderWidth={1}
+              p={3}
+              mb={3}
+              borderRadius="8"
+              w="100%"
+              alignItems="center"
+            >
+              <Text color="red.600" fontWeight="bold">
+                {errorMessage}
+              </Text>
+              <Button
+                mt={2}
+                variant="outline"
+                borderColor="red.500"
+                _text={{ color: "red.500" }}
+                onPress={() => setErrorMessage(null)} // Clear error message
+              >
+                Dismiss
+              </Button>
+            </Box>
+          )}
+
           <Text
             style={{
               fontSize: 24,
@@ -604,6 +632,31 @@ const QuizScreen = ({ route }) => {
   return (
     <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
+        {errorMessage && (
+          <Box
+            backgroundColor="red.100"
+            borderColor="red.500"
+            borderWidth={1}
+            p={3}
+            mb={3}
+            borderRadius="8"
+            w="100%"
+            alignItems="center"
+          >
+            <Text color="red.600" fontWeight="bold">
+              {errorMessage}
+            </Text>
+            <Button
+              mt={2}
+              variant="outline"
+              borderColor="red.500"
+              _text={{ color: "red.500" }}
+              onPress={() => setErrorMessage(null)} // Clear error message
+            >
+              Dismiss
+            </Button>
+          </Box>
+        )}
         <Text fontSize="lg" color={colors.onSurface}>
           Question {currentCardIndex + 1} of {flashcards.length}
         </Text>
