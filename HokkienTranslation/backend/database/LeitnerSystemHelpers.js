@@ -365,3 +365,46 @@ export const isFirstTimeQuiz = async (userId, deckId) => {
         return null;
     }
 };
+
+export const getFlashcardsByBox = async (userId, boxNum) => {
+    try {
+      // Step 1: Query leitnerBoxes to get flashcardIds
+      const q = query(
+        collection(db, "leitnerBoxes"),
+        where("userId", "==", userId),
+        where("boxNum", "==", boxNum)
+      );
+      const querySnapshot = await getDocs(q);
+  
+      if (querySnapshot.empty) {
+        console.log("No flashcards found in this Leitner Box.");
+        return [];
+      }
+  
+      // Extract flashcardIds from leitnerBoxes
+      const flashcardIds = querySnapshot.docs.map(doc => doc.data().flashcardId);
+  
+      // Step 2: Fetch the corresponding flashcards from flashcard collection
+      const flashcardPromises = flashcardIds.map(async (flashcardId) => {
+        const flashcardRef = doc(db, "flashcard", flashcardId);
+        const flashcardSnap = await getDoc(flashcardRef);
+        
+        if (flashcardSnap.exists()) {
+          return { id: flashcardId, ...flashcardSnap.data() };
+        } else {
+          console.warn(`Flashcard ${flashcardId} not found.`);
+          return null;
+        }
+      });
+  
+      // Wait for all flashcard fetches to complete
+      const flashcards = await Promise.all(flashcardPromises);
+  
+      // Filter out any null results (non-existent flashcards)
+      return flashcards.filter(flashcard => flashcard !== null);
+      
+    } catch (error) {
+      console.error("Error fetching flashcards:", error);
+      return [];
+    }
+  };

@@ -14,6 +14,7 @@ import FlashcardCategory from "./screens/FlashcardCategory";
 import LoginScreen from "./screens/LoginScreen";
 import RegisterScreen from "./screens/RegisterScreen";
 import ForgetPasswordScreen from "./screens/ForgetPasswordScreen";
+import FlashcardBoxScreen from "./screens/FlashcardBoxScreen";
 import ThemeProvider, { useTheme } from "./screens/context/ThemeProvider";
 import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
@@ -47,6 +48,11 @@ const HomeStack = () => {
       <Stack.Screen name="Home" component={HomeScreen} />
       <Stack.Screen name="Result" component={ResultScreen} />
       <Stack.Screen name="Settings" component={SettingsScreen} />
+      <Stack.Screen 
+        name="FlashcardBox" 
+        component={FlashcardBoxScreen} 
+        options={{ title: "Your Flashcard Learning Progress" }} 
+      />
     </Stack.Navigator>
   );
 };

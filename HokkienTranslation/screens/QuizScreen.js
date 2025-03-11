@@ -284,7 +284,9 @@ const QuizScreen = ({ route }) => {
           where("flashcardListId", "==", flashcardListName)
         );
 
-        await updateUserPoints(userEmail, finalPoints);
+        if (finalPoints) {
+          await updateUserPoints(userEmail, finalPoints);
+        }
         if (beFirstTimeQuiz) {
           await updateUserPoints(userEmail, 30);
           await appendToLearnedDecks(userEmail, flashcardListName);
@@ -545,7 +547,7 @@ const QuizScreen = ({ route }) => {
               <Text fontSize="lg" color={colors.onSurface} bold textAlign="center">
                 You earned {totalPoints} points in this quiz!
               </Text>
-              {isFirstTimeQuiz && (
+              {beFirstTimeQuiz && (
               <Text fontSize="md" color={colors.onSurface} textAlign="center" mt={2}>
                 This is the first time you completed this quiz so you earned 30 points extra!
               </Text>
