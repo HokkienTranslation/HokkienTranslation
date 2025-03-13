@@ -670,6 +670,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                 ...flashcard,
                 word,
                 translation,
+                contextSentence, 
               };
             })
           );
@@ -800,17 +801,18 @@ const FlashcardScreen = ({ route, navigation }) => {
                   {showTranslation ? (
                     <>
                       <Text fontSize="4xl" fontWeight="bold" color={colors.onSurface}>
-                        {flashcards[currentCardIndex].translation}
+                        {languages[1] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination}
                       </Text>
                       {languages[1] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
-                          prompt={flashcards[currentCardIndex].translation}
+                          prompt={languages[1] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination} 
                         />
                       )}
 
                       {languages[0] === "Hokkien"  ? (
                       <HStack spacing={4} p = {4} direction={direction}>
-                        {shouldShowVStack && <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
+                        {shouldShowVStack && 
+                        <VStack alignItems="flex-start" spacing={4} mr={4} width={{ base: '100%', md: '50%' }}>
                           {/* {flashcardVisibilityStates.englishDefinition && <Text fontSize="md" fontWeight="bold" color={colors.onSurface}>
                             Definition
                           </Text>}
@@ -868,7 +870,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                 <Image source={
                                         flashcards[currentCardIndex]?.downloadURL
                                            ? { uri: flashcards[currentCardIndex].downloadURL }
-                                        : require("../assets/temp-image.png") // Fallback image
+                                        : require("../assets/image-not-available.png") // Fallback image
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
@@ -892,11 +894,11 @@ const FlashcardScreen = ({ route, navigation }) => {
                     <VStack>
                       <Center>
                         <Text fontSize="4xl" color={colors.onSurface}>
-                          {flashcards[currentCardIndex].word}
+                          {languages[0] === "Hokkien" ? flashcards[currentCardIndex]?.origin : flashcards[currentCardIndex]?.destination}
                         </Text>
                         {languages[0] === "Hokkien" && flashcardVisibilityStates.textToSpeech &&(
                         <TextToSpeech
-                          prompt={flashcards[currentCardIndex].word}
+                          prompt={flashcards[currentCardIndex].word}  // no if stetement
                           type="flashcard"
                         />
                         )}
