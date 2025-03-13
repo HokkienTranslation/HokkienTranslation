@@ -164,6 +164,10 @@ const FlashcardScreen = ({ route, navigation }) => {
     fetchDeckID();
   }, [flashcardListName]);
 
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
         const deckCollection = collection(db, "flashcardList");
@@ -181,7 +185,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             );
             const flashcardSnapshot = await getDocs(flashcardQuery);
 
-            const flashcardsWithSentences = await Promise.all(
+            let flashcardsWithSentences = await Promise.all(
                 flashcardSnapshot.docs.map(async (flashcardDoc) => {
                     const flashcardData = flashcardDoc.data();
                     const contextSentenceId = flashcardData.contextSentence;
@@ -210,7 +214,8 @@ const FlashcardScreen = ({ route, navigation }) => {
                     };
                 })
             );
-
+            
+            flashcardsWithSentences = shuffleArray(flashcardsWithSentences);
             setFlashcards(flashcardsWithSentences);
             console.log("Updated flashcards:", flashcardsWithSentences);
         } else {
@@ -310,9 +315,9 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("Current categoryId is ", categoryId);
       // console.log("Current deckID is ", deckID);
 
-      var word = enteredWord;
-      console.log(enteredWord);
-      var contextSentence = await getContextSentence(word={word});
+      // var word = enteredTranslation;
+      // console.log(enteredTranslation);
+      var contextSentence = await getContextSentence(enteredTranslation);
       var image;
 
       const fetchImage = async (prompt) => {
@@ -368,15 +373,15 @@ const FlashcardScreen = ({ route, navigation }) => {
       // Call the function with necessary parameters
       // works just noting a bug, enteredword reads as object object as opposed to the actual word, idk why tha is
       downloadURL = await processImage(contextSentence, currentUser, enteredWord);
-      if (downloadURL === null) {
+      if (downloadURL === null || downloadURL === undefined) {
         console.log("Error, download URL is null");
+        downloadURL = null;
       }
       console.log(downloadURL)
 
       const newFlashcardData = {
         origin: enteredWord,
-        contextSentence: contextSentence,
-        iamgeURL: downloadURL,
+        contextSentence: contextSentence, // we changed the schema, so it won't display
         destination: enteredTranslation,
         otherOptions: [option1, option2, option3],
         type: type,
@@ -385,6 +390,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         createdBy: currentUser,
         romanization: romanization,
         audioUrl: audioUrl,
+        ...(downloadURL !== null && { downloadURL }) // do not add a downloadURL if it is null
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
@@ -403,16 +409,16 @@ const FlashcardScreen = ({ route, navigation }) => {
         "New flashcard ID added to cardList in flashcardList document"
       );
 
-      // WORD IS ALREADY INIT, leaving this here though
-      // let word = newFlashcardData.destination;
-      // let translation = newFlashcardData.origin;
+      // this is needed to update the cards properly!
+      let word = newFlashcardData.destination;
+      let translation = newFlashcardData.origin;
 
-      // if (languages[0] === "Hokkien") {
-      //   word = newFlashcardData.origin;
-      // }
-      // if (languages[1] === "English") {
-      //   translation = newFlashcardData.destination;
-      // }
+      if (languages[0] === "Hokkien") {
+        word = newFlashcardData.origin;
+      }
+      if (languages[1] === "English") {
+        translation = newFlashcardData.destination;
+      }
 
       if (languages[0] !== "English" && languages[0] !== "Hokkien") {
         word = await translateText(newFlashcardData.destination, languages[0]);
@@ -435,6 +441,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           translation: translation,
           romanization: romanization,
           audioUrl: audioUrl,
+          downloadURL: downloadURL,
         },
       ];
 
@@ -597,8 +604,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   };
   
   const handleAutofill = async () => {
-    const hokkien = await fetchTranslation(enteredTranslation);
-    setEnteredWord(hokkien);
     const option1 = await generateOptions(enteredTranslation);
     setOption1(option1);
     const currentWords = `${enteredTranslation}, ${option1}`;
@@ -608,6 +613,15 @@ const FlashcardScreen = ({ route, navigation }) => {
     const option3 = await generateOptions(currentWords2);
     setOption3(option3);
     setType('word');
+
+    let hokkien;
+    try {
+      hokkien = await fetchTranslation(enteredTranslation);
+    } catch (error) {
+      console.error("Error fetching translation:", error);
+      hokkien = "Translation error. Try again later."; 
+    }
+    setEnteredWord(hokkien);
   };
 
   useEffect(() => {
@@ -826,7 +840,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                 <Image source={
                                         flashcards[currentCardIndex]?.downloadURL
                                            ? { uri: flashcards[currentCardIndex].downloadURL }
-                                        : require("../assets/temp-image.png") // Fallback image
+                                        : require("../assets/image-not-available.png") // Fallback image
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
