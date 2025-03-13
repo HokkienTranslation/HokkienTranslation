@@ -164,6 +164,10 @@ const FlashcardScreen = ({ route, navigation }) => {
     fetchDeckID();
   }, [flashcardListName]);
 
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
         const deckCollection = collection(db, "flashcardList");
@@ -181,7 +185,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             );
             const flashcardSnapshot = await getDocs(flashcardQuery);
 
-            const flashcardsWithSentences = await Promise.all(
+            let flashcardsWithSentences = await Promise.all(
                 flashcardSnapshot.docs.map(async (flashcardDoc) => {
                     const flashcardData = flashcardDoc.data();
                     const contextSentenceId = flashcardData.contextSentence;
@@ -210,7 +214,8 @@ const FlashcardScreen = ({ route, navigation }) => {
                     };
                 })
             );
-
+            
+            flashcardsWithSentences = shuffleArray(flashcardsWithSentences);
             setFlashcards(flashcardsWithSentences);
             console.log("Updated flashcards:", flashcardsWithSentences);
         } else {
@@ -835,7 +840,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                                 <Image source={
                                         flashcards[currentCardIndex]?.downloadURL
                                            ? { uri: flashcards[currentCardIndex].downloadURL }
-                                        : require("../assets/temp-image.png") // Fallback image
+                                        : require("../assets/image-not-available.png") // Fallback image
                                       }
                                       alt="Flashcard image"
                                        // for size per image use: 
