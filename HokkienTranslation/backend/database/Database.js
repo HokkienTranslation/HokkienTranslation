@@ -112,6 +112,7 @@ export async function uploadAudio(filename) {
   }
 }
 
+// same as UploadAudio.js
 // Upload audio to google storage from blob
 export async function uploadAudioFromBlob(numericTones, audioBlob) {
   try {

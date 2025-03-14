@@ -218,9 +218,10 @@ const FlashcardCategory = () => {
     const deckName = category.name;
     console.log("Deckname", deckName)
     const categoryIdToPass = categoryId || category.categoryId;
+    const createdBy = category.createdBy;
     console.log(categoryId);
     console.log("Navigating with categoryId: ", categoryIdToPass); // TODO: Remove
-    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass });
+    navigation.navigate("Flashcard", { cardList, deckName, curCategory, currentUser, categoryId: categoryIdToPass, createdBy });
   };
 
   const CategoryBox = ({ category, navigation }) => {
@@ -497,11 +498,12 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   addBox: {
-    minWidth: "32%",
-    width: "32%",
+    minWidth: "30%",
+    width: "30%",
     borderStyle: "dashed",
-
+    marginHorizontal: "1.6%",
     alignItems: "center",
+    justifyContent: "center",
     borderColor: "#FFFFFF",
     borderWidth: 1,
     borderRadius: 10,
