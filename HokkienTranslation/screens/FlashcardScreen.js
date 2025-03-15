@@ -74,6 +74,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [translatedText, setTranslatedText] = useState("");
   //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
   const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const translateText = async (text, language) => {
     try {
@@ -83,7 +84,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error with translation:", error);
+      setErrorMessage("Error with translation. Please try again later.");
       return "Error with translation.";
     }
   };
@@ -115,23 +117,35 @@ const FlashcardScreen = ({ route, navigation }) => {
   ).current;
 
   const getDeckIDByName = async (deckName) => {
-    const deckCollection = collection(db, "flashcardList");
-    const q = query(deckCollection, where("name", "==", deckName));
-    const querySnapshot = await getDocs(q);
+    try {
+      const deckCollection = collection(db, "flashcardList");
+      const q = query(deckCollection, where("name", "==", deckName));
+      const querySnapshot = await getDocs(q);
 
-    const deckDoc = querySnapshot.docs[0];
-    const deckID = deckDoc.id;
-    // console.log("Deck ID:", deckID);
-    // console.log("Current category in FlashcardScreen is:", categoryId);
-    // console.log("Current deck is:", flashcardListName);
-    return deckID;
+      const deckDoc = querySnapshot.docs[0];
+      const deckID = deckDoc.id;
+      // console.log("Deck ID:", deckID);
+      // console.log("Current category in FlashcardScreen is:", categoryId);
+      // console.log("Current deck is:", flashcardListName);
+      return deckID;
+    } catch (error) {
+      console.error("Error getting deck ID:", error);
+      setErrorMessage("Error getting deck ID. Please try again later.");
+      return "Error getting deck ID.";
+    }
   };
 
   useEffect(() => {
     const fetchDeckID = async () => {
-      const id = await getDeckIDByName(flashcardListName);
-      if (id) {
-        setDeckID(id);
+      try {
+        const id = await getDeckIDByName(flashcardListName);
+        if (id) {
+          setDeckID(id);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setErrorMessage("Error fetching deck ID. Please try again later.");
+        return "Error fetching deck ID.";
       }
     };
 
@@ -166,7 +180,8 @@ const FlashcardScreen = ({ route, navigation }) => {
         console.log("Deck not found.");
       }
     } catch (error) {
-      console.error("Error fetching flashcards:", error);
+      console.error("Error fetching flashcards with deck name: ", deckName, "; Error message: ", error.message);
+      setErrorMessage("Error fetching flashcards. Please try again later");
     }
   };
 
@@ -192,10 +207,10 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (tooltipOpen) {
-      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      const timer = setTimeout(() => setTooltipOpen(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [tooltipOpen]); 
+  }, [tooltipOpen]);
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -227,7 +242,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       toValue: { x: 0, y: 0 },
       duration: 500,
       useNativeDriver: true,
-    }).start(() => {});
+    }).start(() => { });
   };
 
   const handleFlip = () => {
@@ -336,31 +351,34 @@ const FlashcardScreen = ({ route, navigation }) => {
       handleSoftRefresh();
     } catch (error) {
       console.error("Error creating flashcard:", error.message);
-      alert(`Failed to create flashcard: ${error.message}`);
+      setErrorMessage("Error creating flashcard. Please try again later.");
+    } finally {
+      setShowNewFlashcard(false);
     }
   };
 
   const handleUpdate = async () => {
-    const flashcardID = flashcards[currentCardIndex].id;
+    try {
+      const flashcardID = flashcards[currentCardIndex].id;
 
-    if (!enteredWord || !enteredTranslation || !type) {
-      alert("Please fill out all required fields");
-      return;
-    }
+      if (!enteredWord || !enteredTranslation || !type) {
+        alert("Please fill out all required fields");
+        return;
+      }
 
-    const flashcardRef = doc(db, "flashcard", flashcardID);
-    await updateDoc(flashcardRef, {
-      origin: enteredWord,
-      destination: enteredTranslation,
-      otherOptions: [option1, option2, option3],
-      type: type,
-      updatedAt: serverTimestamp(),
-    });
+      const flashcardRef = doc(db, "flashcard", flashcardID);
+      await updateDoc(flashcardRef, {
+        origin: enteredWord,
+        destination: enteredTranslation,
+        otherOptions: [option1, option2, option3],
+        type: type,
+        updatedAt: serverTimestamp(),
+      });
 
-    setFlashcards((prevFlashcards) =>
-      prevFlashcards.map((flashcard, index) =>
-        index === currentCardIndex
-          ? {
+      setFlashcards((prevFlashcards) =>
+        prevFlashcards.map((flashcard, index) =>
+          index === currentCardIndex
+            ? {
               ...flashcard,
               origin: enteredWord,
               destination: enteredTranslation,
@@ -369,10 +387,15 @@ const FlashcardScreen = ({ route, navigation }) => {
               word: enteredTranslation,
               translation: enteredWord,
             }
-          : flashcard
-      )
-    );
-    setShowUpdates(false);
+            : flashcard
+        )
+      );
+    } catch (error) {
+      console.error("Error updating flashcard:", error.message);
+      setErrorMessage("Error updating flashcard. Please try again later.");
+    } finally {
+      setShowUpdates(false);
+    }
   };
 
   const handlePermaDelete = async () => {
@@ -460,7 +483,7 @@ const FlashcardScreen = ({ route, navigation }) => {
       handleSoftRefresh();
     } catch (error) {
       console.error("Error deleting flashcard:", error.message);
-      alert(`Failed to delete flashcard: ${error.message}`);
+      setErrorMessage("Failed to delete flashcard. Please try again later.");
     } finally {
       setShowConfirmDelete(false);
       setDisableDeleteButton(false);
@@ -474,23 +497,29 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
-      console.error("Error:", error);
-      return "Error with generating options.";
+      console.error("Error generating options:", error);
+      setErrorMessage("Error generating options. Please try again later.");
+      return "Error generating options.";
     }
   };
-  
+
   const handleAutofill = async () => {
-    const hokkien = await fetchTranslation(enteredTranslation);
-    setEnteredWord(hokkien);
-    const option1 = await generateOptions(enteredTranslation);
-    setOption1(option1);
-    const currentWords = `${enteredTranslation}, ${option1}`;
-    const option2 = await generateOptions(currentWords);
-    setOption2(option2);
-    const currentWords2 = `${currentWords}, ${option2}`;
-    const option3 = await generateOptions(currentWords2);
-    setOption3(option3);
-    setType('word');
+    try {
+      const hokkien = await fetchTranslation(enteredTranslation);
+      setEnteredWord(hokkien);
+      const option1 = await generateOptions(enteredTranslation);
+      setOption1(option1);
+      const currentWords = `${enteredTranslation}, ${option1}`;
+      const option2 = await generateOptions(currentWords);
+      setOption2(option2);
+      const currentWords2 = `${currentWords}, ${option2}`;
+      const option3 = await generateOptions(currentWords2);
+      setOption3(option3);
+      setType('word');
+    } catch (error) {
+      console.error("Error with autofill:", error.message);
+      setErrorMessage("Error with autofill. Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -554,6 +583,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         }
       } catch (error) {
         console.error("Error fetching or generating flashcards:", error);
+        setErrorMessage("Error with fetching or generating flashcards. Please try again later.");
       }
     };
 
@@ -582,34 +612,62 @@ const FlashcardScreen = ({ route, navigation }) => {
           colors={colors}
           flashcardListName={flashcardListName}
         />
+
+        {errorMessage && (
+          <Box
+            backgroundColor="red.100"
+            borderColor="red.500"
+            borderWidth={1}
+            p={3}
+            mb={3}
+            borderRadius="8"
+            w="100%"
+            alignItems="center"
+          >
+            <Text color="red.600" fontWeight="bold">
+              {errorMessage}
+            </Text>
+            <Button
+              mt={2}
+              variant="outline"
+              borderColor="red.500"
+              _text={{ color: "red.500" }}
+              onPress={() => setErrorMessage(null)} // Clear error message
+            >
+              Dismiss
+            </Button>
+          </Box>
+        )}
+
+
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
-          <Tooltip 
-            label="You can't modify starter decks" 
-            placement="top" 
-            isOpen={tooltipOpen}
-            bg={colors.onPrimaryContainer}
-          >
-            <HStack space={4}>
-              <CrudButtons
-                title="Create"
-                onPress={() => setShowNewFlashcard(true)}
-                iconName="add"
-                isDisabled={createdBy === "starter_words"}
-              />
-              <CrudButtons
-                title="Update"
-                onPress={() => setShowUpdates(true)}
-                iconName="pencil"
-                isDisabled={createdBy === "starter_words"}
-              />
-              <CrudButtons
-                title="Delete"
-                onPress={() => setShowConfirmDelete(true)}
-                iconName="trash"
-                isDisabled={createdBy === "starter_words"}
-              />
-            </HStack>
+            <Tooltip
+              label="You can't modify starter decks"
+              placement="top"
+              isOpen={tooltipOpen}
+              bg={colors.onPrimaryContainer}
+            >
+              <HStack space={4}>
+                <CrudButtons
+                  title="Create"
+                  onPress={() => setShowNewFlashcard(true)}
+                  iconName="add"
+                  isDisabled={createdBy === "starter_words"}
+                />
+                <CrudButtons
+                  title="Update"
+                  onPress={() => setShowUpdates(true)}
+                  iconName="pencil"
+                  isDisabled={createdBy === "starter_words"}
+                />
+                <CrudButtons
+                  title="Delete"
+                  onPress={() => setShowConfirmDelete(true)}
+                  iconName="trash"
+                  isDisabled={createdBy === "starter_words"}
+                />
+              </HStack>
             </Tooltip>
 
             <Box
@@ -629,9 +687,9 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Text>
             </Box>
 
-            
+
             <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
-            
+
               <Animated.View
                 {...panResponder.panHandlers}
                 style={[
@@ -648,40 +706,40 @@ const FlashcardScreen = ({ route, navigation }) => {
                   },
                 ]}
               >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-              {showTranslation ? (
-                <>
-                
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.translation}
-                  </Text>
-                  {languages[1] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
+                <Box
+                  width="300px"
+                  height="200px"
+                  bg={colors.primaryContainer}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="10px"
+                  shadow={2}
+                >
+                  {showTranslation ? (
+                    <>
+
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.translation}
+                      </Text>
+                      {languages[1] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.word}
+                      </Text>
+                      {languages[0] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'} />
+                      )}
+                    </>
                   )}
-                </>
-              ) : (
-                <>
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.word}
-                  </Text>
-                  {languages[0] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'}/>
-                  )}
-                </>
-              )}
-              </Box>
+                </Box>
               </Animated.View>
             </TouchableOpacity>
 
-            
+
 
 
             <HStack space={4} alignItems="center">
