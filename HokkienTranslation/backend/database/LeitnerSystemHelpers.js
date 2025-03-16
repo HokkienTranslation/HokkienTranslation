@@ -149,6 +149,38 @@ export const weightedScoreByDeck = async (userId, flashcardListId) => {
     }
 };
 
+/* Function for computing the weighted score the user can receive after a quiz if they answer all questions correctly. 
+   Called when displaying decks (aka. flashcard lists). */
+export const checkIsNewDeck = async (userId, deckId) => {
+    try {
+        // Query the pointsLevelProgress collection where userId matches
+        const progressQuery = query(
+            collection(db, "pointsLevelProgress"),
+            where("userId", "==", userId)
+        );
+
+        const querySnapshot = await getDocs(progressQuery);
+
+        if (querySnapshot.empty) {
+            console.log(`User progress not found for user: ${userId}`);
+            return true; // No progress record exists, assume new deck
+        }
+
+        const userProgressData = querySnapshot.docs[0].data();
+        const learnedDecks = userProgressData.learnedDecks || [];
+
+        // Check if deckId exists in learnedDecks array
+        const isNewDeck = !learnedDecks.includes(deckId);
+
+        console.log(`Deck ${deckId} is new: ${isNewDeck}`);
+        return isNewDeck;
+    } catch (error) {
+        console.error("Error checking if deck is new:", error);
+        return false; // Assume false in case of an error
+    }
+};
+
+
 /* Function for adding points to user after a quiz. 
    Called when a user finishes a quiz. */
 export const updateUserPoints = async (userId, pointsToAdd) => {
@@ -368,43 +400,43 @@ export const isFirstTimeQuiz = async (userId, deckId) => {
 
 export const getFlashcardsByBox = async (userId, boxNum) => {
     try {
-      // Step 1: Query leitnerBoxes to get flashcardIds
-      const q = query(
-        collection(db, "leitnerBoxes"),
-        where("userId", "==", userId),
-        where("boxNum", "==", boxNum)
-      );
-      const querySnapshot = await getDocs(q);
-  
-      if (querySnapshot.empty) {
-        console.log("No flashcards found in this Leitner Box.");
-        return [];
-      }
-  
-      // Extract flashcardIds from leitnerBoxes
-      const flashcardIds = querySnapshot.docs.map(doc => doc.data().flashcardId);
-  
-      // Step 2: Fetch the corresponding flashcards from flashcard collection
-      const flashcardPromises = flashcardIds.map(async (flashcardId) => {
-        const flashcardRef = doc(db, "flashcard", flashcardId);
-        const flashcardSnap = await getDoc(flashcardRef);
-        
-        if (flashcardSnap.exists()) {
-          return { id: flashcardId, ...flashcardSnap.data() };
-        } else {
-          console.warn(`Flashcard ${flashcardId} not found.`);
-          return null;
+        // Step 1: Query leitnerBoxes to get flashcardIds
+        const q = query(
+            collection(db, "leitnerBoxes"),
+            where("userId", "==", userId),
+            where("boxNum", "==", boxNum)
+        );
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No flashcards found in this Leitner Box.");
+            return [];
         }
-      });
-  
-      // Wait for all flashcard fetches to complete
-      const flashcards = await Promise.all(flashcardPromises);
-  
-      // Filter out any null results (non-existent flashcards)
-      return flashcards.filter(flashcard => flashcard !== null);
-      
+
+        // Extract flashcardIds from leitnerBoxes
+        const flashcardIds = querySnapshot.docs.map(doc => doc.data().flashcardId);
+
+        // Step 2: Fetch the corresponding flashcards from flashcard collection
+        const flashcardPromises = flashcardIds.map(async (flashcardId) => {
+            const flashcardRef = doc(db, "flashcard", flashcardId);
+            const flashcardSnap = await getDoc(flashcardRef);
+
+            if (flashcardSnap.exists()) {
+                return { id: flashcardId, ...flashcardSnap.data() };
+            } else {
+                console.warn(`Flashcard ${flashcardId} not found.`);
+                return null;
+            }
+        });
+
+        // Wait for all flashcard fetches to complete
+        const flashcards = await Promise.all(flashcardPromises);
+
+        // Filter out any null results (non-existent flashcards)
+        return flashcards.filter(flashcard => flashcard !== null);
+
     } catch (error) {
-      console.error("Error fetching flashcards:", error);
-      return [];
+        console.error("Error fetching flashcards:", error);
+        return [];
     }
-  };
+};

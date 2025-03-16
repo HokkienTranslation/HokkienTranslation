@@ -40,7 +40,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
-import { weightedScoreByDeck } from "../backend/database/LeitnerSystemHelpers.js";
+import { weightedScoreByDeck, checkIsNewDeck } from "../backend/database/LeitnerSystemHelpers.js";
 // list of categories use api
 
 var index = 0;
@@ -59,6 +59,7 @@ const FlashcardCategory = () => {
   const colors = themes[theme];
 
   const [display, setDisplay] = useState([]);
+  const [displayDecks, setDisplayDecks] = useState(false);
   const isFocused = useIsFocused();
 
   // check for auth when getting categories
@@ -78,7 +79,7 @@ const FlashcardCategory = () => {
   }
 
   // check for auth when getting flashcardList
-  async function getFlashcardList(db) {
+    async function getFlashcardList(db) {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
 
@@ -97,9 +98,11 @@ const FlashcardCategory = () => {
 
     return flashcardList;
   }
+
   const handleBackPress = () => {
     index = 0;
     setDisplay(categories);
+    setDisplayDecks(false);
     curCategory = "";
   };
 
@@ -184,7 +187,8 @@ const FlashcardCategory = () => {
 
         if (temp.createdBy === currentUser || temp.shared) {
           let unfamiliarityScore = await weightedScoreByDeck(currentUser, deckID);
-          decks.push({ id: ref.id, ...temp, unfamiliarityScore });
+          let isNewDeck = await checkIsNewDeck(currentUser, deckID);
+          decks.push({ id: ref.id, ...temp, unfamiliarityScore, isNewDeck });
         }
         // 🔥 Sort decks by unfamiliarity (higher score first)
         decks.sort((a, b) => b.unfamiliarityScore - a.unfamiliarityScore);
@@ -192,6 +196,7 @@ const FlashcardCategory = () => {
         index = 1;
       }
       setDisplay(decks);
+      setDisplayDecks(true);
       console.log("Decks", decks)
       return;
     }
@@ -233,6 +238,9 @@ const FlashcardCategory = () => {
     const [isHovered, setIsHovered] = useState(false);
     const { themes, theme } = useTheme();
     const colors = themes[theme];
+
+    console.log("Category:", category);
+    console.log("Expected Points:", category.expectedPoints);
 
     const handleUpdateDeck = async (category) => {
       var deckName = category.name;
@@ -319,6 +327,37 @@ const FlashcardCategory = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Expected Points Display */}
+
+        {displayDecks &&
+          <Text
+            style={{
+              position: "absolute",
+              bottom: 5,
+              right: 10,
+              fontSize: 14,
+              fontWeight: "bold",
+              color: colors.onSurfaceVariant,
+            }}
+          >
+            Expected {category.unfamiliarityScore} pts
+          </Text>
+        }
+        {displayDecks && category.isNewDeck &&
+          <Text
+            style={{
+              position: "absolute",
+              top: 5,
+              left: 10,
+              fontSize: 14,
+              fontWeight: "bold",
+              color: "red",
+            }}
+          >
+            New!
+          </Text>
+        }
+
         <VStack space={1} alignItems="center">
           <Ionicons name={category.icon} size={30} color={colors.onSurface} />
           <Text style={styles.categoryText} color={colors.onSurface}>{category.name}</Text>
