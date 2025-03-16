@@ -12,7 +12,6 @@ import {
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing, TouchableOpacity } from "react-native";
-import { Animated, Easing, TouchableOpacity } from "react-native";
 import {
   collection,
   getDocs,
@@ -60,6 +59,7 @@ const QuizScreen = ({ route }) => {
   const [optionType, setOptionType] = useState("English");
   const [beFirstTimeQuiz, setBeFirstTimeQuiz] = useState(false);
   const [totalPoints, setTotalPoints] = useState(0);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   const flashcardListName = route.params.flashcardListName;
   console.log("QuizScreen: flashcardListName", flashcardListName);
@@ -128,7 +128,6 @@ const QuizScreen = ({ route }) => {
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
 
-
             let translation = data.origin; // question (Hokkien)
             let word = data.destination; // answer (English)
 
@@ -184,7 +183,6 @@ const QuizScreen = ({ route }) => {
                   return display;
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
-                  return await translateText(option, lang1);
                   return await translateText(option, lang1);
                 }
                 return option;
@@ -366,18 +364,7 @@ const QuizScreen = ({ route }) => {
                 },
               ],
             };
-              [userEmail]: [
-                {
-                  time: timestamp,
-                  totalScore:
-                    (score + (isCorrect ? 1 : 0)) / flashcards.length,
-                  flashcardScores: {
-                    ...flashcardScores,
-                    [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
-                  },
-                },
-              ],
-            };
+              
             await setDoc(quizDocRef, {
               scores: newScoreDoc
             });
@@ -420,8 +407,6 @@ const QuizScreen = ({ route }) => {
     return (
       <VStack space={4} alignItems="center">
         {Object.entries(flashcardScores).map(([flashcardId, score]) => (
-          <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${score ? "Correct" : "Incorrect"
-            }`}</Text>
           <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${score ? "Correct" : "Incorrect"
             }`}</Text>
         ))}
@@ -487,9 +472,6 @@ const QuizScreen = ({ route }) => {
       return index === choiceIndex
         ? { bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder }
         : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
-      return index === choiceIndex
-        ? { bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder }
-        : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
     } else if (choice === correctAnswer) {
       return index === selectedAnswer
         ? { bg: "rgba(39, 201, 36, 0.6)", borderColor: "#27c924" }
@@ -545,9 +527,6 @@ const QuizScreen = ({ route }) => {
               fontSize: 24,
               fontWeight: "bold",
               color: colors.onSurface,
-              fontSize: 24,
-              fontWeight: "bold",
-              color: colors.onSurface,
             }}>Answer with:
           </Text>
           <Select
@@ -556,15 +535,11 @@ const QuizScreen = ({ route }) => {
             onValueChange={handleAnswerWithChange}
             accessibilityLabel="Choose Answer Language"
             placeholder="Choose Answer Language"
-            accessibilityLabel="Choose Answer Language"
-            placeholder="Choose Answer Language"
             _selectedItem={{
-              _text: { fontSize: 24 },
               _text: { fontSize: 24 },
             }}
           >
             <Select.Item label={lang1} value={lang1} />
-            <Select.Item label={lang2} value={lang2} />
           </Select>
 
           {answerWith === "Hokkien" && (
@@ -573,7 +548,6 @@ const QuizScreen = ({ route }) => {
               minWidth={200}
               onValueChange={(value) => setHokkienOption(value)}
               accessibilityLabel="Choose Hokkien Answer Type"
-              placeholder="Choose Hokkien Answer Type"
               placeholder="Choose Hokkien Answer Type"
               _selectedItem={{
                 _text: { fontSize: 24 },
@@ -585,12 +559,9 @@ const QuizScreen = ({ route }) => {
           )}
           <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
         </VStack>
-          <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
-        </VStack>
       </Center>
     );
   }
-
 
   if (!flashcards.length) {
     return (
