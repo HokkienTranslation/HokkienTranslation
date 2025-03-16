@@ -12,6 +12,7 @@ import {
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { Animated, Easing, TouchableOpacity } from "react-native";
+import { Animated, Easing, TouchableOpacity } from "react-native";
 import {
   collection,
   getDocs,
@@ -72,6 +73,7 @@ const QuizScreen = ({ route }) => {
       return response;
     } catch (error) {
       console.error("Error:", error);
+      setErrorMessage("Error with translation. Please try again later.");
       return "Error with translation.";
     }
   };
@@ -125,6 +127,7 @@ const QuizScreen = ({ route }) => {
 
           if (flashcardDoc.exists()) {
             const data = flashcardDoc.data();
+
 
             let translation = data.origin; // question (Hokkien)
             let word = data.destination; // answer (English)
@@ -182,6 +185,7 @@ const QuizScreen = ({ route }) => {
                 }
                 if (lang1 !== "English" && lang1 !== "Hokkien") {
                   return await translateText(option, lang1);
+                  return await translateText(option, lang1);
                 }
                 return option;
               })
@@ -204,6 +208,8 @@ const QuizScreen = ({ route }) => {
         setLoading(false);
       } catch (error) {
         console.error("Error fetching flashcards: ", error);
+        setErrorMessage("Error fetching flashcards. Please try again later.");
+        setLoading(false);
       }
     };
 
@@ -233,6 +239,7 @@ const QuizScreen = ({ route }) => {
         }
       } catch (error) {
         console.error("Error fetching audio URL:", error);
+        setErrorMessage("Error fetching audio URL. Please try again later.");
       }
     }
   };
@@ -359,9 +366,22 @@ const QuizScreen = ({ route }) => {
                 },
               ],
             };
+              [userEmail]: [
+                {
+                  time: timestamp,
+                  totalScore:
+                    (score + (isCorrect ? 1 : 0)) / flashcards.length,
+                  flashcardScores: {
+                    ...flashcardScores,
+                    [flashcards[currentCardIndex].id]: isCorrect ? 1 : 0,
+                  },
+                },
+              ],
+            };
             await setDoc(quizDocRef, {
               scores: newScoreDoc
             });
+            setUserScores(newScoreDoc[userEmail]);
           }
         } else {
           console.error(
@@ -371,6 +391,7 @@ const QuizScreen = ({ route }) => {
         showScoreHistory(userEmail, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
+        setErrorMessage("Error updating quiz scores. Please try again later.");
       }
     } else {
       setTimeout(() => {
@@ -391,6 +412,7 @@ const QuizScreen = ({ route }) => {
       setShowHistory(true);
     } catch (error) {
       console.error("Error fetching score history: ", error);
+      setErrorMessage("Error fetching score history. Please try again later.");
     }
   };
 
@@ -398,6 +420,8 @@ const QuizScreen = ({ route }) => {
     return (
       <VStack space={4} alignItems="center">
         {Object.entries(flashcardScores).map(([flashcardId, score]) => (
+          <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${score ? "Correct" : "Incorrect"
+            }`}</Text>
           <Text key={flashcardId}>{`Flashcard ${flashcardId}: ${score ? "Correct" : "Incorrect"
             }`}</Text>
         ))}
@@ -463,6 +487,9 @@ const QuizScreen = ({ route }) => {
       return index === choiceIndex
         ? { bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder }
         : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
+      return index === choiceIndex
+        ? { bg: colors.darkerPrimaryContainer, borderColor: colors.buttonBorder }
+        : { bg: colors.primaryContainer, borderColor: colors.buttonBorder };
     } else if (choice === correctAnswer) {
       return index === selectedAnswer
         ? { bg: "rgba(39, 201, 36, 0.6)", borderColor: "#27c924" }
@@ -486,8 +513,38 @@ const QuizScreen = ({ route }) => {
     return (
       <Center flex={1} px="3" background={colors.surface}>
         <VStack space={4} alignItems="center">
+
+          {errorMessage && (
+            <Box
+              backgroundColor="red.100"
+              borderColor="red.500"
+              borderWidth={1}
+              p={3}
+              mb={3}
+              borderRadius="8"
+              w="100%"
+              alignItems="center"
+            >
+              <Text color="red.600" fontWeight="bold">
+                {errorMessage}
+              </Text>
+              <Button
+                mt={2}
+                variant="outline"
+                borderColor="red.500"
+                _text={{ color: "red.500" }}
+                onPress={() => setErrorMessage(null)} // Clear error message
+              >
+                Dismiss
+              </Button>
+            </Box>
+          )}
+
           <Text
             style={{
+              fontSize: 24,
+              fontWeight: "bold",
+              color: colors.onSurface,
               fontSize: 24,
               fontWeight: "bold",
               color: colors.onSurface,
@@ -499,7 +556,10 @@ const QuizScreen = ({ route }) => {
             onValueChange={handleAnswerWithChange}
             accessibilityLabel="Choose Answer Language"
             placeholder="Choose Answer Language"
+            accessibilityLabel="Choose Answer Language"
+            placeholder="Choose Answer Language"
             _selectedItem={{
+              _text: { fontSize: 24 },
               _text: { fontSize: 24 },
             }}
           >
@@ -514,6 +574,7 @@ const QuizScreen = ({ route }) => {
               onValueChange={(value) => setHokkienOption(value)}
               accessibilityLabel="Choose Hokkien Answer Type"
               placeholder="Choose Hokkien Answer Type"
+              placeholder="Choose Hokkien Answer Type"
               _selectedItem={{
                 _text: { fontSize: 24 },
               }}
@@ -524,9 +585,12 @@ const QuizScreen = ({ route }) => {
           )}
           <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
         </VStack>
+          <Button onPress={handleStartQuiz} color={colors.primaryContainer}>Start Quiz</Button>
+        </VStack>
       </Center>
     );
   }
+
 
   if (!flashcards.length) {
     return (
@@ -542,6 +606,33 @@ const QuizScreen = ({ route }) => {
         <Box width="100%" height="100%">
           <ScrollView contentContainerStyle={{ paddingBottom: 20 }}>
             <VStack space={4} alignItems="stretch" width="90%" mx="auto">
+
+              {errorMessage && (
+                <Box
+                  backgroundColor="red.100"
+                  borderColor="red.500"
+                  borderWidth={1}
+                  p={3}
+                  mb={3}
+                  borderRadius="8"
+                  w="100%"
+                  alignItems="center"
+                >
+                  <Text color="red.600" fontWeight="bold">
+                    {errorMessage}
+                  </Text>
+                  <Button
+                    mt={2}
+                    variant="outline"
+                    borderColor="red.500"
+                    _text={{ color: "red.500" }}
+                    onPress={() => setErrorMessage(null)} // Clear error message
+                  >
+                    Dismiss
+                  </Button>
+                </Box>
+              )}
+
 
               {/* Show total points earned in the quiz */}
               <Text fontSize="lg" color={colors.onSurface} bold textAlign="center">
@@ -611,6 +702,31 @@ const QuizScreen = ({ route }) => {
   return (
     <Center flex={1} px="3" background={colors.surface}>
       <VStack space={4} alignItems="center">
+        {errorMessage && (
+          <Box
+            backgroundColor="red.100"
+            borderColor="red.500"
+            borderWidth={1}
+            p={3}
+            mb={3}
+            borderRadius="8"
+            w="100%"
+            alignItems="center"
+          >
+            <Text color="red.600" fontWeight="bold">
+              {errorMessage}
+            </Text>
+            <Button
+              mt={2}
+              variant="outline"
+              borderColor="red.500"
+              _text={{ color: "red.500" }}
+              onPress={() => setErrorMessage(null)} // Clear error message
+            >
+              Dismiss
+            </Button>
+          </Box>
+        )}
         <Text fontSize="lg" color={colors.onSurface}>
           Question {currentCardIndex + 1} of {flashcards.length}
         </Text>

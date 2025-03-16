@@ -84,7 +84,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error with translation:", error);
+      setErrorMessage("Error with translation. Please try again later.");
       return "Error with translation.";
     }
   };
@@ -116,23 +117,35 @@ const FlashcardScreen = ({ route, navigation }) => {
   ).current;
 
   const getDeckIDByName = async (deckName) => {
-    const deckCollection = collection(db, "flashcardList");
-    const q = query(deckCollection, where("name", "==", deckName));
-    const querySnapshot = await getDocs(q);
+    try {
+      const deckCollection = collection(db, "flashcardList");
+      const q = query(deckCollection, where("name", "==", deckName));
+      const querySnapshot = await getDocs(q);
 
-    const deckDoc = querySnapshot.docs[0];
-    const deckID = deckDoc.id;
-    // console.log("Deck ID:", deckID);
-    // console.log("Current category in FlashcardScreen is:", categoryId);
-    // console.log("Current deck is:", flashcardListName);
-    return deckID;
+      const deckDoc = querySnapshot.docs[0];
+      const deckID = deckDoc.id;
+      // console.log("Deck ID:", deckID);
+      // console.log("Current category in FlashcardScreen is:", categoryId);
+      // console.log("Current deck is:", flashcardListName);
+      return deckID;
+    } catch (error) {
+      console.error("Error getting deck ID:", error);
+      setErrorMessage("Error getting deck ID. Please try again later.");
+      return "Error getting deck ID.";
+    }
   };
 
   useEffect(() => {
     const fetchDeckID = async () => {
-      const id = await getDeckIDByName(flashcardListName);
-      if (id) {
-        setDeckID(id);
+      try {
+        const id = await getDeckIDByName(flashcardListName);
+        if (id) {
+          setDeckID(id);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        setErrorMessage("Error fetching deck ID. Please try again later.");
+        return "Error fetching deck ID.";
       }
     };
 
@@ -167,9 +180,9 @@ const FlashcardScreen = ({ route, navigation }) => {
         console.log("Deck not found.");
       }
     } catch (error) {
-      console.error("Error fetching flashcards:", error.message);
+      console.error("Error fetching flashcards with deck name: ", deckName, "; Error message: ", error.message);
       setErrorMessage("Error fetching flashcards. Please try again later");
-    } 
+    }
   };
 
   useEffect(() => {
@@ -194,10 +207,10 @@ const FlashcardScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     if (tooltipOpen) {
-      const timer = setTimeout(() => setTooltipOpen(false), 5000); 
+      const timer = setTimeout(() => setTooltipOpen(false), 5000);
       return () => clearTimeout(timer);
     }
-  }, [tooltipOpen]); 
+  }, [tooltipOpen]);
 
   const handleNext = (gestureState = null) => {
     const value = {
@@ -487,23 +500,29 @@ const FlashcardScreen = ({ route, navigation }) => {
       // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
-      console.error("Error:", error);
-      return "Error with generating options.";
+      console.error("Error generating options:", error);
+      setErrorMessage("Error generating options. Please try again later.");
+      return "Error generating options.";
     }
   };
 
   const handleAutofill = async () => {
-    const hokkien = await fetchTranslation(enteredTranslation);
-    setEnteredWord(hokkien);
-    const option1 = await generateOptions(enteredTranslation);
-    setOption1(option1);
-    const currentWords = `${enteredTranslation}, ${option1}`;
-    const option2 = await generateOptions(currentWords);
-    setOption2(option2);
-    const currentWords2 = `${currentWords}, ${option2}`;
-    const option3 = await generateOptions(currentWords2);
-    setOption3(option3);
-    setType('word');
+    try {
+      const hokkien = await fetchTranslation(enteredTranslation);
+      setEnteredWord(hokkien);
+      const option1 = await generateOptions(enteredTranslation);
+      setOption1(option1);
+      const currentWords = `${enteredTranslation}, ${option1}`;
+      const option2 = await generateOptions(currentWords);
+      setOption2(option2);
+      const currentWords2 = `${currentWords}, ${option2}`;
+      const option3 = await generateOptions(currentWords2);
+      setOption3(option3);
+      setType('word');
+    } catch (error) {
+      console.error("Error with autofill:", error.message);
+      setErrorMessage("Error with autofill. Please try again later.");
+    }
   };
 
   useEffect(() => {
@@ -567,6 +586,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         }
       } catch (error) {
         console.error("Error fetching or generating flashcards:", error);
+        setErrorMessage("Error with fetching or generating flashcards. Please try again later.");
       }
     };
 
@@ -621,36 +641,36 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Button>
           </Box>
         )}
-        
+
 
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
-          <Tooltip 
-            label="You can't modify starter decks" 
-            placement="top" 
-            isOpen={tooltipOpen}
-            bg={colors.onPrimaryContainer}
-          >
-            <HStack space={4}>
-              <CrudButtons
-                title="Create"
-                onPress={() => setShowNewFlashcard(true)}
-                iconName="add"
-                isDisabled={createdBy === "starter_words"}
-              />
-              <CrudButtons
-                title="Update"
-                onPress={() => setShowUpdates(true)}
-                iconName="pencil"
-                isDisabled={createdBy === "starter_words"}
-              />
-              <CrudButtons
-                title="Delete"
-                onPress={() => setShowConfirmDelete(true)}
-                iconName="trash"
-                isDisabled={createdBy === "starter_words"}
-              />
-            </HStack>
+            <Tooltip
+              label="You can't modify starter decks"
+              placement="top"
+              isOpen={tooltipOpen}
+              bg={colors.onPrimaryContainer}
+            >
+              <HStack space={4}>
+                <CrudButtons
+                  title="Create"
+                  onPress={() => setShowNewFlashcard(true)}
+                  iconName="add"
+                  isDisabled={createdBy === "starter_words"}
+                />
+                <CrudButtons
+                  title="Update"
+                  onPress={() => setShowUpdates(true)}
+                  iconName="pencil"
+                  isDisabled={createdBy === "starter_words"}
+                />
+                <CrudButtons
+                  title="Delete"
+                  onPress={() => setShowConfirmDelete(true)}
+                  iconName="trash"
+                  isDisabled={createdBy === "starter_words"}
+                />
+              </HStack>
             </Tooltip>
 
             <Box
@@ -689,36 +709,36 @@ const FlashcardScreen = ({ route, navigation }) => {
                   },
                 ]}
               >
-              <Box
-                width="300px"
-                height="200px"
-                bg={colors.primaryContainer}
-                alignItems="center"
-                justifyContent="center"
-                borderRadius="10px"
-                shadow={2}
-              >
-              {showTranslation ? (
-                <>
-                
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.translation}
-                  </Text>
-                  {languages[1] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
+                <Box
+                  width="300px"
+                  height="200px"
+                  bg={colors.primaryContainer}
+                  alignItems="center"
+                  justifyContent="center"
+                  borderRadius="10px"
+                  shadow={2}
+                >
+                  {showTranslation ? (
+                    <>
+
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.translation}
+                      </Text>
+                      {languages[1] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].translation} type={'flashcard'} />
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      <Text fontSize="2xl" color={colors.onSurface}>
+                        {flashcards[currentCardIndex]?.word}
+                      </Text>
+                      {languages[0] === "Hokkien" && (
+                        <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'} />
+                      )}
+                    </>
                   )}
-                </>
-              ) : (
-                <>
-                  <Text fontSize="2xl" color={colors.onSurface}>
-                    {flashcards[currentCardIndex]?.word}
-                  </Text>
-                  {languages[0] === "Hokkien" && (
-                    <TextToSpeech prompt={flashcards[currentCardIndex].word} type={'flashcard'}/>
-                  )}
-                </>
-              )}
-              </Box>
+                </Box>
               </Animated.View>
             </TouchableOpacity>
 
