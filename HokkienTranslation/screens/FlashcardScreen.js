@@ -1,35 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Text,
-  Center,
-  VStack,
-  HStack,
-  Pressable,
-  Input,
-  Select,
-  Modal,
-  Button,
-  ScrollView,
-  Switch,
-  Tooltip
-} from "native-base";
+import {Box, Text, Center, VStack, HStack, Pressable, Input, Select,
+  Modal, Button, ScrollView, Tooltip } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  doc,
-  setDoc,
-  collection,
-  serverTimestamp,
-  query,
-  where,
-  getDoc,
-  getDocs,
-  arrayUnion,
-  updateDoc,
-  deleteDoc,
-  arrayRemove,
-} from "firebase/firestore";
+import {doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs, 
+  arrayUnion, updateDoc, deleteDoc, arrayRemove, } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
@@ -42,46 +17,50 @@ import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechSe
 import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 
 const FlashcardScreen = ({ route, navigation }) => {
+  // Theme and Language
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const { languages } = useLanguage();
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isPressedLeft, setIsPressedLeft] = useState(false);
-  const [isPressedRight, setIsPressedRight] = useState(false);
 
+  // Route Params
+  const flashcardListId = route.params.flashcardListId || "";
+  const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
+  const flashcardListName = route.params.deckName || "";
+  const currentUser = route.params.currentUser;
+
+  // Flashcards
+  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [translatedText, setTranslatedText] = useState("");
+  const [deckID, setDeckID] = useState("");
+
+  // UI Interactions
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [isPressedLeft, setIsPressedLeft] = useState(false);
+  const [isPressedRight, setIsPressedRight] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  // const [isPermanentDelete, setIsPermanentDelete] = useState(false);
 
+  // Form Inputs
   const [enteredWord, setEnteredWord] = useState("");
   const [enteredTranslation, setEnteredTranslation] = useState("");
   const [option1, setOption1] = useState("");
   const [option2, setOption2] = useState("");
   const [option3, setOption3] = useState("");
   const [type, setType] = useState("");
-
-  const flashcardListId = route.params.flashcardListId || "";
-  const categoryId = route.params.categoryId || "";
-  const createdBy = route.params.createdBy || "";
-  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
-
-  const [deckID, setDeckID] = useState("");
-
-  const flashcardListName = route.params.deckName || "";
-  const currentUser = route.params.currentUser;
-  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
-  const [translatedText, setTranslatedText] = useState("");
-  //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
-  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  
 
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
         `Translate ${text} to ${language}. You must respond with only the translation.`
       );
-      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error with translation:", error);
@@ -89,8 +68,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       return "Error with translation.";
     }
   };
-
-  const position = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -124,9 +101,6 @@ const FlashcardScreen = ({ route, navigation }) => {
 
       const deckDoc = querySnapshot.docs[0];
       const deckID = deckDoc.id;
-      // console.log("Deck ID:", deckID);
-      // console.log("Current category in FlashcardScreen is:", categoryId);
-      // console.log("Current deck is:", flashcardListName);
       return deckID;
     } catch (error) {
       console.error("Error getting deck ID:", error);
@@ -270,10 +244,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       const audioBlob = await fetchAudioBlob(romanization);
       const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
 
-      // console.log("Current user is ", currentUser);
-      // console.log("Current categoryId is ", categoryId);
-      // console.log("Current deckID is ", deckID);
-
       const newFlashcardData = {
         origin: enteredWord,
         destination: enteredTranslation,
@@ -287,11 +257,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
-      // console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
-
       const newFlashcardID = flashcardRef.id;
-      // console.log("Flashcard created successfully with ID:", newFlashcardID);
 
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
@@ -638,8 +605,6 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Button>
           </Box>
         )}
-
-
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
             <Tooltip
@@ -686,7 +651,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                 {flashcards[(currentCardIndex + 1) % flashcards.length].word}
               </Text>
             </Box>
-
 
             <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
 
@@ -738,9 +702,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                 </Box>
               </Animated.View>
             </TouchableOpacity>
-
-
-
 
             <HStack space={4} alignItems="center">
               <Pressable
