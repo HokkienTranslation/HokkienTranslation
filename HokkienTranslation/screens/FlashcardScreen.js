@@ -7,8 +7,9 @@ import {doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs,
   arrayUnion, updateDoc, deleteDoc, arrayRemove, } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
-import DeleteFlashcardModal from "./CRUD flashcard modals/DeleteFlashcardModal";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
+import DeleteFlashcardModal from "./CRUD flashcard modals/DeleteFlashcardModal";
+import FlashcardFormModal from "./CRUD flashcard modals/FlashcardFormModal";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
@@ -743,79 +744,31 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Pressable>
             </HStack>
           </VStack>
-          {/* create pop up */}
-          <Modal
+          
+          <FlashcardFormModal // CREATE MODAL
             isOpen={showNewFlashcard}
             onClose={() => setShowNewFlashcard(false)}
-            size="lg"
-          >
-            <Modal.Content width="80%" maxWidth="350px">
-              <Modal.CloseButton />
-              <Modal.Header>Create new flashcard</Modal.Header>
-              <Modal.Body>
-                <VStack space={4}>
-                  <Input
-                    placeholder="Enter English word"
-                    value={enteredTranslation}
-                    onChangeText={setEnteredTranslation}
-                  />
-                  <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
-                    Autofill
-                  </Button>
-                  <Input
-                    placeholder="Enter Hokkien translation"
-                    value={enteredWord}
-                    onChangeText={setEnteredWord}
-                  />
-                  <Input
-                    placeholder="Option 1"
-                    value={option1}
-                    onChangeText={setOption1}
-                  />
-                  <Input
-                    placeholder="Option 2"
-                    value={option2}
-                    onChangeText={setOption2}
-                  />
-                  <Input
-                    placeholder="Option 3"
-                    value={option3}
-                    onChangeText={setOption3}
-                  />
-                  <Select
-                    selectedValue={type}
-                    placeholder="Select Type"
-                    onValueChange={(itemValue) => setType(itemValue)}
-                  >
-                    <Select.Item label="Word" value="word" />
-                    <Select.Item label="Sentence" value="sentence" />
-                  </Select>
-                </VStack>
-              </Modal.Body>
-              <Modal.Footer>
-                <HStack space={2}>
-                  <Button onPress={handleCreate}>
-                    <HStack space={1} alignItems="center">
-                      <Ionicons
-                        name={"save-outline"}
-                        size={30}
-                        color={"#FFFFFF"}
-                      />
-                      <Text color={"#FFFFFF"}>Save</Text>
-                    </HStack>
-                  </Button>
-                  <Button
-                    onPress={() => setShowNewFlashcard(false)}
-                    variant="ghost"
-                    borderWidth={1}
-                    borderColor="coolGray.200"
-                  >
-                    Cancel
-                  </Button>
-                </HStack>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
+            mode="create"
+            values={{
+              enteredWord,
+              enteredTranslation,
+              option1,
+              option2,
+              option3,
+              type,
+            }}
+            setters={{
+              setEnteredWord,
+              setEnteredTranslation,
+              setOption1,
+              setOption2,
+              setOption3,
+              setType,
+            }}
+            onSubmit={handleCreate}
+            onAutofill={handleAutofill}
+          />
+
 
           {/* update modal */}
           <Modal
