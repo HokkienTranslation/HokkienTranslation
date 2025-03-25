@@ -894,59 +894,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Modal.Footer>
             </Modal.Content>
           </Modal>
-
-          {/* delete modal */}
-          {/* <Modal
-            isOpen={showConfirmDelete}
-            onClose={() => setShowConfirmDelete(false)}
-            size="lg"
-          >
-            <Modal.Content maxWidth="400px">
-              <Modal.CloseButton />
-              <Modal.Header>
-                <Text fontSize="xl" fontWeight={"bold"}>
-                  Delete Confirmation
-                </Text>
-              </Modal.Header>
-              <Modal.Body>
-                <Box
-                  backgroundColor={"red.200"}
-                  borderWidth={1}
-                  borderRadius={4}
-                  borderColor={"red.300"}
-                  padding={3}
-                >
-                  <Text color={"red.800"}>
-                    Are you sure you want to delete the flashcard '
-                    {flashcards[currentCardIndex].word}'?
-                  </Text>
-                </Box>
-
-                <HStack space={2} alignItems="center" marginTop={4}></HStack>
-              </Modal.Body>
-              <Modal.Footer>
-                <HStack space={4}>
-                  <Button
-                    variant="ghost"
-                    onPress={() => setShowConfirmDelete(false)}
-                    borderWidth={1}
-                    borderColor="coolGray.200"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onPress={handlePermaDelete}
-                    colorScheme="red"
-                    borderWidth={1}
-                    borderColor="red.500"
-                    disabled={disableDeleteButton}
-                  >
-                    Delete
-                  </Button>
-                </HStack>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal> */}
           <DeleteFlashcardModal
             isOpen={showConfirmDelete}
             onClose={() => setShowConfirmDelete(false)}
