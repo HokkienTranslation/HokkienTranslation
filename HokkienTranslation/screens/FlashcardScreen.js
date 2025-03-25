@@ -7,6 +7,7 @@ import {doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs,
   arrayUnion, updateDoc, deleteDoc, arrayRemove, } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
+import DeleteFlashcardModal from "./CRUD flashcard modals/DeleteFlashcardModal";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
@@ -895,7 +896,7 @@ const FlashcardScreen = ({ route, navigation }) => {
           </Modal>
 
           {/* delete modal */}
-          <Modal
+          {/* <Modal
             isOpen={showConfirmDelete}
             onClose={() => setShowConfirmDelete(false)}
             size="lg"
@@ -945,7 +946,14 @@ const FlashcardScreen = ({ route, navigation }) => {
                 </HStack>
               </Modal.Footer>
             </Modal.Content>
-          </Modal>
+          </Modal> */}
+          <DeleteFlashcardModal
+            isOpen={showConfirmDelete}
+            onClose={() => setShowConfirmDelete(false)}
+            onDelete={handlePermaDelete}
+            word={flashcards[currentCardIndex].word}
+            translation={flashcards[currentCardIndex].translation}
+          />
         </Center>
       </Box>
     </ScrollView>
