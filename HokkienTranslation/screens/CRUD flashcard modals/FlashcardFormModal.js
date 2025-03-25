@@ -1,6 +1,7 @@
 import React from "react";
 import {Modal, VStack, HStack, Input, Button, Text, Select} from "native-base";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../context/ThemeProvider";
 
 export default function FlashcardFormModal({
   isOpen,
@@ -30,7 +31,8 @@ export default function FlashcardFormModal({
   } = setters;
 
   const isCreate = mode === "create";
-
+  const { theme, themes } = useTheme();
+  const colors = themes[theme];
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <Modal.Content width="80%" maxWidth="350px">
@@ -142,7 +144,7 @@ export default function FlashcardFormModal({
         </Modal.Body>
         <Modal.Footer>
           <HStack space={2}>
-            <Button onPress={onSubmit}>
+            <Button colorScheme="green" onPress={onSubmit}>
               <HStack space={1} alignItems="center">
                 <Ionicons name="save-outline" size={30} color="#FFFFFF" />
                 <Text color="#FFFFFF">Save</Text>
@@ -153,8 +155,11 @@ export default function FlashcardFormModal({
               variant="ghost"
               borderWidth={1}
               borderColor="coolGray.200"
+              bg={colors.primaryContainer} 
+              _hover={{ bg: colors.darkerPrimaryContainer }}
+              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
             >
-              Cancel
+               <Text color={colors.onSurface}>Cancel</Text>
             </Button>
           </HStack>
         </Modal.Footer>
