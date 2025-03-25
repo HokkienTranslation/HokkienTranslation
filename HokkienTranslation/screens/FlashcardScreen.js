@@ -45,6 +45,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
   const [disableDeleteButton, setDisableDeleteButton] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
+  const position = useRef(new Animated.ValueXY()).current;
   // const [isPermanentDelete, setIsPermanentDelete] = useState(false);
 
   // Form Inputs
