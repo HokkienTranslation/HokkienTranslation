@@ -5,12 +5,12 @@ export default function DeleteFlashcardModal({
   isOpen,
   onClose,
   onDelete,
-  word = "this flashcard", // fallback word
+  word,
   translation,
 }) {
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
-      <Modal.Content maxWidth="400px">
+      <Modal.Content maxWidth="400px" minWidth="300px">
         <Modal.CloseButton />
         <Modal.Header>
           <Text fontSize="xl" fontWeight="bold">
