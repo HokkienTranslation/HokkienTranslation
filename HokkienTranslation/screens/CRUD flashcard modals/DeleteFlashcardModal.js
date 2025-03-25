@@ -1,4 +1,3 @@
-// components/modals/DeleteFlashcardModal.js
 import React from "react";
 import { Modal, Button, Text, HStack } from "native-base";
 
