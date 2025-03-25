@@ -281,7 +281,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       if (languages[1] === "English") {
         translation = newFlashcardData.destination;
       }
-
       if (languages[0] !== "English" && languages[0] !== "Hokkien") {
         word = await translateText(newFlashcardData.destination, languages[0]);
       }
@@ -380,7 +379,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
-
     try {
       setFlashcards((prevFlashcards) => {
         const updatedFlashcards = prevFlashcards.filter(
@@ -446,7 +444,6 @@ const FlashcardScreen = ({ route, navigation }) => {
           }
         }
       }
-
       console.log(
         "Flashcard successfully deleted from all relevant decks across categories"
       );
@@ -538,7 +535,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               if (languages[1] !== "English" && languages[1] !== "Hokkien") {
                 translation = await translateText(flashcard.destination, languages[1]);
               }
-
               return {
                 ...flashcard,
                 word,
@@ -546,7 +542,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               };
             })
           );
-
           setFlashcards(processedFlashcards);
         } else {
           console.log("Deck not found.");
@@ -684,7 +679,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                 >
                   {showTranslation ? (
                     <>
-
                       <Text fontSize="2xl" color={colors.onSurface}>
                         {flashcards[currentCardIndex]?.translation}
                       </Text>
