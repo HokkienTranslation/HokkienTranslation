@@ -35,8 +35,8 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [flashcards, setFlashcards] = useState(route.params.cardList || []);
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [showTranslation, setShowTranslation] = useState(false);
-  const [translatedText, setTranslatedText] = useState("");
   const [deckID, setDeckID] = useState("");
+  //  const [translatedText, setTranslatedText] = useState("");
 
   // UI Interactions
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);

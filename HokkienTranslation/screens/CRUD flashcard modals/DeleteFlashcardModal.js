@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button, Text, HStack } from "native-base";
+import { useTheme } from "../context/ThemeProvider";
 
 export default function DeleteFlashcardModal({
   isOpen,
@@ -8,6 +9,8 @@ export default function DeleteFlashcardModal({
   word,
   translation,
 }) {
+  const { theme, themes } = useTheme();
+  const colors = themes[theme];
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="lg">
       <Modal.Content maxWidth="400px" minWidth="300px">
@@ -24,8 +27,13 @@ export default function DeleteFlashcardModal({
         </Modal.Body>
         <Modal.Footer>
           <HStack space={3}>
-            <Button variant="ghost" onPress={onClose}>
-              Cancel
+            <Button 
+              bg={colors.primaryContainer} 
+              variant="ghost" onPress={onClose}
+              _hover={{ bg: colors.darkerPrimaryContainer }}
+              _pressed={{ bg: colors.evenDarkerPrimaryContainer }}>
+                
+              <Text color={colors.onSurface}>Cancel</Text>
             </Button>
             <Button colorScheme="red" onPress={onDelete}>
               Delete
