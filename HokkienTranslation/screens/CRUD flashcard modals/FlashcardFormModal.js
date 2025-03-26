@@ -104,6 +104,11 @@ export default function FlashcardFormModal({
                   selectedValue={type}
                   placeholder="Select Type"
                   onValueChange={setType}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  //focusOutlineColor =... literally cannot figure this out :')
                 >
                   <Select.Item label="Word" value="word" />
                   <Select.Item label="Sentence" value="sentence" />
@@ -183,6 +188,11 @@ export default function FlashcardFormModal({
                     selectedValue={type}
                     placeholder="Select Type"
                     onValueChange={setType}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                      //focusOutlineColor =... literally cannot figure this out :')
                   >
                     <Select.Item label="Word" value="word" />
                     <Select.Item label="Sentence" value="sentence" />
