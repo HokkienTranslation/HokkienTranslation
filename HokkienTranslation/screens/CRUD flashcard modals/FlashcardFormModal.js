@@ -48,6 +48,11 @@ export default function FlashcardFormModal({
                   placeholder="Enter English word"
                   value={enteredTranslation}
                   onChangeText={setEnteredTranslation}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Button
                   onPress={onAutofill}
@@ -59,21 +64,41 @@ export default function FlashcardFormModal({
                   placeholder="Enter Hokkien translation"
                   value={enteredWord}
                   onChangeText={setEnteredWord}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Input
                   placeholder="Option 1"
                   value={option1}
                   onChangeText={setOption1}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Input
                   placeholder="Option 2"
                   value={option2}
                   onChangeText={setOption2}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Input
                   placeholder="Option 3"
                   value={option3}
                   onChangeText={setOption3}
+                  _hover={{
+                    borderColor: colors.darkerPrimaryContainer, 
+                    bg: colors.primaryContainer,
+                  }}
+                  focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Select
                   selectedValue={type}
@@ -92,6 +117,11 @@ export default function FlashcardFormModal({
                     flex={1}
                     value={enteredWord}
                     onChangeText={setEnteredWord}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                    focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                   />
                 </HStack>
                 <HStack space={2} alignItems="center">
@@ -100,6 +130,11 @@ export default function FlashcardFormModal({
                     flex={1}
                     value={enteredTranslation}
                     onChangeText={setEnteredTranslation}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                    focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                   />
                 </HStack>
                 <HStack space={2} alignItems="center">
@@ -108,6 +143,11 @@ export default function FlashcardFormModal({
                     flex={1}
                     value={option1}
                     onChangeText={setOption1}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                    focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                   />
                 </HStack>
                 <HStack space={2} alignItems="center">
@@ -116,6 +156,11 @@ export default function FlashcardFormModal({
                     flex={1}
                     value={option2}
                     onChangeText={setOption2}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                    focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                   />
                 </HStack>
                 <HStack space={2} alignItems="center">
@@ -124,6 +169,11 @@ export default function FlashcardFormModal({
                     flex={1}
                     value={option3}
                     onChangeText={setOption3}
+                    _hover={{
+                        borderColor: colors.darkerPrimaryContainer, 
+                        bg: colors.primaryContainer,
+                      }}
+                    focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                   />
                 </HStack>
                 <HStack space={2} alignItems="center">
