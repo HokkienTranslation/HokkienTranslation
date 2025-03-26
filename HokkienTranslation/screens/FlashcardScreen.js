@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import {Box, Text, Center, VStack, HStack, Pressable, Input, Select,
-  Modal, Button, ScrollView, Tooltip } from "native-base";
+import {Box, Text, Center, VStack, HStack,
+   Button, ScrollView, Tooltip } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import {doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs, 
@@ -697,6 +697,12 @@ const FlashcardScreen = ({ route, navigation }) => {
                       )}
                     </>
                   )}
+                  <Ionicons
+                    name="repeat-outline"
+                    size={24}
+                    color={colors.onSurface}
+                    style={{ position: 'absolute', bottom: 8, right: 8 }}
+                  />
                 </Box>
               </Animated.View>
             </TouchableOpacity>
