@@ -10,6 +10,7 @@ import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
 import DeleteFlashcardModal from "./CRUD flashcard modals/DeleteFlashcardModal";
 import FlashcardFormModal from "./CRUD flashcard modals/FlashcardFormModal";
+import FlashcardNav from "./components/FlashcardNav";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
@@ -700,43 +701,17 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Animated.View>
             </TouchableOpacity>
 
-            <HStack space={4} alignItems="center">
-              <Pressable
-                borderRadius="50"
-                onPressIn={() => setIsPressedLeft(true)}
-                onPressOut={() => setIsPressedLeft(false)}
-                onPress={handleBack}
-              >
-                <Ionicons
-                  name={
-                    isPressedLeft
-                      ? "chevron-back-circle"
-                      : "chevron-back-circle-outline"
-                  }
-                  color={colors.onSurface}
-                  size={50}
-                />
-              </Pressable>
-              <Text fontSize="lg" color={colors.onSurface}>
-                {currentCardIndex + 1}/{flashcards.length}
-              </Text>
-              <Pressable
-                borderRadius="50"
-                onPressIn={() => setIsPressedRight(true)}
-                onPressOut={() => setIsPressedRight(false)}
-                onPress={handleNext}
-              >
-                <Ionicons
-                  name={
-                    isPressedRight
-                      ? "chevron-forward-circle"
-                      : "chevron-forward-circle-outline"
-                  }
-                  color={colors.onSurface}
-                  size={50}
-                />
-              </Pressable>
-            </HStack>
+            <FlashcardNav
+              currentIndex={currentCardIndex}
+              total={flashcards.length}
+              onBack={handleBack}
+              onNext={handleNext}
+              isPressedLeft={isPressedLeft}
+              isPressedRight={isPressedRight}
+              setIsPressedLeft={setIsPressedLeft}
+              setIsPressedRight={setIsPressedRight}
+              color={colors.onSurface}
+            />
           </VStack>
           
           <FlashcardFormModal // CREATE MODAL
