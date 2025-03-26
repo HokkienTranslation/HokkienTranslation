@@ -19,6 +19,7 @@ import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 import FlashcardAdd from "./screens/FlashcardAdd";
+import LearningScreen from "./screens/learningScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,7 +67,7 @@ const FlashcardStack = () => {
         headerRight: () => <FeedbackButton />,
       }}
     >
-      <Stack.Screen name="Category" component={FlashcardCategory} />
+      <Stack.Screen name="Category" component={LearningScreen} />
       <Stack.Screen name="Flashcard" component={FlashcardScreen} />
       <Stack.Screen name="Quiz" component={QuizScreen} />
       <Stack.Screen name="FlashcardAdd" component={FlashcardAdd} />

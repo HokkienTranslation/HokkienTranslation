@@ -10,15 +10,22 @@ import {
   } from "ts-fsrs";
 
 
-const ExtendedCard = Card & {
-    flascardId // this is a string
-};
+  class ExtendedCard {
+    constructor(card, flashcardId) {
+        this.card = card;
+        this.flashcardId = flashcardId;
+    }
+
+    getDetails() {
+        return { ...this.card, flashcardId: this.flashcardId };
+    }
+}
   
 const createExtendedCard = (flashcardId, date) => {
-    return {
-        ...createEmptyCard(date),
-        flashcardId,
-    };
+    var card = createEmptyCard(date)
+    card.last_review = ""
+    card.flashcardId = flashcardId
+    return card;
 };
 
 export { ExtendedCard, createExtendedCard };
