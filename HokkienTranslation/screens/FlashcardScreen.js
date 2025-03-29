@@ -152,6 +152,10 @@ const FlashcardScreen = ({ route, navigation }) => {
     fetchDeckID();
   }, [flashcardListName]);
 
+  const shuffleArray = (array) => {
+    return array.sort(() => Math.random() - 0.5);
+  };
+
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
       const deckCollection = collection(db, "flashcardList");
@@ -550,7 +554,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             ...doc.data(),
           }));
 
-          const processedFlashcards = await Promise.all(
+          let processedFlashcards = await Promise.all(
             fetchedFlashcards.map(async (flashcard) => {
               let word = flashcard.destination;
               let translation = flashcard.origin;
@@ -577,6 +581,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             })
           );
 
+          processedFlashcards = shuffleArray(processedFlashcards);
           setFlashcards(processedFlashcards);
         } else {
           console.log("Deck not found.");
