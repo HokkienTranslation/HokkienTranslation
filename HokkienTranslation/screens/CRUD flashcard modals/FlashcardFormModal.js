@@ -56,6 +56,8 @@ export default function FlashcardFormModal({
                 />
                 <Button
                   bg={colors.primaryContainer} 
+                  _hover={{ bg: colors.darkerPrimaryContainer }}
+                  _pressed={{ bg: colors.evenDarkerPrimaryContainer }}
                   onPress={onAutofill}
                   isDisabled={!enteredTranslation}
                 >
