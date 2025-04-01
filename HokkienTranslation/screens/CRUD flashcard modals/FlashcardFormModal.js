@@ -55,10 +55,11 @@ export default function FlashcardFormModal({
                   focusOutlineColor= {colors.evenDarkerPrimaryContainer}
                 />
                 <Button
+                  bg={colors.primaryContainer} 
                   onPress={onAutofill}
                   isDisabled={!enteredTranslation}
                 >
-                  Autofill
+                  <Text color={colors.onSurface} > Autofill </Text>
                 </Button>
                 <Input
                   placeholder="Enter Hokkien translation"
