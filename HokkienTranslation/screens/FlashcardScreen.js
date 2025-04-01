@@ -719,21 +719,34 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Animated.View>
             </TouchableOpacity>
             <HStack
-              
+              width="300px" 
+              justifyContent="center"
+              alignItems="center"
+              mt={2}
+              position="relative"
             >
-              <Button
-                onPress={() => {
-                  setFlashcards(shuffleArray(flashcards));
-                  setCurrentCardIndex(0);
-                }}
-                //_hover={{bg: colors.darkerPrimaryContainer}}
-              >
-                <Ionicons
-                      name="shuffle"
-                      size={24}
-                      color={colors.onSurface}
-                />
-              </Button>
+              <Box position="absolute" left={0}>
+                <Button
+                  onPress={() => {
+                    setFlashcards(shuffleArray(flashcards));
+                    setCurrentCardIndex(0);
+                  }}
+                  bg="transparent"
+                  width="36px"
+                  height="36px"
+                  _hover={{ bg: "#d3d3d3" ,
+                    borderRadius: "full",
+                  }}
+                  px={0}
+                  ml={1}
+                >
+                  <Ionicons
+                    name="shuffle"
+                    size={24}
+                    color={colors.onSurface}
+                  />
+                </Button>
+              </Box>
               <FlashcardNav
                 currentIndex={currentCardIndex}
                 total={flashcards.length}
@@ -747,7 +760,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               />
             </HStack>
           </VStack>
-          
           <FlashcardFormModal // CREATE MODAL
             isOpen={showNewFlashcard}
             onClose={() => setShowNewFlashcard(false)}
