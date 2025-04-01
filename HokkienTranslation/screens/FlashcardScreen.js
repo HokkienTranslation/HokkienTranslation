@@ -1,38 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Box,
-  Text,
-  Center,
-  VStack,
-  HStack,
-  Pressable,
-  Input,
-  Select,
-  Modal,
-  Button,
-  ScrollView,
-  Switch,
-  Tooltip
-} from "native-base";
+import {Box, Text, Center, VStack, HStack,
+   Button, ScrollView, Tooltip } from "native-base";
 import { TouchableOpacity, Animated, PanResponder } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  doc,
-  setDoc,
-  collection,
-  serverTimestamp,
-  query,
-  where,
-  getDoc,
-  getDocs,
-  arrayUnion,
-  updateDoc,
-  deleteDoc,
-  arrayRemove,
-} from "firebase/firestore";
+import {doc, setDoc, collection, serverTimestamp, query, where, getDoc, getDocs, 
+  arrayUnion, updateDoc, deleteDoc, arrayRemove, } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import CrudButtons from "./components/ScreenCrudButtons";
 import NavigationButtons from "../screens/components/ScreenNavigationButtons";
+import DeleteFlashcardModal from "./CRUD flashcard modals/DeleteFlashcardModal";
+import FlashcardFormModal from "./CRUD flashcard modals/FlashcardFormModal";
+import FlashcardNav from "./components/FlashcardNav";
 import { useTheme } from "./context/ThemeProvider";
 import { useLanguage } from "./context/LanguageProvider";
 import { callOpenAIChat } from "../backend/API/OpenAIChatService";
@@ -42,46 +20,52 @@ import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechSe
 import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 
 const FlashcardScreen = ({ route, navigation }) => {
+  // Theme and Language
   const { theme, themes } = useTheme();
   const colors = themes[theme];
   const { languages } = useLanguage();
-  const [showTranslation, setShowTranslation] = useState(false);
-  const [currentCardIndex, setCurrentCardIndex] = useState(0);
-  const [isPressedLeft, setIsPressedLeft] = useState(false);
-  const [isPressedRight, setIsPressedRight] = useState(false);
 
+  // Route Params
+  const flashcardListId = route.params.flashcardListId || "";
+  const categoryId = route.params.categoryId || "";
+  const createdBy = route.params.createdBy || "";
+  const flashcardListName = route.params.deckName || "";
+  const currentUser = route.params.currentUser;
+
+  // Flashcards
+  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
+  const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [showTranslation, setShowTranslation] = useState(false);
+  const [deckID, setDeckID] = useState("");
+  //  const [translatedText, setTranslatedText] = useState("");
+  const [isShuffled, setIsShuffled] = useState(true);
+
+  // UI Interactions
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
   const [showUpdates, setShowUpdates] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [isPressedLeft, setIsPressedLeft] = useState(false);
+  const [isPressedRight, setIsPressedRight] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
+  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
+  const [errorMessage, setErrorMessage] = useState(null);
+  const position = useRef(new Animated.ValueXY()).current;
+  // const [isPermanentDelete, setIsPermanentDelete] = useState(false);
 
+  // Form Inputs
   const [enteredWord, setEnteredWord] = useState("");
   const [enteredTranslation, setEnteredTranslation] = useState("");
   const [option1, setOption1] = useState("");
   const [option2, setOption2] = useState("");
   const [option3, setOption3] = useState("");
   const [type, setType] = useState("");
-
-  const flashcardListId = route.params.flashcardListId || "";
-  const categoryId = route.params.categoryId || "";
-  const createdBy = route.params.createdBy || "";
-  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
-
-  const [deckID, setDeckID] = useState("");
-
-  const flashcardListName = route.params.deckName || "";
-  const currentUser = route.params.currentUser;
-  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
-  const [translatedText, setTranslatedText] = useState("");
-  //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
-  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(null);
+  
 
   const translateText = async (text, language) => {
     try {
       const response = await callOpenAIChat(
         `Translate ${text} to ${language}. You must respond with only the translation.`
       );
-      // console.log("OpenAI Response:", response);
       return response;
     } catch (error) {
       console.error("Error with translation:", error);
@@ -89,8 +73,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       return "Error with translation.";
     }
   };
-
-  const position = useRef(new Animated.ValueXY()).current;
 
   const panResponder = useRef(
     PanResponder.create({
@@ -116,6 +98,15 @@ const FlashcardScreen = ({ route, navigation }) => {
     })
   ).current;
 
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };  
+
   const getDeckIDByName = async (deckName) => {
     try {
       const deckCollection = collection(db, "flashcardList");
@@ -124,9 +115,6 @@ const FlashcardScreen = ({ route, navigation }) => {
 
       const deckDoc = querySnapshot.docs[0];
       const deckID = deckDoc.id;
-      // console.log("Deck ID:", deckID);
-      // console.log("Current category in FlashcardScreen is:", categoryId);
-      // console.log("Current deck is:", flashcardListName);
       return deckID;
     } catch (error) {
       console.error("Error getting deck ID:", error);
@@ -270,10 +258,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       const audioBlob = await fetchAudioBlob(romanization);
       const audioUrl = await uploadAudioFromBlob(romanization, audioBlob);
 
-      // console.log("Current user is ", currentUser);
-      // console.log("Current categoryId is ", categoryId);
-      // console.log("Current deckID is ", deckID);
-
       const newFlashcardData = {
         origin: enteredWord,
         destination: enteredTranslation,
@@ -287,11 +271,8 @@ const FlashcardScreen = ({ route, navigation }) => {
       };
 
       const flashcardRef = doc(collection(db, "flashcard"));
-      // console.log("FlashcardRef", flashcardRef);
       await setDoc(flashcardRef, newFlashcardData);
-
       const newFlashcardID = flashcardRef.id;
-      // console.log("Flashcard created successfully with ID:", newFlashcardID);
 
       const flashcardListRef = doc(db, "flashcardList", deckID);
       await updateDoc(flashcardListRef, {
@@ -311,7 +292,6 @@ const FlashcardScreen = ({ route, navigation }) => {
       if (languages[1] === "English") {
         translation = newFlashcardData.destination;
       }
-
       if (languages[0] !== "English" && languages[0] !== "Hokkien") {
         word = await translateText(newFlashcardData.destination, languages[0]);
       }
@@ -410,7 +390,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     if (!flashcardId) {
       throw new Error("No flashcard ID found");
     }
-
     try {
       setFlashcards((prevFlashcards) => {
         const updatedFlashcards = prevFlashcards.filter(
@@ -476,7 +455,6 @@ const FlashcardScreen = ({ route, navigation }) => {
           }
         }
       }
-
       console.log(
         "Flashcard successfully deleted from all relevant decks across categories"
       );
@@ -568,7 +546,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               if (languages[1] !== "English" && languages[1] !== "Hokkien") {
                 translation = await translateText(flashcard.destination, languages[1]);
               }
-
               return {
                 ...flashcard,
                 word,
@@ -576,8 +553,9 @@ const FlashcardScreen = ({ route, navigation }) => {
               };
             })
           );
-
           setFlashcards(processedFlashcards);
+          const finalCards = isShuffled ? shuffleArray(processedFlashcards) : processedFlashcards;
+          setFlashcards(finalCards);
         } else {
           console.log("Deck not found.");
         }
@@ -638,8 +616,6 @@ const FlashcardScreen = ({ route, navigation }) => {
             </Button>
           </Box>
         )}
-
-
         <Center flex={1} px="3">
           <VStack space={4} alignItems="center">
             <Tooltip
@@ -687,7 +663,6 @@ const FlashcardScreen = ({ route, navigation }) => {
               </Text>
             </Box>
 
-
             <TouchableOpacity onPress={handleFlip} accessibilityLabel="Flip Card">
 
               <Animated.View
@@ -717,7 +692,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                 >
                   {showTranslation ? (
                     <>
-
                       <Text fontSize="2xl" color={colors.onSurface}>
                         {flashcards[currentCardIndex]?.translation}
                       </Text>
@@ -735,255 +709,109 @@ const FlashcardScreen = ({ route, navigation }) => {
                       )}
                     </>
                   )}
+                  <Ionicons
+                    name="repeat-outline"
+                    size={24}
+                    color={colors.onSurface}
+                    style={{ position: 'absolute', bottom: 8, right: 8 }}
+                  />
                 </Box>
               </Animated.View>
             </TouchableOpacity>
-
-
-
-
-            <HStack space={4} alignItems="center">
-              <Pressable
-                borderRadius="50"
-                onPressIn={() => setIsPressedLeft(true)}
-                onPressOut={() => setIsPressedLeft(false)}
-                onPress={handleBack}
-              >
-                <Ionicons
-                  name={
-                    isPressedLeft
-                      ? "chevron-back-circle"
-                      : "chevron-back-circle-outline"
-                  }
-                  color={colors.onSurface}
-                  size={50}
-                />
-              </Pressable>
-              <Text fontSize="lg" color={colors.onSurface}>
-                {currentCardIndex + 1}/{flashcards.length}
-              </Text>
-              <Pressable
-                borderRadius="50"
-                onPressIn={() => setIsPressedRight(true)}
-                onPressOut={() => setIsPressedRight(false)}
-                onPress={handleNext}
-              >
-                <Ionicons
-                  name={
-                    isPressedRight
-                      ? "chevron-forward-circle"
-                      : "chevron-forward-circle-outline"
-                  }
-                  color={colors.onSurface}
-                  size={50}
-                />
-              </Pressable>
+            <HStack
+              width="300px" 
+              justifyContent="center"
+              alignItems="center"
+              mt={2}
+              position="relative"
+            >
+              <Box position="absolute" left={0}>
+                <Button
+                  onPress={() => {
+                    setFlashcards(shuffleArray(flashcards));
+                    setCurrentCardIndex(0);
+                  }}
+                  bg="transparent"
+                  width="36px"
+                  height="36px"
+                  _hover={{ bg: "#d3d3d3" ,
+                    borderRadius: "full",
+                  }}
+                  px={0}
+                  ml={1}
+                >
+                  <Ionicons
+                    name="shuffle"
+                    size={24}
+                    color={colors.onSurface}
+                  />
+                </Button>
+              </Box>
+              <FlashcardNav
+                currentIndex={currentCardIndex}
+                total={flashcards.length}
+                onBack={handleBack}
+                onNext={handleNext}
+                isPressedLeft={isPressedLeft}
+                isPressedRight={isPressedRight}
+                setIsPressedLeft={setIsPressedLeft}
+                setIsPressedRight={setIsPressedRight}
+                color={colors.onSurface}
+              />
             </HStack>
           </VStack>
-          {/* create pop up */}
-          <Modal
+          <FlashcardFormModal // CREATE MODAL
             isOpen={showNewFlashcard}
             onClose={() => setShowNewFlashcard(false)}
-            size="lg"
-          >
-            <Modal.Content width="80%" maxWidth="350px">
-              <Modal.CloseButton />
-              <Modal.Header>Create new flashcard</Modal.Header>
-              <Modal.Body>
-                <VStack space={4}>
-                  <Input
-                    placeholder="Enter English word"
-                    value={enteredTranslation}
-                    onChangeText={setEnteredTranslation}
-                  />
-                  <Button onPress={handleAutofill} isDisabled={!enteredTranslation}>
-                    Autofill
-                  </Button>
-                  <Input
-                    placeholder="Enter Hokkien translation"
-                    value={enteredWord}
-                    onChangeText={setEnteredWord}
-                  />
-                  <Input
-                    placeholder="Option 1"
-                    value={option1}
-                    onChangeText={setOption1}
-                  />
-                  <Input
-                    placeholder="Option 2"
-                    value={option2}
-                    onChangeText={setOption2}
-                  />
-                  <Input
-                    placeholder="Option 3"
-                    value={option3}
-                    onChangeText={setOption3}
-                  />
-                  <Select
-                    selectedValue={type}
-                    placeholder="Select Type"
-                    onValueChange={(itemValue) => setType(itemValue)}
-                  >
-                    <Select.Item label="Word" value="word" />
-                    <Select.Item label="Sentence" value="sentence" />
-                  </Select>
-                </VStack>
-              </Modal.Body>
-              <Modal.Footer>
-                <HStack space={2}>
-                  <Button onPress={handleCreate}>
-                    <HStack space={1} alignItems="center">
-                      <Ionicons
-                        name={"save-outline"}
-                        size={30}
-                        color={"#FFFFFF"}
-                      />
-                      <Text color={"#FFFFFF"}>Save</Text>
-                    </HStack>
-                  </Button>
-                  <Button
-                    onPress={() => setShowNewFlashcard(false)}
-                    variant="ghost"
-                    borderWidth={1}
-                    borderColor="coolGray.200"
-                  >
-                    Cancel
-                  </Button>
-                </HStack>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
-
-          {/* update modal */}
-          <Modal
+            mode="create"
+            values={{
+              enteredWord,
+              enteredTranslation,
+              option1,
+              option2,
+              option3,
+              type,
+            }}
+            setters={{
+              setEnteredWord,
+              setEnteredTranslation,
+              setOption1,
+              setOption2,
+              setOption3,
+              setType,
+            }}
+            onSubmit={handleCreate}
+            onAutofill={handleAutofill}
+          />
+          <FlashcardFormModal // UPDATE MODAL
             isOpen={showUpdates}
             onClose={() => setShowUpdates(false)}
-            size="lg"
-          >
-            <Modal.Content width="80%" maxWidth="350px">
-              <Modal.CloseButton />
-              <Modal.Header>Update Flashcard</Modal.Header>
-              <Modal.Body>
-                <VStack space={3}>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Word:</Text>
-                    <Input
-                      flex={1}
-                      value={enteredWord}
-                      onChangeText={setEnteredWord}
-                    />
-                  </HStack>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Translation:</Text>
-                    <Input
-                      flex={1}
-                      value={enteredTranslation}
-                      onChangeText={setEnteredTranslation}
-                    />
-                  </HStack>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Option 1:</Text>
-                    <Input flex={1} value={option1} onChangeText={setOption1} />
-                  </HStack>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Option 2:</Text>
-                    <Input flex={1} value={option2} onChangeText={setOption2} />
-                  </HStack>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Option 3:</Text>
-                    <Input flex={1} value={option3} onChangeText={setOption3} />
-                  </HStack>
-                  <HStack space={2} alignItems="center">
-                    <Text width="100px">Type:</Text>
-                    <Select
-                      flex={1}
-                      selectedValue={type}
-                      placeholder="Select Type"
-                      onValueChange={(itemValue) => setType(itemValue)}
-                    >
-                      <Select.Item label="Word" value="word" />
-                      <Select.Item label="Sentence" value="sentence" />
-                    </Select>
-                  </HStack>
-                </VStack>
-              </Modal.Body>
-              <Modal.Footer>
-                <HStack space={2}>
-                  <Button onPress={handleUpdate}>
-                    <HStack space={1} alignItems="center">
-                      <Ionicons
-                        name={"save-outline"}
-                        size={30}
-                        color={"#FFFFFF"}
-                      />
-                      <Text color={"#FFFFFF"}>Save</Text>
-                    </HStack>
-                  </Button>
-                  <Button
-                    onPress={() => setShowUpdates(false)}
-                    variant="ghost"
-                    borderWidth={1}
-                    borderColor="coolGray.200"
-                  >
-                    Cancel
-                  </Button>
-                </HStack>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
-
-          {/* delete modal */}
-          <Modal
+            mode="update"
+            values={{
+              enteredWord,
+              enteredTranslation,
+              option1,
+              option2,
+              option3,
+              type,
+            }}
+            setters={{
+              setEnteredWord,
+              setEnteredTranslation,
+              setOption1,
+              setOption2,
+              setOption3,
+              setType,
+            }}
+            onSubmit={handleUpdate}
+          />
+          <DeleteFlashcardModal
             isOpen={showConfirmDelete}
             onClose={() => setShowConfirmDelete(false)}
-            size="lg"
-          >
-            <Modal.Content maxWidth="400px">
-              <Modal.CloseButton />
-              <Modal.Header>
-                <Text fontSize="xl" fontWeight={"bold"}>
-                  Delete Confirmation
-                </Text>
-              </Modal.Header>
-              <Modal.Body>
-                <Box
-                  backgroundColor={"red.200"}
-                  borderWidth={1}
-                  borderRadius={4}
-                  borderColor={"red.300"}
-                  padding={3}
-                >
-                  <Text color={"red.800"}>
-                    Are you sure you want to delete the flashcard '
-                    {flashcards[currentCardIndex].word}'?
-                  </Text>
-                </Box>
-
-                <HStack space={2} alignItems="center" marginTop={4}></HStack>
-              </Modal.Body>
-              <Modal.Footer>
-                <HStack space={4}>
-                  <Button
-                    variant="ghost"
-                    onPress={() => setShowConfirmDelete(false)}
-                    borderWidth={1}
-                    borderColor="coolGray.200"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onPress={handlePermaDelete}
-                    colorScheme="red"
-                    borderWidth={1}
-                    borderColor="red.500"
-                    disabled={disableDeleteButton}
-                  >
-                    Delete
-                  </Button>
-                </HStack>
-              </Modal.Footer>
-            </Modal.Content>
-          </Modal>
+            onDelete={handlePermaDelete}
+            word={flashcards[currentCardIndex].word}
+            translation={flashcards[currentCardIndex].translation}
+          />
         </Center>
       </Box>
     </ScrollView>
