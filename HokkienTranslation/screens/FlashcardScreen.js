@@ -718,18 +718,34 @@ const FlashcardScreen = ({ route, navigation }) => {
                 </Box>
               </Animated.View>
             </TouchableOpacity>
-
-            <FlashcardNav
-              currentIndex={currentCardIndex}
-              total={flashcards.length}
-              onBack={handleBack}
-              onNext={handleNext}
-              isPressedLeft={isPressedLeft}
-              isPressedRight={isPressedRight}
-              setIsPressedLeft={setIsPressedLeft}
-              setIsPressedRight={setIsPressedRight}
-              color={colors.onSurface}
-            />
+            <HStack
+              
+            >
+              <Button
+                onPress={() => {
+                  setFlashcards(shuffleArray(flashcards));
+                  setCurrentCardIndex(0);
+                }}
+                //_hover={{bg: colors.darkerPrimaryContainer}}
+              >
+                <Ionicons
+                      name="shuffle"
+                      size={24}
+                      color={colors.onSurface}
+                />
+              </Button>
+              <FlashcardNav
+                currentIndex={currentCardIndex}
+                total={flashcards.length}
+                onBack={handleBack}
+                onNext={handleNext}
+                isPressedLeft={isPressedLeft}
+                isPressedRight={isPressedRight}
+                setIsPressedLeft={setIsPressedLeft}
+                setIsPressedRight={setIsPressedRight}
+                color={colors.onSurface}
+              />
+            </HStack>
           </VStack>
           
           <FlashcardFormModal // CREATE MODAL
