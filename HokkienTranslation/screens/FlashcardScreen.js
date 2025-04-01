@@ -38,6 +38,7 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [showTranslation, setShowTranslation] = useState(false);
   const [deckID, setDeckID] = useState("");
   //  const [translatedText, setTranslatedText] = useState("");
+  const [isShuffled, setIsShuffled] = useState(true);
 
   // UI Interactions
   const [showNewFlashcard, setShowNewFlashcard] = useState(false);
@@ -96,6 +97,15 @@ const FlashcardScreen = ({ route, navigation }) => {
       },
     })
   ).current;
+
+  const shuffleArray = (array) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };  
 
   const getDeckIDByName = async (deckName) => {
     try {
@@ -544,6 +554,8 @@ const FlashcardScreen = ({ route, navigation }) => {
             })
           );
           setFlashcards(processedFlashcards);
+          const finalCards = isShuffled ? shuffleArray(processedFlashcards) : processedFlashcards;
+          setFlashcards(finalCards);
         } else {
           console.log("Deck not found.");
         }
