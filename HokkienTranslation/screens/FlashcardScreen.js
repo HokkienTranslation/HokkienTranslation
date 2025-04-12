@@ -93,11 +93,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   const [option3, setOption3] = useState("");
   const [type, setType] = useState("");
 
-  const flashcardListId = route.params.flashcardListId || "";
-  const categoryId = route.params.categoryId || "";
-  const createdBy = route.params.createdBy || "";
-  const [tooltipOpen, setTooltipOpen] = useState(createdBy === "starter_words");
-
   // For responsive flashcards 
   const direction = useBreakpointValue({
     base: 'column',  
@@ -115,15 +110,6 @@ const FlashcardScreen = ({ route, navigation }) => {
   // flashcardVisibilityStates.englishDefinition ||
   flashcardVisibilityStates.hokkienSentence ||
   flashcardVisibilityStates.englishSentence;
-
-  const [deckID, setDeckID] = useState("");
-
-  const flashcardListName = route.params.deckName || "";
-  const currentUser = route.params.currentUser;
-  const [flashcards, setFlashcards] = useState(route.params.cardList || []);
-  const [translatedText, setTranslatedText] = useState("");
-  //const [isPermanentDelete, setIsPermanentDelete] = useState(false);
-  const [disableDeleteButton, setDisableDeleteButton] = useState(false);
 
   const translateText = async (text, language) => {
     try {
@@ -204,10 +190,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     fetchDeckID();
   }, [flashcardListName]);
 
-  const shuffleArray = (array) => {
-    return array.sort(() => Math.random() - 0.5);
-  };
-
   const fetchFlashcardsByDeck = async (deckName) => {
     try {
         const deckCollection = collection(db, "flashcardList");
@@ -225,7 +207,7 @@ const FlashcardScreen = ({ route, navigation }) => {
             );
             const flashcardSnapshot = await getDocs(flashcardQuery);
 
-            let flashcardsWithSentences = await Promise.all(
+            const flashcardsWithSentences = await Promise.all(
                 flashcardSnapshot.docs.map(async (flashcardDoc) => {
                     const flashcardData = flashcardDoc.data();
                     const contextSentenceId = flashcardData.contextSentence;
@@ -255,7 +237,6 @@ const FlashcardScreen = ({ route, navigation }) => {
                 })
             );
             
-            flashcardsWithSentences = shuffleArray(flashcardsWithSentences);
             setFlashcards(flashcardsWithSentences);
             console.log("Updated flashcards:", flashcardsWithSentences);
         } else {
@@ -660,6 +641,7 @@ const FlashcardScreen = ({ route, navigation }) => {
 
     let hokkien;
     try {
+      setEnteredWord("Loading...");
       hokkien = await fetchTranslation(enteredTranslation);
     } catch (error) {
       console.error("Error fetching translation:", error);
@@ -719,7 +701,7 @@ const FlashcardScreen = ({ route, navigation }) => {
                 ...flashcard,
                 word,
                 translation,
-                contextSentence, 
+                contextSentence, // somehow works?
               };
             })
           );
@@ -731,7 +713,7 @@ const FlashcardScreen = ({ route, navigation }) => {
         }
       } catch (error) {
         console.error("Error fetching or generating flashcards:", error);
-        setErrorMessage("Error with fetching or generating flashcards. Please try again later.");
+        // setErrorMessage("Error with fetching or generating flashcards. Please try again later.");
       }
     };
 
