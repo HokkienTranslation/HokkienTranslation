@@ -274,7 +274,7 @@ const ResultScreen = ({ route }) => {
             </Text>
             <HStack alignItems="center">
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant} flex={1} flexWrap="wrap">
-                {dataFromDatabase?.translation?.audioURL}
+                {query}
               </Text>
               <IconButton
                 icon={
