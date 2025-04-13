@@ -133,12 +133,8 @@ const FlashcardCategory = () => {
     }
   };
 
-
-  
   useEffect(() => {
-    
     if (isFocused) {
-       
        getCategories(db).then((categoryList) => {
         categories = categoryList;
         console.log("Categories: ", categories);
@@ -156,8 +152,6 @@ const FlashcardCategory = () => {
        index = 0
     }
   }, [isFocused]);
-
-  
 
   const handleCategoryPress = async (category, navigation) => {
     // for flashcard lists/decks
