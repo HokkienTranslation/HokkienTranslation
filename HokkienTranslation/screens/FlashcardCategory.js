@@ -128,8 +128,6 @@ const FlashcardCategory = () => {
     }
   };
 
-
-  
   useEffect(() => {
     if (isFocused) {
        
@@ -302,7 +300,7 @@ const FlashcardCategory = () => {
     };
     return (
       <Pressable
-        style={[styles.categoryBox, isPressed && styles.categoryBoxPressed]}
+        // style={[styles.categoryBox, isPressed && styles.categoryBoxPressed]}
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => setIsPressed(false)}
         onPress={() => handleCategoryPress(category, navigation)}
