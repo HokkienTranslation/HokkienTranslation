@@ -24,6 +24,7 @@ import { useComponentVisibility } from "./context/ComponentVisibilityContext";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
+import DictToFlashcardModal from "./CRUD flashcard modals/DictToFlashcard";
 
 const TextToImage = ({ imageUrl }) => {
   if (!imageUrl) {
@@ -61,6 +62,7 @@ const ResultScreen = ({ route }) => {
   const [databaseErrorMessage, setDatabaseErrorMessage] = useState(null);
   const [feedbackErrorMessage, setFeedbackErrorMessage] = useState(null);
   const [dismissedError, setDismissedError] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
 
   const feedbackWords = {
     thumbsUp: [
@@ -252,25 +254,54 @@ const ResultScreen = ({ route }) => {
           </Box>
         )}
 
+        <DictToFlashcardModal 
+          isOpen={openModal}
+          onClose={() => (setOpenModal(false))}
+          hokkien={hokkienTranslation}
+          english={query}
+          romanization={dataFromDatabase?.translation?.romanization}
+          audioUrl={dataFromDatabase?.translation?.audioURL}
+        />
+
         {/* Query */}
-        <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
-          Query
-        </Text>
-        <HStack alignItems="center">
-          <Text fontSize="2xl" bold color={colors.onSurfaceVariant}>
-            {query}
-          </Text>
-          <IconButton
-            icon={
-              <Ionicons
-                name="copy-outline"
-                size={20}
-                color={colors.onPrimaryContainer}
+        <HStack justifyContent="space-between" alignItems="flex-start" mb={4} space={4}>
+        <Box flex={1} mr={2}>
+          <VStack >
+            <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
+              Query
+            </Text>
+            <HStack alignItems="center">
+              <Text fontSize="2xl" bold color={colors.onSurfaceVariant} flex={1} flexWrap="wrap">
+                {query}
+              </Text>
+              <IconButton
+                icon={
+                  <Ionicons
+                    name="copy-outline"
+                    size={20}
+                    color={colors.onPrimaryContainer}
+                  />
+                }
+                onPress={() => copyToClipboard(query)}
               />
-            }
-            onPress={() => copyToClipboard(query)}
-          />
-        </HStack>
+            </HStack>
+          </VStack>
+        </Box>
+        <Button
+          onPress={() => {
+            setOpenModal(true);
+          }}
+          leftIcon={<Ionicons name="add" size={20} color={colors.onPrimaryContainer}/>}
+          bg={colors.primaryContainer}
+          _text={{ color: colors.onPrimaryContainer, fontWeight: "bold", fontSize: "sm" }}
+          _hover={{ bg: colors.onPrimaryContainer, opacity: 0.8 }}
+          _pressed={{ bg: colors.onPrimaryContainer, opacity: 0.6 }}
+          borderRadius="full"
+          alignSelf="center"
+        >
+          Add to Flashcards
+        </Button>
+      </HStack>
         <Divider my={2} />
         {/* Translation */}
         <Text fontSize="lg" fontWeight="bold" color={colors.onSurface}>
