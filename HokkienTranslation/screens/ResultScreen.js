@@ -260,7 +260,9 @@ const ResultScreen = ({ route }) => {
           hokkien={hokkienTranslation}
           english={query}
           romanization={dataFromDatabase?.translation?.romanization}
-          audioUrl={dataFromDatabase?.translation?.audioURL}
+          audioUrl={dataFromDatabase?.translation?.audioUrl}
+          contextSentence={dataFromDatabase?.translation?.sentence}
+          downloadUrl={dataFromDatabase?.sentence?.imageURL}
         />
 
         {/* Query */}
@@ -272,7 +274,7 @@ const ResultScreen = ({ route }) => {
             </Text>
             <HStack alignItems="center">
               <Text fontSize="2xl" bold color={colors.onSurfaceVariant} flex={1} flexWrap="wrap">
-                {query}
+                {dataFromDatabase?.translation?.audioURL}
               </Text>
               <IconButton
                 icon={

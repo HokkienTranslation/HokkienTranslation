@@ -55,6 +55,8 @@ export default function DictToFlashcardModal({
   english,
   romanization,
   audioUrl,
+  contextSentence,
+  downloadUrl,
 }) {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -130,6 +132,8 @@ export default function DictToFlashcardModal({
         createdBy: currentUser,
         romanization: romanization,
         audioUrl: audioUrl,
+        contextSentence: contextSentence,
+        downloadUrl: downloadUrl,
     };
 
     const flashcardRef = doc(collection(db, "flashcard"));
