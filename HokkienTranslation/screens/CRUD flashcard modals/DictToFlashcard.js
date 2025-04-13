@@ -131,9 +131,9 @@ export default function DictToFlashcardModal({
         createdAt: serverTimestamp(),
         createdBy: currentUser,
         romanization: romanization,
-        audioUrl: audioUrl,
-        contextSentence: contextSentence,
-        downloadUrl: downloadUrl,
+        audioUrl: audioUrl || null,
+        contextSentence: contextSentence || " ",
+        downloadUrl: downloadUrl || null,
     };
 
     const flashcardRef = doc(collection(db, "flashcard"));
