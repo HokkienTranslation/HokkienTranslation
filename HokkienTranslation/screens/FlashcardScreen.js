@@ -51,6 +51,7 @@ import { fetchTranslation } from "../backend/API/HokkienTranslationToolService";
 import { fetchNumericTones, fetchAudioBlob } from "../backend/API/TextToSpeechService";
 import { uploadAudioFromBlob } from "../backend/database/UploadtoDatabase";
 import ExampleSentence from "./components/ExampleSentence";
+import { generateOptions } from "../backend/API/GenerateOptions";
 
 const FlashcardScreen = ({ route, navigation }) => {
   // Theme and Language
@@ -612,19 +613,6 @@ const FlashcardScreen = ({ route, navigation }) => {
     } finally {
       setShowConfirmDelete(false);
       setDisableDeleteButton(false);
-    }
-  };
-
-  const generateOptions = async (options) => {
-    try {
-      const prompt = `Given the word(s): ${options}, provide another word that belongs to the same category. The word must be similar in type but not identical. Respond with only one word and no punctuation.`;
-      const response = await callOpenAIChat(prompt);
-      // console.log("OpenAI Response:", response);
-      return response;
-    } catch (error) {
-      console.error("Error generating options:", error);
-      setErrorMessage("Error generating options. Please try again later.");
-      return "Error generating options.";
     }
   };
 
