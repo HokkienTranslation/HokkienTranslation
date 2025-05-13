@@ -19,6 +19,7 @@ import { LanguageProvider } from "./screens/context/LanguageProvider";
 import { ComponentVisibilityProvider } from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 import FlashcardAdd from "./screens/FlashcardAdd";
+import {usePushNotifications} from "./backend/usePushNotifications";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -144,6 +145,8 @@ const AppContent = () => {
 };
 
 export default function App() {
+    const {expoPushToken, notification} = usePushNotifications()
+    const data = JSON.stringify(notification, undefined, 2);
   return (
     <ThemeProvider>
       <LanguageProvider>

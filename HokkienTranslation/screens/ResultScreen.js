@@ -254,7 +254,7 @@ const ResultScreen = ({ route }) => {
           </Box>
         )}
 
-        <DictToFlashcardModal 
+        <DictToFlashcardModal
           isOpen={openModal}
           onClose={() => (setOpenModal(false))}
           hokkien={hokkienTranslation}
@@ -449,7 +449,7 @@ const ResultScreen = ({ route }) => {
                         />
                       </HStack>
                       {visibilityStates.textToSpeech && (
-                        <TextToSpeech prompt={hokkienSentence} type={'sentence'} /> 
+                        <TextToSpeech prompt={hokkienSentence} type={'sentence'} />
                       )}
                     </VStack>
                   )}
