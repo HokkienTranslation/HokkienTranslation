@@ -146,7 +146,9 @@ const AppContent = () => {
 
 export default function App() {
     const {expoPushToken, notification} = usePushNotifications()
+    console.log("Expo Push Token:", expoPushToken?.data ?? "")
     const data = JSON.stringify(notification, undefined, 2);
+    console.log("Notification Data:", data)
   return (
     <ThemeProvider>
       <LanguageProvider>

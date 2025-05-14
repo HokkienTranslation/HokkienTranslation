@@ -14,7 +14,7 @@ export const usePushNotifications = (): PushNotificationState => {
     Notifications.setNotificationHandler({
         handleNotification: async () => (
             {
-            shouldPlaySound: false,
+                shouldPlaySound: false,
                 shouldShowAlert: true,
                 shouldSetBadge: false,
             })
@@ -27,45 +27,53 @@ export const usePushNotifications = (): PushNotificationState => {
     const responseListener = useRef<Notifications.Subscription>();
 
     async function registerForPushNotificationsAsync() {
+        console.log("Starting push notification registration");
         let token;
 
         if (Device.isDevice) {
+            console.log("Running on physical device");
             const {status: existingStatus} = await Notifications.getPermissionsAsync();
+            console.log("Existing permission status:", existingStatus);
 
             let finalStatus = existingStatus;
 
             if (existingStatus !== "granted") {
+                console.log("Requesting permissions...");
                 const {status} = await Notifications.requestPermissionsAsync();
                 finalStatus = status;
+                console.log("New permission status:", finalStatus);
             }
+
             if (finalStatus !== "granted") {
+                console.log("Permission denied");
                 alert("Failed to get push token for push notification!");
+                return undefined;
             }
 
-            token = await Notifications.getExpoPushTokenAsync({
-                projectId: Constants.expoConfig?.extra?.eas?.projectId,
-                }
-            )
-            if (Platform.OS === "android") {
-                Notifications.setNotificationChannelAsync("default", {
-                    name: "default",
-                    importance: Notifications.AndroidImportance.MAX,
-                    sound: "default",
-                    vibrationPattern: [0, 250, 250, 250],
-                    lightColor: "#FF231F7C",
+            console.log("Permissions granted, getting token...");
+            console.log("Project ID:", Constants.expoConfig?.extra?.eas?.projectId);
+
+            try {
+                token = await Notifications.getExpoPushTokenAsync({
+                    projectId: Constants.expoConfig?.extra?.eas?.projectId,
                 });
+                console.log("Token successfully generated:", token);
+                return token;
+            } catch (error) {
+                console.error("Error getting push token:", error);
+                return undefined;
             }
-
-            return token;
-        }   else {
-            console.log("ERROR: Please use a physical device");
+        } else {
+            console.log("Not a physical device");
+            return undefined;
         }
     }
+
 
     useEffect(() => {
         registerForPushNotificationsAsync().then((token) => {
             setExpoPushToken(token);
-        } )
+        })
 
         notificationListener.current =
             Notifications.addNotificationReceivedListener((notification) => {
