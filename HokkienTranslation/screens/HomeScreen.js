@@ -13,17 +13,40 @@ import {
 } from "native-base";
 import { useTheme } from "./context/ThemeProvider";
 import { collection, getDocs } from "firebase/firestore";
-import { db } from "../backend/database/Firebase";
+import { db, auth } from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import { useRegisterAndStoreToken } from "../backend/database/RegisterAndStoreToken";
 
 export default function HomeScreen({ navigation }) {
   const [queryText, setQueryText] = useState("");
   const [randomInputs, setRandomInputs] = useState([]);
   const { theme, themes } = useTheme();
   const colors = themes[theme];
+  const [userCred, setUserCred] = useState(null);
 
   // console.log("Current User: ", getCurrentUser());
+
+    useEffect(() => {
+    const currentUser = auth.currentUser;
+    if (currentUser) {
+      // Create a structure similar to UserCredential
+      setUserCred({
+        user: currentUser
+      });
+      console.log("Current user set in HomeScreen:", currentUser.uid);
+    }
+  }, []);
+
+  // Register push token when user is available
+  const token = useRegisterAndStoreToken(userCred);
+
+  // Log when token is successfully registered
+  useEffect(() => {
+    if (token && userCred) {
+      console.log("Token registered in HomeScreen:", token.data);
+    }
+  }, [token, userCred]);
 
   const handleTextChange = (text) => {
     const cleanedText = text.replace(/\n/, "");

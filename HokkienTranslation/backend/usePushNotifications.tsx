@@ -4,10 +4,23 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import {Platform} from "react-native";
+import {setupFlashcardCategories} from "../screens/Notifications/InteractiveNotification";
+import {navigate} from "../screens/Navigation/RootNavigation";
+
+interface FlashcardData {
+    origin: string;
+    destination: string;
+    options: string[];
+    selectedIndex: number;
+    correctAnswerIndex: number;
+    flashcardId: string;
+}
 
 export interface PushNotificationState {
     notification?: Notifications.Notification;
     expoPushToken?: Notifications.ExpoPushToken;
+    isCorrectAnswer?: boolean;
+    flashcardData?: any;
 }
 
 export const usePushNotifications = (): PushNotificationState => {
@@ -22,6 +35,8 @@ export const usePushNotifications = (): PushNotificationState => {
 
     const [expoPushToken, setExpoPushToken] = useState<Notifications.ExpoPushToken | undefined>();
     const [notification, setNotification] = useState<Notifications.Notification | undefined>();
+    const [isCorrectAnswer, setIsCorrectAnswer] = useState<boolean | undefined>();
+    const [flashcardData, setFlashcardData] = useState<FlashcardData | undefined>();
 
     const notificationListener = useRef<Notifications.Subscription>();
     const responseListener = useRef<Notifications.Subscription>();
@@ -71,19 +86,68 @@ export const usePushNotifications = (): PushNotificationState => {
 
 
     useEffect(() => {
+
+        setupFlashcardCategories(); // Promise returned from flashcard categories is ignored but flashcard categories
+        // does not return anything?
+        console.log("Notification Categories set up in usePushNotifications");
+
         registerForPushNotificationsAsync().then((token) => {
             setExpoPushToken(token);
         })
 
-        notificationListener.current =
-            Notifications.addNotificationReceivedListener((notification) => {
-                setNotification(notification);
-            })
+        // Listen for incoming notifications
+        notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+            console.log("Notification received:", notification);
+            setNotification(notification);
+        });
 
-        responseListener.current =
-            Notifications.addNotificationResponseReceivedListener((response) => {
-                console.log(response);
-            })
+        // Listen for user interaction with notifications
+        responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+            console.log("User responded to notification(foreground):", response);
+
+            // Extract data from the notification response
+            const {actionIdentifier} = response;
+            const data = response.notification.request.content.data;
+
+            // Check if this is a flashcard quiz notification
+            if (data.correctAnswerIndex !== undefined && data.options) {
+                // Get the selected option index based on the action button pressed
+                let selectedIndex;
+                if (actionIdentifier === 'option_1') selectedIndex = 0;
+                else if (actionIdentifier === 'option_2') selectedIndex = 1;
+                else if (actionIdentifier === 'option_3') selectedIndex = 2;
+                else selectedIndex = -1; // Default action (e.g., tapping the notification)
+
+                // Check if the selected option is correct
+                const isCorrect = selectedIndex === data.correctAnswerIndex;
+
+                // Store the result and flashcard data for the component to use
+                setIsCorrectAnswer(isCorrect);
+                setFlashcardData({
+                    origin: data.origin,
+                    destination: data.destination,
+                    options: data.options,
+                    selectedIndex,
+                    correctAnswerIndex: data.correctAnswerIndex,
+                    flashcardId: data.flashcardId
+                });
+                // Navigate to feedback screen
+                navigate('FlashcardFeedback', {
+                    isCorrect,
+                    origin: data.origin,
+                    destination: data.destination,
+                    contextSentence: data.contextSentence
+                });
+
+                // Handle the response
+                if (isCorrect) {
+                    console.log('Correct answer!');
+                    // You could call a function here to award points to the user
+                } else {
+                    console.log('Incorrect answer');
+                }
+            }
+        });
 
         return () => {
             Notifications.removeNotificationSubscription(
@@ -93,5 +157,5 @@ export const usePushNotifications = (): PushNotificationState => {
         }
     }, []);
 
-    return {expoPushToken, notification};
+    return {expoPushToken, notification, isCorrectAnswer, flashcardData};
 }

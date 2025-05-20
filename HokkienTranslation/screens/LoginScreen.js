@@ -24,14 +24,17 @@ import {
 } from "firebase/auth";
 import { auth } from "../backend/database/Firebase";
 import { useTheme } from "./context/ThemeProvider";
+import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState("");
+  // const [userCred, setUserCred] = useState(null);
   const { theme, themes } = useTheme();
   const colors = themes[theme];
+  // const token = useRegisterAndStoreToken(userCred);
 
   const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity
 
@@ -61,7 +64,9 @@ export default function LoginScreen({ navigation }) {
   const loginWithEmail = () => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
+        // console.log("User logged in:", userCredential.user);
         setMessage("Successfully logging you in");
+        // setUserCred(userCredential);
         navigation.dispatch(
           CommonActions.reset({
             index: 0,

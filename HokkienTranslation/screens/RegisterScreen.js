@@ -6,6 +6,7 @@ import { CommonActions } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../backend/database/Firebase";
 import { useTheme } from "./context/ThemeProvider";
+import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');
@@ -24,7 +25,7 @@ export default function RegisterScreen({ navigation }) {
       useNativeDriver: true,
     }).start();
   }, [fadeAnim]);
-  
+
   const registerWithEmail = () => {
     if (password !== passwordConfirmation) {
       setMessage("Passwords don't match!");
@@ -33,6 +34,8 @@ export default function RegisterScreen({ navigation }) {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         setMessage("Successfully registered!");
+        const token = useRegisterAndStoreToken(userCredential);
+        console.warn("ExpoPushToken at login:", token);
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
