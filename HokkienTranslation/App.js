@@ -19,7 +19,7 @@ import {LanguageProvider} from "./screens/context/LanguageProvider";
 import {ComponentVisibilityProvider} from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 import FlashcardAdd from "./screens/FlashcardAdd";
-import {usePushNotifications} from "./backend/usePushNotifications";
+import {usePushNotifications} from "./backend/notifications/usePushNotifications";
 import {navigationRef} from "./screens/Navigation/RootNavigation";
 import FlashcardFeedback from "./screens/Notifications/NotificationFeedbackScreen";
 

@@ -4,8 +4,8 @@ import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 import {Platform} from "react-native";
-import {setupFlashcardCategories} from "../screens/Notifications/InteractiveNotification";
-import {navigate} from "../screens/Navigation/RootNavigation";
+import {setupFlashcardCategories} from "../../screens/Notifications/InteractiveNotification";
+import {navigate} from "../../screens/Navigation/RootNavigation";
 
 interface FlashcardData {
     origin: string;

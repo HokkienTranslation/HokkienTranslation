@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 import { UserCredential } from 'firebase/auth';
 import { db } from './Firebase';
-import { usePushNotifications } from '../usePushNotifications';
+import { usePushNotifications } from '../notifications/usePushNotifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 

@@ -2,10 +2,11 @@ import {useState, useRef, useEffect} from "react";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import {Platform} from "react-native";
-import {setupFlashcardCategories} from "../screens/Notifications/InteractiveNotification";
-import {navigate} from "../screens/Navigation/RootNavigation";
-import {db, auth} from "./database/Firebase"
-import {collection, doc, getDoc, getDocs, limit, query, updateDoc, serverTimestamp} from 'firebase/firestore';
+import {setupFlashcardCategories} from "../../screens/Notifications/InteractiveNotification";
+import {navigate} from "../../screens/Navigation/RootNavigation";
+import {db, auth} from "../database/Firebase"
+import {collection, doc, getDoc, getDocs, limit, query, updateDoc, serverTimestamp,} from 'firebase/firestore';
+import {getRandomFlashcard} from "./GetRandomFlashcard";
 
 
 interface FlashcardData {
@@ -145,41 +146,6 @@ export const useLocalNotifications = (): LocalNotificationState => {
             clearTimeout(inactivityTimerRef.current);
         };
     }, []);
-
-    // Function to fetch a random flashcard from Firestore
-    const getRandomFlashcard = async (flashcardId?: string) => {
-        try {
-            let flashcardDoc;
-
-            if (flashcardId) {
-                // Get specific flashcard if ID is provided
-                const docRef = doc(db, "flashcard", flashcardId);
-                flashcardDoc = await getDoc(docRef);
-                if (!flashcardDoc.exists()) {
-                    console.error("Flashcard not found:", flashcardId);
-                    return null;
-                }
-            } else {
-                // Get a random flashcard
-                const flashcardsRef = collection(db, "flashcard");
-                const q = query(flashcardsRef, limit(1));
-                const flashcardsSnapshot = await getDocs(q);
-                if (flashcardsSnapshot.empty) {
-                    console.log("No flashcards found");
-                    return null;
-                }
-                flashcardDoc = flashcardsSnapshot.docs[0];
-            }
-
-            const flashcard = flashcardDoc.data();
-            flashcard.id = flashcardDoc.id;
-
-            return flashcard;
-        } catch (error) {
-            console.error("Error fetching flashcard:", error);
-            return null;
-        }
-    };
 
     // Function to schedule a flashcard quiz notification
     const scheduleFlashcardQuiz = async (flashcardId?: string, delaySeconds = 1) => {

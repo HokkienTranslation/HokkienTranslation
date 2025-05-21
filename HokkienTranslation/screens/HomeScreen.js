@@ -18,7 +18,7 @@ import QuickInputWords from "./components/QuickInputWords";
 import getCurrentUser from "../backend/database/GetCurrentUser";
 import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
 import {useFocusEffect} from "@react-navigation/native";
-import {useLocalNotifications} from "../backend/useLocalNotifications";
+import {useLocalNotifications} from "../backend/notifications/useLocalNotifications";
 
 export default function HomeScreen({navigation}) {
     const [queryText, setQueryText] = useState("");
