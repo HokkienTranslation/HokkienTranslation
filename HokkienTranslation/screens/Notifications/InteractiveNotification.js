@@ -1,12 +1,12 @@
 import * as Notifications from 'expo-notifications';
 
 // Function to set up notification categories for flashcards
-export async function setupFlashcardCategories() {
+export async function setupFlashcardCategories(options) {
   // Create a category for flashcard quiz notifications
   await Notifications.setNotificationCategoryAsync('flashcard_quiz', [
     {
       identifier: 'option_1',
-      buttonTitle: 'Option 1', // This will be dynamically replaced when sending
+      buttonTitle: options[0], // This will be dynamically replaced when sending
       options: {
         isDestructive: false,
         isAuthenticationRequired: false,
@@ -14,7 +14,7 @@ export async function setupFlashcardCategories() {
     },
     {
       identifier: 'option_2',
-      buttonTitle: 'Option 2', // This will be dynamically replaced when sending
+      buttonTitle: options[1], // This will be dynamically replaced when sending
       options: {
         isDestructive: false,
         isAuthenticationRequired: false,
@@ -22,7 +22,7 @@ export async function setupFlashcardCategories() {
     },
     {
       identifier: 'option_3',
-      buttonTitle: 'Option 3', // This will be dynamically replaced when sending
+      buttonTitle: options[2], // This will be dynamically replaced when sending
       options: {
         isDestructive: false,
         isAuthenticationRequired: false,

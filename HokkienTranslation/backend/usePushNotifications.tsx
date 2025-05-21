@@ -87,7 +87,8 @@ export const usePushNotifications = (): PushNotificationState => {
 
     useEffect(() => {
 
-        setupFlashcardCategories(); // Promise returned from flashcard categories is ignored but flashcard categories
+        // setupFlashcardCategories(flashcardData.options);
+        // Promise returned from flashcard categories is ignored but flashcard categories
         // does not return anything?
         console.log("Notification Categories set up in usePushNotifications");
 
@@ -96,9 +97,47 @@ export const usePushNotifications = (): PushNotificationState => {
         })
 
         // Listen for incoming notifications
-        notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+        notificationListener.current = Notifications.addNotificationReceivedListener( async(notification) => {
             console.log("Notification received:", notification);
             setNotification(notification);
+
+            const data = notification.request.content.data;
+
+            // If this is a flashcard notification with options, set up a category
+            if (data.options && Array.isArray(data.options)) {
+                console.log("Setting up notification category with options:", data.options);
+                const categoryId = `flashcard_quiz_${data.flashcardId}`;
+
+                console.log("Setting up notification category and options before invoking it:", categoryId, data.options)
+
+                // Set up the category with the dynamic options
+                await Notifications.setNotificationCategoryAsync(categoryId, [
+                    {
+                        identifier: 'option_1',
+                        buttonTitle: data.options[0],
+                        options: {
+                            isDestructive: false,
+                            isAuthenticationRequired: false,
+                        }
+                    },
+                    {
+                        identifier: 'option_2',
+                        buttonTitle: data.options[1],
+                        options: {
+                            isDestructive: false,
+                            isAuthenticationRequired: false,
+                        }
+                    },
+                    {
+                        identifier: 'option_3',
+                        buttonTitle: data.options[2],
+                        options: {
+                            isDestructive: false,
+                            isAuthenticationRequired: false,
+                        }
+                    }
+                ]);
+            }
         });
 
         // Listen for user interaction with notifications

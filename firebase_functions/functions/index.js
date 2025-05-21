@@ -96,7 +96,7 @@ exports.sendFlashcardOnUserTokenUpdate = onDocumentUpdated("userTokens/{userId}"
         console.log(`User ${userId} was active, waiting 60 seconds before sending notification`);
 
         // Wait for 60 seconds of inactivity
-        await new Promise((resolve) => setTimeout(resolve, 60000));
+        await new Promise((resolve) => setTimeout(resolve, 10000));
 
         // Check if user is still inactive by getting the latest data
         const latestDoc = await admin.firestore()
