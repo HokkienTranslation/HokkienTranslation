@@ -2,10 +2,9 @@ import {useState, useRef, useEffect} from "react";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import {Platform} from "react-native";
-import {setupFlashcardCategories} from "../../screens/Notifications/InteractiveNotification";
 import {navigate} from "../../screens/Navigation/RootNavigation";
 import {db, auth} from "../database/Firebase"
-import {collection, doc, getDoc, getDocs, limit, query, updateDoc, serverTimestamp,} from 'firebase/firestore';
+import {doc, updateDoc, serverTimestamp,} from 'firebase/firestore';
 import {getRandomFlashcard} from "./GetRandomFlashcard";
 
 
