@@ -77,7 +77,7 @@ export default function HomeScreen({navigation}) {
         React.useCallback(() => {
             console.log("HomeScreen is focused, setting up inactivity reminder");
 
-            scheduleInactivityReminder(15); // 1 hour
+            scheduleInactivityReminder(3600); // 1 hour
 
             return () => {
                 console.log("HomeScreen is unfocused, cleaning up");
@@ -88,7 +88,7 @@ export default function HomeScreen({navigation}) {
 
     const handleTextChange = (text) => {
         // Reset inactivity timer when user types
-        scheduleInactivityReminder(15);
+        scheduleInactivityReminder(3600);
         const cleanedText = text.replace(/\n/, "");
         setQueryText(cleanedText);
     };

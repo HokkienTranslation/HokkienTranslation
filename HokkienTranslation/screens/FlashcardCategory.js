@@ -4,7 +4,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-} from "react-native-web";
+} from "react-native";
 import {
   Box,
   Center,
@@ -22,7 +22,7 @@ import {
 } from "native-base";
 import { useFocusEffect, useIsFocused, useNavigation } from "@react-navigation/native";
 import { MaterialIcons } from "@expo/vector-icons";
-import { Pressable } from "react-native-web";
+import { Pressable } from "react-native";
 import { useState } from "react";
 import { useTheme } from "./context/ThemeProvider";
 import app, { db } from "../backend/database/Firebase";
@@ -64,8 +64,8 @@ const FlashcardCategory = () => {
 
   // check for auth when getting categories
   async function getCategories(db) {
-  
-  
+
+
     const categoryCol = collection(db, "category");
     const categorySnapshot = await getDocs(categoryCol);
 
@@ -76,7 +76,7 @@ const FlashcardCategory = () => {
 
     //TODO: REMOVE THIS
     console.log("Print: ", categoryList)
-    
+
 
     return categoryList;
   }
@@ -123,7 +123,7 @@ const FlashcardCategory = () => {
 
     return flashcards;
   }
-  
+
   const fetchUser = async () => {
     try {
       const user = await getCurrentUser();
@@ -158,9 +158,9 @@ const FlashcardCategory = () => {
     if (currentUser === "") {
       fetchUser();
     }
-    
+
     if (index == 0) {
-      console.log("Current Category in FlashcardCategory is: ", category); 
+      console.log("Current Category in FlashcardCategory is: ", category);
       var flashcardList = category.flashcardList;
       console.log("List of FlashcardList: ", flashcardList);
       decks = [];
@@ -171,7 +171,7 @@ const FlashcardCategory = () => {
 
         // Await the document snapshot
         const ref = await getDoc(docRef);
-        
+
         deckID = ref.id;
         // console.log(ref.data())
 
@@ -197,7 +197,7 @@ const FlashcardCategory = () => {
 
     // update API here
     var flashCardList = category.cardList;
-    console.log("List of Flashcards: ", flashCardList); 
+    console.log("List of Flashcards: ", flashCardList);
 
     for (const card of flashCardList) {
       // console.log(card);
@@ -394,7 +394,7 @@ const FlashcardCategory = () => {
           {/* Emphasize categories for study */}
           <VStack style={styles.grid}>
           {display
-            .filter(category => 
+            .filter(category =>
               ["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
             )
             .map((category, index) => (
@@ -405,19 +405,19 @@ const FlashcardCategory = () => {
               />
           ))}
 
-          {index === 0 &&  
+          {index === 0 &&
           <Divider my={4} bg={colors.surface} />
           }
 
           {/* Remaining Categories */}
           {display
-            .filter(category => 
+            .filter(category =>
               !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
             )
             .map((category, index) => (
-              <CategoryBox 
-              key={index} 
-              category={category} 
+              <CategoryBox
+              key={index}
+              category={category}
               navigation={navigation} />
           ))}
           {index === 1 && <AddBox />}
@@ -518,7 +518,7 @@ const styles = StyleSheet.create({
   container: {
     width: "95%",
     minWidth: 300,
-    alignItems: "center",  
+    alignItems: "center",
     backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
@@ -533,12 +533,12 @@ const styles = StyleSheet.create({
   grid: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "flex-start", 
-    alignSelf: "center",  
-    width: "100%", 
+    justifyContent: "flex-start",
+    alignSelf: "center",
+    width: "100%",
   },
   categoryBox: {
-    width: "30%",  
+    width: "30%",
     height: 120,
     marginHorizontal: "1.6%",
     alignItems: "center",
