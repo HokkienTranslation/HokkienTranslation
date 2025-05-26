@@ -19,6 +19,7 @@ import {
   getDoc,
   updateDoc,
   setDoc,
+  arrayUnion,
   serverTimestamp,
   where,
   query,
@@ -32,6 +33,7 @@ import { fetchNumericTones, fetchAudioUrl } from "../backend/API/TextToSpeechSer
 import TextToSpeech from "./components/TextToSpeech";
 import { fetchRomanizer } from "../backend/API/HokkienHanziRomanizerService";
 import { getStoredHokkienFlashcard } from "../backend/database/DatabaseUtils.js";
+import { countPointsByFlashcard, updateLeitnerBox, appendToLearnedDecks, updateUserPoints, isFirstTimeQuiz } from "../backend/database/LeitnerSystemHelpers.js";
 
 const QuizScreen = ({ route }) => {
   const { theme, themes } = useTheme();
@@ -55,6 +57,8 @@ const QuizScreen = ({ route }) => {
   const [choiceIndex, setChoice] = useState(null);
   const [hokkienOption, setHokkienOption] = useState("Romanization");
   const [optionType, setOptionType] = useState("English");
+  const [beFirstTimeQuiz, setBeFirstTimeQuiz] = useState(false);
+  const [totalPoints, setTotalPoints] = useState(0);
   const [errorMessage, setErrorMessage] = useState(null);
 
   const flashcardListName = route.params.flashcardListName;
@@ -108,6 +112,11 @@ const QuizScreen = ({ route }) => {
           return;
         }
 
+        const user = await getCurrentUser();
+        const userEmail = user;
+        const firstTime = await isFirstTimeQuiz(userEmail, flashcardListName);
+        console.log("First time quiz: ", firstTime);
+        setBeFirstTimeQuiz(firstTime);
         const flashcardListData = flashcardListDoc.data();
         const flashcardIds = flashcardListData.cardList;
         let flashcards = [];
@@ -237,11 +246,23 @@ const QuizScreen = ({ route }) => {
     setSelectedAnswer(index);
     setIsDisabled(true);
 
+    const user = await getCurrentUser();
+    const userEmail = user;
+
     const isCorrect =
       flashcards[currentCardIndex].choices[index] ===
       flashcards[currentCardIndex].destination;
+
     if (isCorrect) {
       setScore((prevScore) => prevScore + 1);
+      var addPoints = await countPointsByFlashcard(userEmail, flashcards[currentCardIndex].id, true);
+      const updatedTotalPoints = totalPoints + addPoints;
+      console.log("Updated totalPoints (expected):", updatedTotalPoints);
+      setTotalPoints(updatedTotalPoints);
+      await updateLeitnerBox(userEmail, flashcards[currentCardIndex].id, true);
+
+    } else {
+      await updateLeitnerBox(userEmail, flashcards[currentCardIndex].id, false);
     }
 
     setFlashcardScores({
@@ -250,6 +271,8 @@ const QuizScreen = ({ route }) => {
     });
 
     if (currentCardIndex === flashcards.length - 1) {
+      const finalPoints = totalPoints + addPoints;
+      console.log("Quiz ended. Final points before firebase update: ", finalPoints);
       // Last flashcard, update quiz scores and show history
       try {
         const user = await getCurrentUser();
@@ -265,6 +288,14 @@ const QuizScreen = ({ route }) => {
           collection(db, "flashcardQuiz"),
           where("flashcardListId", "==", flashcardListName)
         );
+
+        if (finalPoints) {
+          await updateUserPoints(userEmail, finalPoints);
+        }
+        if (beFirstTimeQuiz) {
+          await updateUserPoints(userEmail, 30);
+          await appendToLearnedDecks(userEmail, flashcardListName);
+        };
 
         const quizQuerySnapshot = await getDocs(quizQuery);
         const scores = quizQuerySnapshot.docs[0].data().scores[userEmail];
@@ -333,6 +364,7 @@ const QuizScreen = ({ route }) => {
                 },
               ],
             };
+              
             await setDoc(quizDocRef, {
               scores: newScoreDoc
             });
@@ -343,7 +375,6 @@ const QuizScreen = ({ route }) => {
             "No flashcardQuiz document found with the given flashcardListName."
           );
         }
-
         showScoreHistory(userEmail, flashcardListName);
       } catch (error) {
         console.error("Error updating quiz scores: ", error);
@@ -509,7 +540,6 @@ const QuizScreen = ({ route }) => {
             }}
           >
             <Select.Item label={lang1} value={lang1} />
-            <Select.Item label={lang2} value={lang2} />
           </Select>
 
           {answerWith === "Hokkien" && (
@@ -573,6 +603,17 @@ const QuizScreen = ({ route }) => {
                   </Button>
                 </Box>
               )}
+
+
+              {/* Show total points earned in the quiz */}
+              <Text fontSize="lg" color={colors.onSurface} bold textAlign="center">
+                You earned {totalPoints} points in this quiz!
+              </Text>
+              {beFirstTimeQuiz && (
+              <Text fontSize="md" color={colors.onSurface} textAlign="center" mt={2}>
+                This is the first time you completed this quiz so you earned 30 points extra!
+              </Text>
+            )}
 
               {userScores && userScores.length > 0 ? (
                 userScores.slice().reverse().map((scoreEntry, index) => (

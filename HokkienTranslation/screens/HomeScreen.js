@@ -1,12 +1,14 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
+import {useFocusEffect} from "@react-navigation/native";
 import {Ionicons} from "@expo/vector-icons";
+import * as Progress from "react-native-progress";
 import {
     Box,
     Input,
     IconButton,
     ScrollView,
     VStack,
-    Button,
+    HStack, Button,
     Wrap,
     Flex,
     Text,
@@ -16,16 +18,20 @@ import {collection, getDocs} from "firebase/firestore";
 import {db, auth} from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import {getUserLevel, getUserPoints} from "../backend/database/LeitnerSystemHelpers.js";
 import {useRegisterAndStoreToken} from "../backend/notifications/RegisterAndStoreToken";
-import {useFocusEffect} from "@react-navigation/native";
 import {useLocalNotifications} from "../backend/notifications/useLocalNotifications";
 import {checkAndUpdateStreak} from "../backend/streaks/CheckAndUpdateStreak";
 
 export default function HomeScreen({navigation}) {
     const [queryText, setQueryText] = useState("");
     const [randomInputs, setRandomInputs] = useState([]);
+    const [userLevel, setUserLevel] = useState(null);
+    const [userPoints, setUserPoints] = useState(null);
+    const [levelProgress, setLevelProgress] = useState(null);
     const {theme, themes} = useTheme();
     const colors = themes[theme];
+    const pointsPerLevel = 100;
     const [userCred, setUserCred] = useState(null);
 
     const {
@@ -108,37 +114,80 @@ export default function HomeScreen({navigation}) {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
 
-    useEffect(() => {
-        fetchRandomInputs();
-    }, []);
+  const fetchUserLevelPointsProgress = async () => {
+    const user = await getCurrentUser();
+    const userEmail = user;
+    const level = await getUserLevel(userEmail, pointsPerLevel);
+    const points = await getUserPoints(userEmail);
+    console.log("user level: ", userLevel);
+    console.log("user points", userPoints);
+    setUserLevel(level);
+    setUserPoints(points);
+    setLevelProgress((points - ((level - 1) * 100)) / 100);
+  };
 
-    return (
-        <ScrollView
-            bg={colors.surface}
-            flex={1}
-            contentContainerStyle={{alignItems: "center"}}
+  const fetchUserFlashcardProgress = async () => {
+    const user = await getCurrentUser();
+    const userEmail = user;
+  };
+
+  useEffect(() => {
+    fetchRandomInputs();
+  }, [])
+
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserLevelPointsProgress();
+    }, [])
+  );
+
+  return (
+    <ScrollView
+      bg={colors.surface}
+      flex={1}
+      contentContainerStyle={{ alignItems: "center" }}
+    >
+      <VStack space={4} alignItems="center" w="100%" mt={5}>
+        {/* Header */}
+        <Box
+          w="80%"
+          flexDirection="row"
+          justifyContent="space-between"
+          alignItems="center"
         >
-            <VStack space={4} alignItems="center" w="100%" mt={5}>
-                {/* Header */}
-                <Box
-                    w="80%"
-                    flexDirection="row"
-                    justifyContent="flex-end"
-                    alignItems="center"
-                >
-                    <IconButton
-                        icon={
-                            <Ionicons
-                                name="settings-outline"
-                                size={25}
-                                color={colors.onSurfaceVariant}
-                            />
-                        }
-                        _hover={{bg: "transparent"}}
-                        _pressed={{bg: "transparent"}}
-                        onPress={() => navigation.navigate("Settings")}
-                    />
-                </Box>
+
+          {/* Wrap Level Text and Progress Bar in an HStack */}
+          <HStack alignItems="center" space={4} flex={1}>
+            <Text fontSize="2xl" color={colors.onSurface} bold>
+              Level {userLevel !== null ? userLevel : "Loading..."}:
+            </Text>
+
+            <Progress.Bar
+              progress={levelProgress}
+              width={window.width}  // Adjust width so it fits next to the text
+              borderRadius={24}
+              height={24}
+              color={colors.primaryContainer}
+            />
+
+            <Text fontSize="md" color={colors.onSurface} bold>
+              {userPoints}/{userLevel * 100}
+            </Text>
+          </HStack>
+
+          <IconButton
+            icon={
+              <Ionicons
+                name="settings-outline"
+                size={25}
+                color={colors.onSurfaceVariant}
+              />
+            }
+            _hover={{ bg: "transparent" }}
+            _pressed={{ bg: "transparent" }}
+            onPress={() => navigation.navigate("Settings")}
+          />
+        </Box>
 
                 {/* Random Words and Input Box */}
                 <Box w="80%">
@@ -183,26 +232,26 @@ export default function HomeScreen({navigation}) {
                     </Box>
                 </Box>
 
-                {/* Submit Button */}
-                {queryText.length > 0 && (
-                    <Box w="80%" flexDirection="row" justifyContent="flex-end">
-                        <IconButton
-                            icon={
-                                <Ionicons
-                                    name="checkbox"
-                                    size={40}
-                                    color={colors.onPrimaryContainer}
-                                />
-                            }
-                            onPress={() =>
-                                navigation.navigate("Result", {query: queryText})
-                            }
-                            _hover={{bg: "transparent"}}
-                            _pressed={{bg: "transparent"}}
-                        />
-                    </Box>
-                )}
-            </VStack>
-        </ScrollView>
-    );
+        {/* Submit Button */}
+        {queryText.length > 0 && (
+          <Box w="80%" flexDirection="row" justifyContent="flex-end">
+            <IconButton
+              icon={
+                <Ionicons
+                  name="checkbox"
+                  size={40}
+                  color={colors.onPrimaryContainer}
+                />
+              }
+              onPress={() =>
+                navigation.navigate("Result", { query: queryText })
+              }
+              _hover={{ bg: "transparent" }}
+              _pressed={{ bg: "transparent" }}
+            />
+          </Box>
+        )}
+      </VStack>
+    </ScrollView >
+  );
 }

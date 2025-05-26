@@ -40,6 +40,7 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
+import { weightedScoreByDeck, checkIsNewDeck } from "../backend/database/LeitnerSystemHelpers.js";
 import contextSentence from "./components/contextSentence";
 import getContextSentence from "./components/contextSentence";
 // list of categories use api
@@ -82,7 +83,7 @@ const FlashcardCategory = () => {
   }
 
   // check for auth when getting flashcardList
-  async function getFlashcardList(db) {
+    async function getFlashcardList(db) {
     const flashcardCol = collection(db, "flashcardList");
     const flashcardSnapshot = await getDocs(flashcardCol);
 
@@ -101,6 +102,7 @@ const FlashcardCategory = () => {
 
     return flashcardList;
   }
+
   const handleBackPress = () => {
     index = 0;
     setDisplay(categories);
@@ -139,17 +141,17 @@ const FlashcardCategory = () => {
         categories = categoryList;
         console.log("Categories: ", categories);
         setDisplay(categoryList);
-       }).catch((error) => {
+      }).catch((error) => {
         console.error("Error fetching categories: ", error);
-       });
-       getFlashcardList(db)
-      .then((flashcardList) => {
-        alldecks = flashcardList;
-      })
-      .catch((error) => {
-        console.error("Error fetching flashcardList: ", error);
       });
-       index = 0
+      getFlashcardList(db)
+        .then((flashcardList) => {
+          alldecks = flashcardList;
+        })
+        .catch((error) => {
+          console.error("Error fetching flashcardList: ", error);
+        });
+      index = 0
     }
   }, [isFocused]);
 
@@ -182,8 +184,12 @@ const FlashcardCategory = () => {
         // console.log(temp)
 
         if (temp.createdBy === currentUser || temp.shared) {
-          decks.push({ id: ref.id, ...temp });
+          let unfamiliarityScore = await weightedScoreByDeck(currentUser, deckID);
+          let isNewDeck = await checkIsNewDeck(currentUser, deckID);
+          decks.push({ id: ref.id, ...temp, unfamiliarityScore, isNewDeck });
         }
+        // 🔥 Sort decks by unfamiliarity (higher score first)
+        decks.sort((a, b) => b.unfamiliarityScore - a.unfamiliarityScore);
 
         index = 1;
       }
@@ -229,6 +235,9 @@ const FlashcardCategory = () => {
     const [isHovered, setIsHovered] = useState(false);
     const { themes, theme } = useTheme();
     const colors = themes[theme];
+
+    console.log("Category:", category);
+    console.log("Expected Points:", category.expectedPoints);
 
     const handleUpdateDeck = async (category) => {
       var deckName = category.name;
@@ -284,7 +293,7 @@ const FlashcardCategory = () => {
       console.log("FlashcardList: ", flashcardList);
       flashcardList.splice(flashcardList.indexOf(category.name), 1);
 
-      // update caategory
+      // update category
       await updateDoc(categoryRef2, {
         flashcardList: flashcardList,
       });
@@ -313,21 +322,52 @@ const FlashcardCategory = () => {
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Expected Points Display */}
+
+        {category.unfamiliarityScore &&
+          <Text
+            style={{
+              position: "absolute",
+              bottom: 5,
+              right: 10,
+              fontSize: 14,
+              fontWeight: "bold",
+              color: colors.onSurfaceVariant,
+            }}
+          >
+            Expected {category.unfamiliarityScore} pts
+          </Text>
+        }
+        {category.unfamiliarityScore && category.isNewDeck &&
+          <Text
+            style={{
+              position: "absolute",
+              top: 5,
+              left: 10,
+              fontSize: 14,
+              fontWeight: "bold",
+              color: "red",
+            }}
+          >
+            New!
+          </Text>
+        }
+
         <VStack space={1} alignItems="center">
           <Ionicons name={category.icon} size={30} color={colors.onSurface} />
           <Text style={styles.categoryText} color={colors.onSurface}>{category.name}</Text>
         </VStack>
         {index === 1 && (
           <HStack style={styles.actionButtons}>
-            {category.createdBy === currentUser &&  (
-            <>
-              <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
-                <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
-                <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
-              </TouchableOpacity>
-            </>
+            {category.createdBy === currentUser && (
+              <>
+                <TouchableOpacity onPress={() => handleUpdateDeck(category)}>
+                  <Icon as={MaterialIcons} name="edit" size="sm" color={colors.onSurface} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleDeleteDeck(category)}>
+                  <Icon as={MaterialIcons} name="delete" size="sm" color={colors.onSurface} />
+                </TouchableOpacity>
+              </>
             )}
           </HStack>
         )}
@@ -335,7 +375,7 @@ const FlashcardCategory = () => {
     );
   };
 
-  const AddBox = ({}) => {
+  const AddBox = ({ }) => {
     const [isPressed, setIsPressed] = useState(false);
 
     const addFlashcard = () => {
@@ -348,7 +388,7 @@ const FlashcardCategory = () => {
       <Pressable
         style={[
           styles.addBox,
-          {borderColor: colors.onSurface},
+          { borderColor: colors.onSurface },
           isPressed && styles.categoryBoxPressed,
           { backgroundColor: colors.categoriesBox },
         ]}
@@ -393,7 +433,7 @@ const FlashcardCategory = () => {
 
           {/* Emphasize categories for study */}
           <VStack style={styles.grid}>
-          {display
+            {/*{display
             .filter(category =>
               ["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
             )
@@ -407,20 +447,20 @@ const FlashcardCategory = () => {
 
           {index === 0 &&
           <Divider my={4} bg={colors.surface} />
-          }
+          }*/}
 
-          {/* Remaining Categories */}
-          {display
-            .filter(category =>
-              !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
-            )
-            .map((category, index) => (
-              <CategoryBox
-              key={index}
-              category={category}
-              navigation={navigation} />
-          ))}
-          {index === 1 && <AddBox />}
+            {/* Remaining Categories */}
+            {display
+              .filter(category =>
+                !["Daily Conversations", "Dining and Food", "Family and Relationships"].includes(category.name)
+              )
+              .map((category, index) => (
+                <CategoryBox
+                  key={index}
+                  category={category}
+                  navigation={navigation} />
+              ))}
+            {index === 1 && <AddBox />}
           </VStack>
 
           {/* <VStack style={styles.grid}>
