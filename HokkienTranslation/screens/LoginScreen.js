@@ -24,7 +24,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../backend/database/Firebase";
 import { useTheme } from "./context/ThemeProvider";
-import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
+import {useRegisterAndStoreToken} from "../backend/notifications/RegisterAndStoreToken";
 
 export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState("");

@@ -6,7 +6,7 @@ import { CommonActions } from "@react-navigation/native";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../backend/database/Firebase";
 import { useTheme } from "./context/ThemeProvider";
-import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
+import {useRegisterAndStoreToken} from "../backend/notifications/RegisterAndStoreToken";
 
 export default function RegisterScreen({ navigation }) {
   const [email, setEmail] = useState('');

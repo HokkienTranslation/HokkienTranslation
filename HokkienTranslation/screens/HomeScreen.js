@@ -16,9 +16,10 @@ import {collection, getDocs} from "firebase/firestore";
 import {db, auth} from "../backend/database/Firebase";
 import QuickInputWords from "./components/QuickInputWords";
 import getCurrentUser from "../backend/database/GetCurrentUser";
-import {useRegisterAndStoreToken} from "../backend/database/RegisterAndStoreToken";
+import {useRegisterAndStoreToken} from "../backend/notifications/RegisterAndStoreToken";
 import {useFocusEffect} from "@react-navigation/native";
 import {useLocalNotifications} from "../backend/notifications/useLocalNotifications";
+import {checkAndUpdateStreak} from "../backend/streaks/CheckAndUpdateStreak";
 
 export default function HomeScreen({navigation}) {
     const [queryText, setQueryText] = useState("");
@@ -34,6 +35,22 @@ export default function HomeScreen({navigation}) {
     } = useLocalNotifications();
 
     // console.log("Current User: ", getCurrentUser());
+
+    const [streakData, setStreakData] = useState({isNewStreak: false, streakCount: 0});
+
+    useEffect(() => {
+        const updateStreak = async () => {
+            try {
+                const result = await checkAndUpdateStreak();
+                setStreakData(result);
+                console.log("isNewStreak: ", streakData.isNewStreak);
+            } catch (error) {
+                console.error("Error updating streak:", error);
+            }
+        };
+
+        updateStreak();
+    }, []);
 
     useEffect(() => {
         const currentUser = auth.currentUser;
@@ -60,15 +77,11 @@ export default function HomeScreen({navigation}) {
         React.useCallback(() => {
             console.log("HomeScreen is focused, setting up inactivity reminder");
 
-            // Schedule inactivity reminder when screen comes into focus
-            // This will trigger a notification after 120 seconds (2 minutes) of inactivity
-            scheduleInactivityReminder(15);
+            scheduleInactivityReminder(15); // 1 hour
 
-            // Clean up function that runs when screen loses focus
             return () => {
                 console.log("HomeScreen is unfocused, cleaning up");
-                // You might want to cancel any pending notifications when leaving the screen
-                // This depends on your app's requirements
+                // TODO Maybe remove pending notifications
             };
         }, [])
     );
