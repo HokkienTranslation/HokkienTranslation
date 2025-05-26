@@ -36,6 +36,14 @@
       "eas": {
         "projectId": "0e58da73-63c9-4f14-a312-6296202406e0"
       }
-    }
+    },
+    "plugins": [
+      [
+        "expo-av",
+        {
+          "microphonePermission": "Allow audio playback"
+        }
+      ]
+    ]
   }
 }
