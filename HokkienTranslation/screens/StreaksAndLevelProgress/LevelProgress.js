@@ -1,11 +1,9 @@
 import {useEffect, useState} from "react";
-import {useTheme, View} from "native-base";
+import {useTheme, View, Text} from "native-base";
 import getCurrentUser from "../../backend/database/GetCurrentUser";
 import {getUserLevel, getUserPoints} from "../../backend/database/LeitnerSystemHelpers";
-import {StyleSheet} from "react-native"
-import * as Progress from "react-native-progress"
-import {auth} from "../../backend/database/Firebase"
-
+import {StyleSheet} from "react-native";
+import * as Progress from "react-native-progress";
 
 export const LevelProgress = () => {
     const [loading, setLoading] = useState(true);
@@ -13,32 +11,36 @@ export const LevelProgress = () => {
     const [userPoints, setUserPoints] = useState(null);
     const [levelProgress, setLevelProgress] = useState(0);
     const {themes, theme} = useTheme();
-    const colors = themes[theme];
+    const colors = themes?.[theme] || {};
     const pointsPerLevel = 100;
 
     useEffect(() => {
         const fetchUserLevelData = async () => {
             try {
                 const user = await getCurrentUser();
+                if (!user) {
+                    setLoading(false);
+                    return;
+                }
+
                 const level = await getUserLevel(user, pointsPerLevel);
                 const points = await getUserPoints(user);
 
-                setUserLevel(level);
-                setUserPoints(points);
-                setLevelProgress((points - ((level - 1) * 100)) / 100);
+                setUserLevel(level || 1);
+                setUserPoints(points || 0);
+                setLevelProgress(((points || 0) - (((level || 1) - 1) * 100)) / 100);
             } catch (error) {
                 console.error("Error fetching user level:", error);
-            }
-            finally {
+                setUserLevel(1);
+                setUserPoints(0);
+                setLevelProgress(0);
+            } finally {
                 setLoading(false);
             }
         };
+
         fetchUserLevelData();
     }, []);
-
-    if (!auth.currentUser) {
-        return null
-    }
 
     if (loading) {
         return (
@@ -70,7 +72,6 @@ export const LevelProgress = () => {
     );
 };
 
-
 const styles = StyleSheet.create({
     levelContainer: {
         alignItems: 'center',
@@ -86,5 +87,4 @@ const styles = StyleSheet.create({
         marginTop: 1,
         opacity: 0.8,
     },
-
-})
+});

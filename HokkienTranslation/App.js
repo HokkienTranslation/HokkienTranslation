@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {NavigationContainer} from "@react-navigation/native";
 import {NativeBaseProvider} from "native-base";
 import {createNativeStackNavigator} from "@react-navigation/native-stack";
@@ -20,13 +20,11 @@ import {LanguageProvider} from "./screens/context/LanguageProvider";
 import {ComponentVisibilityProvider} from "./screens/context/ComponentVisibilityContext";
 import FeedbackButton from "./screens/components/FeedbackButton";
 import FlashcardAdd from "./screens/FlashcardAdd";
+import imageContextScriptComponent from "./backend/scripts/imageContextScriptComponent";
 import {usePushNotifications} from "./backend/notifications/usePushNotifications";
 import {navigationRef} from "./screens/Navigation/RootNavigation";
 import FlashcardFeedback from "./screens/Notifications/NotificationFeedbackScreen";
 import {Audio} from 'expo-av';
-import {StreakDisplay} from "./screens/StreaksAndLevelProgress/StreakDisplay";
-import {LevelProgress} from "./screens/StreaksAndLevelProgress/LevelProgress";
-import {auth} from "./backend/database/Firebase"
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,49 +33,33 @@ const Tab = createBottomTabNavigator();
 const HomeStack = () => {
     const {themes, theme} = useTheme();
     const colors = themes[theme];
-    const [user, setUser] = useState(null)
-
-    useEffect(() => {
-        return auth.onAuthStateChanged((user) => {
-            setUser(user);
-        });
-    }, []);
 
     return (
         <Stack.Navigator
-            screenOptions={({route, navigation}) => ({
+            initialRouteName="Home"
+            screenOptions={({route}) => ({
                 headerShown: route.name !== "Landing",
                 headerStyle: {
                     backgroundColor: colors.header,
                 },
-                headerTitle: route.name === "Home" ? "" : route.name,
                 headerTitleStyle: {
                     fontSize: 25,
                     color: colors.onSurface,
                 },
                 headerTitleAlign: "center",
                 headerTintColor: colors.onSurface,
-                // Only show custom header when user is authenticated
-                ...(route.name === "Home" && user && {
-                    headerLeft: () => <StreakDisplay/>,
-                    headerTitle: () => <LevelProgress/>,
-                    headerRight: () => <FeedbackButton iconOnly={true}/>
-                }),
-                // Show normal header when not authenticated
-                ...(route.name === "Home" && !user && {
-                    headerRight: () => <FeedbackButton iconOnly={true}/>
-                }),
+                headerRight: () => <FeedbackButton/>,
             })}
         >
             <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="Result" component={ResultScreen}/>
             <Stack.Screen name="Settings" component={SettingsScreen}/>
-            <Stack.Screen
-                name="FlashcardBox"
-                component={FlashcardBoxScreen}
-                options={{title: "Your Flashcard Learning Progress"}}
-            />
-        </Stack.Navigator>
+        <Stack.Screen
+        name="FlashcardBox"
+        component={FlashcardBoxScreen}
+        options={{ title: "Your Flashcard Learning Progress" }}
+      />
+    </Stack.Navigator>
     );
 };
 

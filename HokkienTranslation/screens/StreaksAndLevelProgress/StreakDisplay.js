@@ -2,23 +2,19 @@ import {StyleSheet} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {checkAndUpdateStreak} from "../../backend/streaks/CheckAndUpdateStreak";
 import {useEffect, useState} from "react";
-import {useTheme, View} from "native-base";
-import {auth} from "../../backend/database/Firebase";
-
+import {useTheme, View, Text} from "native-base";
 
 export const StreakDisplay = () => {
     const [loading, setLoading] = useState(true);
     const [streakData, setStreakData] = useState({streakCount: 0});
     const {themes, theme} = useTheme();
-    const colors = themes[theme];
+    const colors = themes?.[theme] || {};
 
     useEffect(() => {
         const updateStreak = async () => {
             try {
                 const result = await checkAndUpdateStreak();
-
-                // Ensure result is a valid object
-                if (result && typeof result === 'object') {
+                if (result && typeof result === 'object' && !result.error) {
                     setStreakData(result);
                 } else {
                     setStreakData({streakCount: 0});
@@ -26,39 +22,33 @@ export const StreakDisplay = () => {
             } catch (error) {
                 console.error("Error updating streak:", error);
                 setStreakData({streakCount: 0});
-            }
-            finally {
+            } finally {
                 setLoading(false);
             }
         };
+
         updateStreak();
     }, []);
 
-    if (!auth.currentUser) {
-        return null;
-    }
-
     if (loading) {
         return (
-            <View style={styles.levelContainer}>
-                <Text style={[styles.levelText, {color: colors.onSurface}]}>
+            <View style={styles.streakContainer}>
+                <Text style={[styles.streakText, {color: colors.onSurface}]}>
                     Loading...
                 </Text>
             </View>
         );
     }
 
-
     return (
         <View style={styles.streakContainer}>
             <Ionicons name="flame" size={16} color="#FF6B35"/>
             <Text style={[styles.streakText, {color: colors.onSurface}]}>
-                {streakData.streakCount}
+                {streakData?.streakCount || 0}
             </Text>
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     streakContainer: {
@@ -75,5 +65,4 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: 4,
     },
-
-})
+});
