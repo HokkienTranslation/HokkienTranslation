@@ -1,5 +1,6 @@
 import React, {useState, useEffect, useCallback} from "react";
 import {useFocusEffect} from "@react-navigation/native";
+import {TouchableOpacity} from "react-native"
 import {Ionicons} from "@expo/vector-icons";
 import * as Progress from "react-native-progress";
 import {
