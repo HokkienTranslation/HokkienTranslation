@@ -2,7 +2,8 @@ import {StyleSheet} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {checkAndUpdateStreak} from "../../backend/streaks/CheckAndUpdateStreak";
 import {useEffect, useState} from "react";
-import {useTheme, View, Text} from "native-base";
+import {View, Text} from "native-base";
+import {useTheme} from "../context/ThemeProvider"
 
 export const StreakDisplay = () => {
     const [loading, setLoading] = useState(true);

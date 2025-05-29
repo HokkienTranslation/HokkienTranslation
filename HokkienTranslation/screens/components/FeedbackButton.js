@@ -18,8 +18,8 @@ const FeedbackButton = ({iconOnly = false}) => {
             <IconButton
                 icon={
                     <Ionicons
-                        name="chatbubble-outline"
-                        size={18}
+                        name="document-text"
+                        size={25}
                         color={colors.onSurface}
                     />
                 }

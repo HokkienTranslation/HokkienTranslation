@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
-import {useTheme, View, Text} from "native-base";
+import {View, Text} from "native-base";
 import getCurrentUser from "../../backend/database/GetCurrentUser";
 import {getUserLevel, getUserPoints} from "../../backend/database/LeitnerSystemHelpers";
 import {StyleSheet} from "react-native";
 import * as Progress from "react-native-progress";
+import {useTheme} from "../context/ThemeProvider"
 
 export const LevelProgress = () => {
     const [loading, setLoading] = useState(true);
@@ -61,7 +62,7 @@ export const LevelProgress = () => {
                 progress={levelProgress || 0}
                 width={80}
                 height={3}
-                color={colors.primary}
+                color={colors.primaryContainer}
                 unfilledColor={colors.surface}
                 borderWidth={0}
             />
