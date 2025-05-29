@@ -40,7 +40,11 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import CategoryModal from "./CategoryModal";
 import getCurrentUser from "../backend/database/GetCurrentUser";
-import { weightedScoreByDeck, checkIsNewDeck } from "../backend/database/LeitnerSystemHelpers.js";
+import {
+  weightedScoreByDeck,
+  checkIsNewDeck,
+  ensureUserDataInitialized
+} from "../backend/database/LeitnerSystemHelpers.js";
 import contextSentence from "./components/contextSentence";
 import getContextSentence from "./components/contextSentence";
 // list of categories use api
@@ -130,6 +134,9 @@ const FlashcardCategory = () => {
     try {
       const user = await getCurrentUser();
       currentUser = user;
+      if (user) {
+      await ensureUserDataInitialized(user);
+    }
     } catch (error) {
       console.error("Error fetching user: ", error);
     }
@@ -323,9 +330,9 @@ const FlashcardCategory = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Expected Points Display */}
-
+        console.log("Category Unfamiliarity Score: ", category.unfamiliarityScore);
         {category.unfamiliarityScore &&
-          <Text
+            (<Text
             style={{
               position: "absolute",
               bottom: 5,
@@ -336,9 +343,9 @@ const FlashcardCategory = () => {
             }}
           >
             Expected {category.unfamiliarityScore} pts
-          </Text>
+          </Text>)
         }
-        {category.unfamiliarityScore && category.isNewDeck &&
+        {category.unfamiliarityScore && category.isNewDeck && (
           <Text
             style={{
               position: "absolute",
@@ -350,7 +357,7 @@ const FlashcardCategory = () => {
             }}
           >
             New!
-          </Text>
+          </Text>)
         }
 
         <VStack space={1} alignItems="center">

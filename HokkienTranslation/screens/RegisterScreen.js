@@ -32,31 +32,30 @@ export default function RegisterScreen({navigation}) {
             setMessage("Passwords don't match!");
             return;
         }
-        createUserWithEmailAndPassword(auth, email, password)
-            .then((userCredential) => {
-                setMessage("Successfully registered!");
-                const token = useRegisterAndStoreToken(userCredential);
-                console.warn("ExpoPushToken at login:", token);
-                // Call initializePointLevelProgress after successful registration
-                await initializePointLevelProgress(user.email);
-                console.log("PointLevelProgress initialized for ", user.email);
+        try {
+            const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+            setMessage("Successfully registered!");
+            const token = useRegisterAndStoreToken(userCredential);
+            console.warn("ExpoPushToken at login:", token);
 
-                // Call initializeLeitnerBoxesForUser after successful registration
-                await initializeLeitnerBoxesForUser(user.email);
-                console.log("Leitner Boxes initialized for ", user.email);
+            await initializePointLevelProgress(userCredential.user.email);
+            console.log("PointLevelProgress initialized for ", userCredential.user.email);
 
-                navigation.dispatch(
-                    CommonActions.reset({
-                        index: 0,
-                        routes: [{name: "Main"}],
-                    })
-                );
-            })
-            .catch((error) => {
-                const errorMessage = error.message;
-                setMessage(errorMessage);
-            });
+            await initializeLeitnerBoxesForUser(userCredential.user.email);
+            console.log("Leitner Boxes initialized for ", userCredential.user.email);
+
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{name: "Main"}],
+                })
+            );
+        } catch (error) {
+            const errorMessage = error.message;
+            setMessage(errorMessage);
+        }
     };
+
 
     return (
         <ImageBackground

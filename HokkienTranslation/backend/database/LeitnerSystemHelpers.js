@@ -1,4 +1,4 @@
-import { db } from "./Firebase.js";
+import {db} from "./Firebase.js";
 import {
     collection,
     doc,
@@ -13,43 +13,90 @@ import {
     arrayUnion
 } from "firebase/firestore";
 
-/* Function for initializing Leitner Box for a new user or flashcard. 
+
+/* Function to ensure user has pointsLevelProgress and leitnerBoxes initialized */
+export const ensureUserDataInitialized = async (userId) => {
+    try {
+        // Check if pointsLevelProgress exists
+        const pointsQuery = query(
+            collection(db, "pointsLevelProgress"),
+            where("userId", "==", userId)
+        );
+        const pointsSnapshot = await getDocs(pointsQuery);
+
+        if (pointsSnapshot.empty) {
+            console.log("Initializing pointsLevelProgress for existing user:", userId);
+            await initializePointLevelProgress(userId);
+        }
+
+        // Check if leitnerBoxes exist
+        // const leitnerQuery = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId)
+        // );
+        // const leitnerSnapshot = await getDocs(leitnerQuery);
+        const userDocRef = doc(db, "leitnerBoxes", userId);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (!userDocSnap.exists()) {
+            console.log("Initializing leitnerBoxes for existing user:", userId);
+            await initializeLeitnerBoxesForUser(userId);
+        }
+
+        return true;
+    } catch (error) {
+        console.error("Error ensuring user data initialized:", error);
+        return false;
+    }
+};
+
+/* Function for initializing Leitner Box for a new user or flashcard.
     Called when a new user registers or a new flashcard is created. */
 export const initializeLeitnerBox = async (userId, flashcardId) => {
     try {
-        const docRef = await addDoc(collection(db, "leitnerBoxes"), {
-            userId: userId,
+        const userBoxRef = doc(db, "leitnerBoxes", userId, "userBoxes", flashcardId);
+
+        await setDoc(userBoxRef, {
             flashcardId: flashcardId,
             boxNum: 1,
             correctAns: 0,
             incorrectAns: 0,
             lastUpdated: serverTimestamp(),
-        });
+        }, {merge: true});
+
+        console.log("LeitnerBox document successfully created for user:", userId, "flashcard:", flashcardId);
         console.log("LeitnerBox document successfully created with ID:", docRef.id);
     } catch (error) {
         console.error("Error initializing Leitner Box: ", error);
     }
 };
 
-/* Function for updating Leitner Box based on user answer to the flashcard. 
+/* Function for updating Leitner Box based on user answer to the flashcard.
     Called when a user answers a quiz question. */
 export const updateLeitnerBox = async (userId, flashcardId, isCorrect) => {
     try {
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("flashcardId", "==", flashcardId)
-        );
-
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("flashcardId", "==", flashcardId)
+        // );
+        //
+        // const querySnapshot = await getDocs(q);
+        //
+        // if (querySnapshot.empty) {
+        //     throw new Error("No matching document found.");
+        // }
+        //
+        // // Retrieve the document reference (assume only one document exists)
+        // const docRef = querySnapshot.docs[0].ref;
+        // const docData = querySnapshot.docs[0].data();
+        // Doing it without queries and with separate users
+        const userBoxRef = doc(db, "leitnerBoxes", userId, "userBoxes", flashcardId);
+        const docSnap = await getDoc(userBoxRef);
+        if (!docSnap.exists()) {
             throw new Error("No matching document found.");
         }
-
-        // Retrieve the document reference (assume only one document exists)
-        const docRef = querySnapshot.docs[0].ref;
-        const docData = querySnapshot.docs[0].data();
+        const docData = docSnap.data();
         let newBox = docData.boxNum;
 
         // Find the new boxNum
@@ -61,37 +108,45 @@ export const updateLeitnerBox = async (userId, flashcardId, isCorrect) => {
         }
 
         // Update the document with new data
-        await updateDoc(docRef, {
+        await updateDoc(userBoxRef, {
             boxNum: newBox,
             correctAns: isCorrect ? docData.correctAns + 1 : docData.correctAns,
             incorrectAns: isCorrect ? docData.incorrectAns : docData.incorrectAns + 1,
             lastUpdated: serverTimestamp(),
         });
 
-        console.log("Document updated successfully with ID:", docRef.id);
+        console.log("Document updated successfully with ID:", userBoxRef.id);
     } catch (error) {
         console.error("Error updating Leitner Box:", error);
     }
 };
 
-/* Function for counting points user earns based on user answer to the flashcard. 
+/* Function for counting points user earns based on user answer to the flashcard.
     Called when a user answers a quiz question. */
 export const countPointsByFlashcard = async (userId, flashcardId, isCorrect) => {
     try {
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("flashcardId", "==", flashcardId)
-        );
-        const querySnapshot = await getDocs(q);
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("flashcardId", "==", flashcardId)
+        // );
+        // const querySnapshot = await getDocs(q);
+        //
+        // if (querySnapshot.empty) {
+        //     throw new Error("No matching document found.");
+        // }
+        //
+        // // Retrieve the document reference (assume only one document exists)
+        // const docRef = querySnapshot.docs[0].ref;
+        // const docData = querySnapshot.docs[0].data();   '
+        // Doing it without queries and with separate users
+        const userBoxRef = doc(db, "leitnerBoxes", userId, "userBoxes", flashcardId);
 
-        if (querySnapshot.empty) {
+        const docSnap = await getDoc(userBoxRef);
+        if (!docSnap.exists()) {
             throw new Error("No matching document found.");
         }
-
-        // Retrieve the document reference (assume only one document exists)
-        const docRef = querySnapshot.docs[0].ref;
-        const docData = querySnapshot.docs[0].data();
+        const docData = docSnap.data();
 
         if (isCorrect) {
             if (docData.boxNum === 1) {
@@ -110,7 +165,7 @@ export const countPointsByFlashcard = async (userId, flashcardId, isCorrect) => 
     }
 };
 
-/* Function for computing the weighted score the user can receive after a quiz if they answer all questions correctly. 
+/* Function for computing the weighted score the user can receive after a quiz if they answer all questions correctly.
    Called when displaying decks (aka. flashcard lists). */
 export const weightedScoreByDeck = async (userId, flashcardListId) => {
     try {
@@ -126,15 +181,17 @@ export const weightedScoreByDeck = async (userId, flashcardListId) => {
         if (!flashcardIds || flashcardIds.length === 0) throw new Error("flashcard list contains no flashcards");
 
         // Query the leitnerBoxes collection for all flashcards in the list
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where('userId', '==', userId)
-        );
-        const querySnapshot = await getDocs(q);
-        const filteredDocs = querySnapshot.docs.filter(doc => flashcardIds.includes(doc.data().flashcardId));
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where('userId', '==', userId)
+        // );
+        // const querySnapshot = await getDocs(q);
+        // const filteredDocs = querySnapshot.docs.filter(doc => flashcardIds.includes(doc.data().flashcardId));
+        const userBoxesRef = collection(db, "leitnerBoxes", userId, "userBoxes");
+        const querySnapshot = await getDocs(userBoxesRef);
 
         let weightedScore = 0;
-        filteredDocs.forEach((doc) => {
+        querySnapshot.forEach((doc) => {
             const data = doc.data();
             if (data.boxNum === 1) weightedScore += 4;
             if (data.boxNum === 2) weightedScore += 2;
@@ -149,7 +206,7 @@ export const weightedScoreByDeck = async (userId, flashcardListId) => {
     }
 };
 
-/* Function for computing the weighted score the user can receive after a quiz if they answer all questions correctly. 
+/* Function for computing the weighted score the user can receive after a quiz if they answer all questions correctly.
    Called when displaying decks (aka. flashcard lists). */
 export const checkIsNewDeck = async (userId, deckId) => {
     try {
@@ -181,7 +238,7 @@ export const checkIsNewDeck = async (userId, deckId) => {
 };
 
 
-/* Function for adding points to user after a quiz. 
+/* Function for adding points to user after a quiz.
    Called when a user finishes a quiz. */
 export const updateUserPoints = async (userId, pointsToAdd) => {
     try {
@@ -213,6 +270,7 @@ export const updateUserPoints = async (userId, pointsToAdd) => {
 /* Function for computing user level given userId and points per level (e.g. 30 points per level). */
 export const getUserLevel = async (userId, pointsPerLevel) => {
     try {
+        await ensureUserDataInitialized(userId);
 
         // Get the userPoints doc corresponding to userId
         const q = query(
@@ -241,6 +299,7 @@ export const getUserLevel = async (userId, pointsPerLevel) => {
 /* Function for computing user points given userId and points per level (e.g. 30 points per level). */
 export const getUserPoints = async (userId) => {
     try {
+        await ensureUserDataInitialized(userId);
 
         // Get the userPoints doc corresponding to userId
         const q = query(
@@ -266,11 +325,16 @@ export const getUserPoints = async (userId) => {
 /* Function for getting how many flashcards a user has learned (box 3). */
 export const countBox3Flashcards = async (userId) => {
     try {
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("boxNum", "==", 3)
-        );
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("boxNum", "==", 3)
+        // );
+        // const querySnapshot = await getDocs(q);
+        // return querySnapshot.size;
+
+        const userBoxesRef = collection(db, "leitnerBoxes", userId, "userBoxes");
+        const q = query(userBoxesRef, where("boxNum", "==", 3));
         const querySnapshot = await getDocs(q);
         return querySnapshot.size;
 
@@ -283,11 +347,16 @@ export const countBox3Flashcards = async (userId) => {
 /* Function for getting how many flashcards a user has learned (box 3). */
 export const countBox2Flashcards = async (userId) => {
     try {
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("boxNum", "==", 2)
-        );
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("boxNum", "==", 2)
+        // );
+        // const querySnapshot = await getDocs(q);
+        // return querySnapshot.size;
+
+        const userBoxesRef = collection(db, "leitnerBoxes", userId, "userBoxes");
+        const q = query(userBoxesRef, where("boxNum", "==", 1));
         const querySnapshot = await getDocs(q);
         return querySnapshot.size;
 
@@ -300,11 +369,16 @@ export const countBox2Flashcards = async (userId) => {
 /* Function for getting how many flashcards a user has learned (box 3). */
 export const countBox1Flashcards = async (userId) => {
     try {
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("boxNum", "==", 1)
-        );
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("boxNum", "==", 1)
+        // );
+        // const querySnapshot = await getDocs(q);
+        // return querySnapshot.size;
+
+        const userBoxesRef = collection(db, "leitnerBoxes", userId, "userBoxes");
+        const q = query(userBoxesRef, where("boxNum", "==", 1));
         const querySnapshot = await getDocs(q);
         return querySnapshot.size;
 
@@ -325,9 +399,22 @@ export const initializeLeitnerBoxesForUser = async (userId) => {
 
         console.log("Found", flashcardSnapshot.docs.length, "flashcards.");
 
-        // Step 2: Initialize Leitner Box for each flashcard
-        for (const doc of flashcardSnapshot.docs) {
-            const flashcardId = doc.id;
+        // Step 2: Create the user document in leitnerBoxes (this will be empty but creates the path)
+        const userDocRef = doc(db, "leitnerBoxes", userId);
+        await setDoc(userDocRef, {
+            createdAt: serverTimestamp(),
+            userId: userId
+        });
+
+        // // Step 2: Initialize Leitner Box for each flashcard. (Tanay) we would just do this directly before
+        // for (const doc of flashcardSnapshot.docs) {
+        //     const flashcardId = doc.id;
+        //     await initializeLeitnerBox(userId, flashcardId);
+        // }
+
+        // Step 3: Initialize Leitner Box for each flashcard in the subcollection
+        for (const flashcardDoc of flashcardSnapshot.docs) {
+            const flashcardId = flashcardDoc.id;
             await initializeLeitnerBox(userId, flashcardId);
         }
 
@@ -337,7 +424,7 @@ export const initializeLeitnerBoxesForUser = async (userId) => {
     }
 };
 
-/* Function for initializing user point level progress object for a new user. 
+/* Function for initializing user point level progress object for a new user.
   Called when a new user registers.*/
 export const initializePointLevelProgress = async (userId) => {
     try {
@@ -352,7 +439,7 @@ export const initializePointLevelProgress = async (userId) => {
     }
 };
 
-/* Function for adding a learned deck to a user's learned decks array. 
+/* Function for adding a learned deck to a user's learned decks array.
   Called when a new deck is learned.*/
 export const appendToLearnedDecks = async (userId, newDeck) => {
     try {
@@ -377,7 +464,7 @@ export const appendToLearnedDecks = async (userId, newDeck) => {
     }
 }
 
-/* Function for determining if the user first quizzes on this deckId. 
+/* Function for determining if the user first quizzes on this deckId.
   Called when a new deck is learned.*/
 export const isFirstTimeQuiz = async (userId, deckId) => {
     try {
@@ -401,11 +488,16 @@ export const isFirstTimeQuiz = async (userId, deckId) => {
 export const getFlashcardsByBox = async (userId, boxNum) => {
     try {
         // Step 1: Query leitnerBoxes to get flashcardIds
-        const q = query(
-            collection(db, "leitnerBoxes"),
-            where("userId", "==", userId),
-            where("boxNum", "==", boxNum)
-        );
+        // const q = query(
+        //     collection(db, "leitnerBoxes"),
+        //     where("userId", "==", userId),
+        //     where("boxNum", "==", boxNum)
+        // );
+        // const querySnapshot = await getDocs(q);
+        //
+
+        const userBoxesRef = collection(db, "leitnerBoxes", userId, "userBoxes");
+        const q = query(userBoxesRef, where("boxNum", "==", boxNum));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -422,7 +514,7 @@ export const getFlashcardsByBox = async (userId, boxNum) => {
             const flashcardSnap = await getDoc(flashcardRef);
 
             if (flashcardSnap.exists()) {
-                return { id: flashcardId, ...flashcardSnap.data() };
+                return {id: flashcardId, ...flashcardSnap.data()};
             } else {
                 console.warn(`Flashcard ${flashcardId} not found.`);
                 return null;
