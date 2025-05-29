@@ -24,6 +24,7 @@ import {
   where,
   query,
 } from "firebase/firestore";
+import {Audio} from "expo-av";
 import { db } from "../backend/database/Firebase";
 import getCurrentUser from "../backend/database/GetCurrentUser";
 import { useLanguage } from "./context/LanguageProvider";
@@ -364,7 +365,7 @@ const QuizScreen = ({ route }) => {
                 },
               ],
             };
-              
+
             await setDoc(quizDocRef, {
               scores: newScoreDoc
             });

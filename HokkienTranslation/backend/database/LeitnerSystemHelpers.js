@@ -65,7 +65,7 @@ export const initializeLeitnerBox = async (userId, flashcardId) => {
         }, {merge: true});
 
         console.log("LeitnerBox document successfully created for user:", userId, "flashcard:", flashcardId);
-        console.log("LeitnerBox document successfully created with ID:", docRef.id);
+        console.log("LeitnerBox document successfully created with ID:", userBoxRef.id);
     } catch (error) {
         console.error("Error initializing Leitner Box: ", error);
     }
@@ -94,7 +94,7 @@ export const updateLeitnerBox = async (userId, flashcardId, isCorrect) => {
         const userBoxRef = doc(db, "leitnerBoxes", userId, "userBoxes", flashcardId);
         const docSnap = await getDoc(userBoxRef);
         if (!docSnap.exists()) {
-            throw new Error("No matching document found.");
+            console.error("No matching document found.");
         }
         const docData = docSnap.data();
         let newBox = docData.boxNum;
@@ -144,7 +144,7 @@ export const countPointsByFlashcard = async (userId, flashcardId, isCorrect) => 
 
         const docSnap = await getDoc(userBoxRef);
         if (!docSnap.exists()) {
-            throw new Error("No matching document found.");
+            console.error("No matching document found.");
         }
         const docData = docSnap.data();
 
@@ -174,7 +174,7 @@ export const weightedScoreByDeck = async (userId, flashcardListId) => {
         const flashcardListDoc = await getDoc(flashcardListRef);
 
         if (!flashcardListDoc.exists()) {
-            throw new Error("Flashcard list not found.");
+            console.error("Flashcard list not found.");
         }
 
         const flashcardIds = flashcardListDoc.data().cardList;
@@ -279,7 +279,7 @@ export const getUserLevel = async (userId, pointsPerLevel) => {
         );
         const querySnapshot = await getDocs(q);
         if (querySnapshot.empty) {
-            throw new Error("No matching user found");
+            console.error("No matching user found");
         }
 
         const docRef = querySnapshot.docs[0].ref;

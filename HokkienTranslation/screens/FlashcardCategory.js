@@ -330,7 +330,7 @@ const FlashcardCategory = () => {
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Expected Points Display */}
-        console.log("Category Unfamiliarity Score: ", category.unfamiliarityScore);
+        {/*console.log("Category Unfamiliarity Score: ", category.unfamiliarityScore);*/}
         {category.unfamiliarityScore &&
             (<Text
             style={{

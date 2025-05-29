@@ -4,7 +4,7 @@ import * as Notifications from "expo-notifications";
 import {Platform} from "react-native";
 import {navigate} from "../../screens/Navigation/RootNavigation";
 import {db, auth} from "../database/Firebase"
-import {doc, updateDoc, serverTimestamp,} from 'firebase/firestore';
+import {doc, updateDoc, serverTimestamp, setDoc,} from 'firebase/firestore';
 import {getRandomFlashcard} from "./GetRandomFlashcard";
 
 
@@ -255,9 +255,9 @@ export const useLocalNotifications = (): LocalNotificationState => {
                 const userId = auth.currentUser?.uid;
                 if (userId) {
                     const userDocRef = doc(db, "userTokens", userId);
-                    await updateDoc(userDocRef, {
+                    await setDoc(userDocRef, {
                         lastActive: serverTimestamp(),
-                    });
+                    }, {merge: true});
                 }
             } catch (error) {
                 console.error("Error updating user activity:", error);
