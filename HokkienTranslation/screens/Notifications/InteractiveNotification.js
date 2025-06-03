@@ -1,6 +1,7 @@
 import * as Notifications from 'expo-notifications';
 
 // Function to set up notification categories for flashcards
+// Note this function is not being currently used due to issues with sending data through push notifications.
 export async function setupFlashcardCategories(options) {
   // Create a category for flashcard quiz notifications
   await Notifications.setNotificationCategoryAsync('flashcard_quiz', [

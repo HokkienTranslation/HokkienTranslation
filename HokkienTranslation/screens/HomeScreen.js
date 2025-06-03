@@ -28,12 +28,8 @@ export default function HomeScreen({navigation}) {
     const [userCred, setUserCred] = useState(null);
 
     const {
-        scheduleFlashcardQuiz,
         scheduleInactivityReminder,
-        cancelScheduledNotification
     } = useLocalNotifications();
-
-    // console.log("Current User: ", getCurrentUser());
 
     const [streakData, setStreakData] = useState({isNewStreak: false, streakCount: 0});
 
@@ -168,38 +164,6 @@ export default function HomeScreen({navigation}) {
                     justifyContent="space-between"
                     alignItems="center"
                 >
-
-                    {/* Wrap Level Text and Progress Bar in an HStack */}
-                    <HStack alignItems="center" space={4} flex={1}>
-                        <Text fontSize="2xl" color={colors.onSurface} bold>
-                            Level {userLevel !== null ? userLevel : "Loading..."}:
-                        </Text>
-
-                        <Progress.Bar
-                            progress={levelProgress}
-                            width={window.width}  // Adjust width so it fits next to the text
-                            borderRadius={24}
-                            height={24}
-                            color={colors.primaryContainer}
-                        />
-
-                        <Text fontSize="md" color={colors.onSurface} bold>
-                            {userPoints}/{userLevel * 100}
-                        </Text>
-                    </HStack>
-
-                    <IconButton
-                        icon={
-                            <Ionicons
-                                name="settings-outline"
-                                size={25}
-                                color={colors.onSurfaceVariant}
-                            />
-                        }
-                        _hover={{bg: "transparent"}}
-                        _pressed={{bg: "transparent"}}
-                        onPress={() => navigation.navigate("Settings")}
-                    />
                 </Box>
 
                 {/* Random Words and Input Box */}

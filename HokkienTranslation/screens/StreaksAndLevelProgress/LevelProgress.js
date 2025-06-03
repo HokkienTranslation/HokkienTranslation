@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {View, Text} from "native-base";
+import {View, Text, HStack} from "native-base";
 import getCurrentUser from "../../backend/database/GetCurrentUser";
 import {getUserLevel, getUserPoints} from "../../backend/database/LeitnerSystemHelpers";
 import {StyleSheet} from "react-native";
@@ -55,20 +55,22 @@ export const LevelProgress = () => {
 
     return (
         <View style={styles.levelContainer}>
-            <Text style={[styles.levelText, {color: colors.onSurface}]}>
-                Level {userLevel || "..."}
-            </Text>
-            <Progress.Bar
-                progress={levelProgress || 0}
-                width={80}
-                height={3}
-                color={colors.primaryContainer}
-                unfilledColor={colors.surface}
-                borderWidth={0}
-            />
-            <Text style={[styles.pointsText, {color: colors.onSurface}]}>
-                {userPoints || 0}/{(userLevel || 1) * 100}
-            </Text>
+            <HStack space={2} alignItems="center" justifyContent="center">
+                <Text style={[styles.levelText, {color: colors.onSurface}]}>
+                     {userLevel || "..."}
+                </Text>
+                <Progress.Bar
+                    progress={levelProgress || 0}
+                    width={80}
+                    height={15}
+                    color={colors.primaryContainer}
+                    unfilledColor={colors.surface}
+                    borderWidth={0}
+                />
+                <Text style={[styles.pointsText, {color: colors.onSurface}]}>
+                    {userPoints || 0}/{(userLevel || 1) * 100}
+                </Text>
+            </HStack>
         </View>
     );
 };

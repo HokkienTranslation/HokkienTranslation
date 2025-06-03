@@ -1,16 +1,7 @@
 import {doc, runTransaction, serverTimestamp, Timestamp} from 'firebase/firestore';
 import {db, auth} from '../database/Firebase';
+import {updateUserPoints} from "../database/LeitnerSystemHelpers";
 
-// Define interfaces for your Firestore data structure
-interface UserDocument {
-    deviceName?: string;
-    expoPushToken?: string;
-    platform?: string;
-    createdAt?: Timestamp;
-    lastActive?: Timestamp;
-    streakCount?: number;
-    maxStreak?: number;
-}
 
 // Define return type for the function
 interface StreakResult {
@@ -76,41 +67,76 @@ const checkAndUpdateStreak = async (): Promise<StreakResult> => {
             console.log("Last Active Value:", lastActive);
             if (lastActive) {
                 // Calculate time difference in minutes (for testing)
-                const diffInMinutes: number = (currentTime.getTime() - lastActive.getTime()) / (1000 * 60);
-                console.log(`Time difference in minutes: ${diffInMinutes}`);
-                // const diffInDays: number = (currentTime.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24);
+                // const diffInMinutes: number = (currentTime.getTime() - lastActive.getTime()) / (1000 * 60);
+                // console.log(`Time difference in minutes: ${diffInMinutes}`);
+                //     const diffInDays: number = (currentTime.getTime() - lastActive.getTime()) / (1000 * 60 * 60 * 24);
+                //
+                //     if (diffInMinutes >= 1 && diffInMinutes < 20) {
+                //         streakCount += 1;
+                //         isNewStreak = true;
+                //
+                //         if (streakCount > maxStreak) {
+                //             maxStreak = streakCount;
+                //         }
+                //     } else if (diffInMinutes >= 20) {
+                //         streakCount = 1;
+                //         isNewStreak = true;
+                //     }
+                // } else {
+                //     streakCount = 1;
+                //     isNewStreak = true;
+                //     maxStreak = 1;
+                // }
 
-                if (diffInMinutes >= 1 && diffInMinutes < 20) {
+                const currentDate = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
+                const lastActiveDate = new Date(lastActive.getFullYear(), lastActive.getMonth(), lastActive.getDate());
+
+                // Calculate difference using UTC to avoid timezone issues
+                const currentUTC = Date.UTC(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+                const lastActiveUTC = Date.UTC(lastActiveDate.getFullYear(), lastActiveDate.getMonth(), lastActiveDate.getDate());
+
+                const diffInDays = Math.round((currentUTC - lastActiveUTC) / (1000 * 60 * 60 * 24));
+                console.log(`Time difference in days: ${diffInDays}`);
+
+                if (diffInDays === 0) {
+                    // Same day - no streak update needed
+                    isNewStreak = false;
+                } else if (diffInDays === 1) {
+                    // Consecutive day - increment streak
                     streakCount += 1;
                     isNewStreak = true;
-
+                    const userEmail = auth.currentUser?.email;
+                    await updateUserPoints(userEmail, 1)
                     if (streakCount > maxStreak) {
                         maxStreak = streakCount;
                     }
-                } else if (diffInMinutes >= 20) {
+                } else if (diffInDays > 1) {
+                    // Gap in days - reset streak
                     streakCount = 1;
                     isNewStreak = true;
+                } else {
+                    streakCount = 1;
+                    isNewStreak = true;
+                    maxStreak = 1;
                 }
-            } else {
-                streakCount = 1;
-                isNewStreak = true;
-                maxStreak = 1;
+
+                transaction.update(userRef, {
+                    streakCount,
+                    maxStreak,
+                    lastActive: serverTimestamp()
+                });
+
+                console.log("Streak updated successfully:", {streakCount, maxStreak, isNewStreak});
+                return {streakCount, maxStreak, isNewStreak};
             }
-
-            // Use transaction.update instead of updateDoc
-            transaction.update(userRef, {
-                streakCount,
-                maxStreak,
-                lastActive: serverTimestamp()
-            });
-
-            console.log("Streak updated successfully:", {streakCount, maxStreak, isNewStreak});
-            return {streakCount, maxStreak, isNewStreak};
-        });
-    } catch (error) {
-        console.error("Error in streak transaction:", error instanceof Error ? error.message : String(error));
-        return {error: String(error)};
+        })
     }
-};
+    catch(error)
+        {
+            console.error("Error in streak transaction:", error instanceof Error ? error.message : String(error));
+            return {error: String(error)};
+        }
+    }
+    ;
 
-export {checkAndUpdateStreak};
+    export {checkAndUpdateStreak};

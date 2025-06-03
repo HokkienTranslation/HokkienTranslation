@@ -27,6 +27,8 @@ admin.initializeApp();
 const expo = new Expo();
 
 // Function to send flashcard quiz notifications
+// Note these are not currently being used due to issues with sending data through push notifications but can
+// be revamped for normal notifications.
 exports.sendFlashcardQuiz = functions.https.onCall(
     async (data, context) => {
       const {userId, flashcardId} = data;
