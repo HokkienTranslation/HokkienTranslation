@@ -26,6 +26,7 @@ import {navigationRef} from "./screens/Navigation/RootNavigation";
 import FlashcardFeedback from "./screens/Notifications/NotificationFeedbackScreen";
 import {Audio} from 'expo-av';
 import {Platform} from "react-native";
+import {ToastProvider} from "react-native-toast-notifications";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -55,12 +56,12 @@ const HomeStack = () => {
             <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="Result" component={ResultScreen}/>
             <Stack.Screen name="Settings" component={SettingsScreen}/>
-        <Stack.Screen
-        name="FlashcardBox"
-        component={FlashcardBoxScreen}
-        options={{ title: "Your Flashcard Learning Progress" }}
-      />
-    </Stack.Navigator>
+            <Stack.Screen
+                name="FlashcardBox"
+                component={FlashcardBoxScreen}
+                options={{title: "Your Flashcard Learning Progress"}}
+            />
+        </Stack.Navigator>
     );
 };
 
@@ -189,40 +190,42 @@ export default function App() {
             <LanguageProvider>
                 <ComponentVisibilityProvider>
                     <NativeBaseProvider>
-                        <NavigationContainer
-                            ref={navigationRef}
-                            linking={{
-                                prefixes: ['hokkientranslation://'],
-                                config: {
-                                    screens: {
-                                        Landing: 'Landing',
-                                        Main: {
-                                            screens: {
-                                                HomeStack: 'HomeStack',
-                                                FlashcardStack: 'FlashcardStack',
-                                                Settings: 'Settings'
-                                            }
-                                        },
-                                        Login: 'Login',
-                                        Register: 'Register',
-                                        ForgetPassword: 'ForgetPassword',
-                                        FlashcardFeedback: 'FlashcardFeedback'  // Move to root level
-                                    }
-                                },
+                        <ToastProvider>
+                            <NavigationContainer
+                                ref={navigationRef}
+                                linking={{
+                                    prefixes: ['hokkientranslation://'],
+                                    config: {
+                                        screens: {
+                                            Landing: 'Landing',
+                                            Main: {
+                                                screens: {
+                                                    HomeStack: 'HomeStack',
+                                                    FlashcardStack: 'FlashcardStack',
+                                                    Settings: 'Settings'
+                                                }
+                                            },
+                                            Login: 'Login',
+                                            Register: 'Register',
+                                            ForgetPassword: 'ForgetPassword',
+                                            FlashcardFeedback: 'FlashcardFeedback'  // Move to root level
+                                        }
+                                    },
 
-                                async getInitialURL() {
-                                    // Check for background notifications
-                                    const response = await Notifications.getLastNotificationResponseAsync();
-                                    if (response) {
-                                        // Process notification data
-                                        // Return appropriate URL
+                                    async getInitialURL() {
+                                        // Check for background notifications
+                                        const response = await Notifications.getLastNotificationResponseAsync();
+                                        if (response) {
+                                            // Process notification data
+                                            // Return appropriate URL
+                                        }
+                                        return null;
                                     }
-                                    return null;
-                                }
-                            }}
-                        >
-                            <AppContent/>
-                        </NavigationContainer>
+                                }}
+                            >
+                                <AppContent/>
+                            </NavigationContainer>
+                        </ToastProvider>
                     </NativeBaseProvider>
                 </ComponentVisibilityProvider>
             </LanguageProvider>

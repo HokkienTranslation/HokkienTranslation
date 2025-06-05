@@ -1,4 +1,5 @@
 import React, {useState, useEffect, useRef} from "react";
+import {useToast} from 'react-native-toast-notifications';
 import {
     Box,
     Text,
@@ -35,6 +36,8 @@ export default function LoginScreen({navigation}) {
     const {theme, themes} = useTheme();
     const colors = themes[theme];
     // const token = useRegisterAndStoreToken(userCred);
+
+    const toast = useToast();
 
     const fadeAnim = useRef(new Animated.Value(0)).current; // Opacity
 
@@ -75,6 +78,8 @@ export default function LoginScreen({navigation}) {
                 );
             })
             .catch((error) => {
+                let toastMessage = "";
+                let toastType = "danger";
                 const errorCode = error.code;
                 switch (errorCode) {
                     case "auth/user-not-found":
@@ -104,6 +109,15 @@ export default function LoginScreen({navigation}) {
                     case "auth/invalid-credential":
                         setMessage("Your password is invalid or the user does not have a password." +
                             "Please try using forgot password or login with Google.");
+                        toastMessage = "Your password is invalid or the user does not have a password. " +
+                            "Please try using forgot password or login with Google."
+
+                        toast.show(toastMessage, {
+                            type: toastType,
+                            placement: "top",
+                            duration: 4000,
+                            animationType: "slide-in",
+                        })
                         break;
                     default:
                         setMessage(error.message || "An unexpected error occurred. Please try again.");
