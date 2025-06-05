@@ -25,6 +25,7 @@ import {usePushNotifications} from "./backend/notifications/usePushNotifications
 import {navigationRef} from "./screens/Navigation/RootNavigation";
 import FlashcardFeedback from "./screens/Notifications/NotificationFeedbackScreen";
 import {Audio} from 'expo-av';
+import {Platform} from "react-native";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -132,8 +133,11 @@ const MainTabNavigator = () => {
 };
 
 const AppContent = () => {
-    const {expoPushToken, notification, isCorrectAnswer, flashcardData} = usePushNotifications();
-    console.log("Expo Push Token from App.js:", expoPushToken?.data ?? "");
+    if (Platform.OS === 'android') {
+        const {expoPushToken, notification, isCorrectAnswer, flashcardData} = usePushNotifications();
+        console.log("Expo Push Token from App.js:", expoPushToken?.data ?? "");
+    }
+
     return (
         <NativeBaseProvider>
             <Stack.Navigator
