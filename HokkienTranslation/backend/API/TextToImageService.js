@@ -1,4 +1,7 @@
 import axios from "axios";
+import {GoogleGenAI, Modality} from "@google/genai";
+import * as fs from "node:fs";
+
 // import { IMAGE_API_URL, API_KEY } from "@env";
 
 // const apiUrl = IMAGE_API_URL;
@@ -8,31 +11,66 @@ const apiUrl = process.env.IMAGE_API_URL;
 const apiKey = process.env.API_KEY;
 
 const generateImage = async (prompt) => {
-  if (!prompt) return { imgBase64: null, error: null };
+    if (!prompt) return {imgBase64: null, error: null};
 
-  const requestData = {
-    prompt: prompt, //option types: string or list of strings.
-    prompt_style: "photography", //options: "anime", "portraits", "landscape", "sci-fi", "photography", "video_game", None for default.
-    negative_prompt: "", //can change to your negative prompt here.
-    negative_prompt_style: null, //options: "comic", "basic", "natural_human", None for default.
-    n_steps: 40, //generating steps
-    high_noise_frac: 0.8, //generating parameters
-    base64_string: true, //please set True for api call, False is for testing.
-  };
+    const requestData = {
+        prompt: prompt, //option types: string or list of strings.
+        prompt_style: "photography", //options: "anime", "portraits", "landscape", "sci-fi", "photography", "video_game", None for default.
+        negative_prompt: "", //can change to your negative prompt here.
+        negative_prompt_style: null, //options: "comic", "basic", "natural_human", None for default.
+        n_steps: 40, //generating steps
+        high_noise_frac: 0.8, //generating parameters
+        base64_string: true, //please set True for api call, False is for testing.
+    };
 
-  try {
-    const response = await axios.post(apiUrl, requestData, {
-      headers: { "API-KEY": apiKey },
-    });
+    try {
+        const response = await axios.post(apiUrl, requestData, {
+            headers: {"API-KEY": apiKey},
+        });
 
-    if (response.data && response.data.img_base64_list) {
-      const imgBase64 = response.data.img_base64_list[0];
-      return { imgBase64, error: null };
+        if (response.data && response.data.img_base64_list) {
+            const imgBase64 = response.data.img_base64_list[0];
+            return {imgBase64, error: null};
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        return {imgBase64: null, error};
     }
-  } catch (error) {
-    console.error("Error:", error);
-    return { imgBase64: null, error };
-  }
 };
 
-export { generateImage };
+const apiKeyForGemini = process.env.GEMINI_API_KEY;
+
+const generateImageWithGemini = async (prompt) => {
+    if (!prompt) return {imgBase64: null, error: null};
+
+    const ai = new GoogleGenAI({apiKey: apiKeyForGemini});
+
+    const promptContent = `Generating an image representing the word ${prompt}.`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash-preview-image-generation",
+            contents: promptContent,
+            config: {
+                responseModalities: [Modality.TEXT, Modality.IMAGE],
+            },
+        });
+
+        for (const part of response.candidates[0].content.parts) {
+            if (part.inlineData) {
+                const imageData = part.inlineData.data;
+                // Optionally save the image to a file
+                // const buffer = Buffer.from(imageData, "base64");
+                // fs.writeFileSync("gemini-native-image.png", buffer);
+                return {imgBase64: imageData, error: null};
+            }
+        }
+
+        return {imgBase64: null, error: "No image data found in response"};
+    } catch (error) {
+        console.error("Error:", error);
+        return {imgBase64: null, error};
+    }
+};
+
+export {generateImage};
