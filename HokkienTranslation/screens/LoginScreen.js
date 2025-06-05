@@ -77,10 +77,6 @@ export default function LoginScreen({navigation}) {
             .catch((error) => {
                 const errorCode = error.code;
                 switch (errorCode) {
-                    case "auth/invalid-credential":
-                        setMessage("Your password is invalid or the user does not have a password.\n" +
-                            "Please try using forgot password or login with Google.");
-                        break;
                     case "auth/user-not-found":
                         setMessage("No account found with this email address. Please check your email or create a new account.");
                         break;
@@ -104,6 +100,10 @@ export default function LoginScreen({navigation}) {
                         break;
                     case "auth/internal-error":
                         setMessage("An internal error occurred. Please try again later.");
+                        break;
+                    case "auth/invalid-credential":
+                        setMessage("Your password is invalid or the user does not have a password." +
+                            "Please try using forgot password or login with Google.");
                         break;
                     default:
                         setMessage(error.message || "An unexpected error occurred. Please try again.");
