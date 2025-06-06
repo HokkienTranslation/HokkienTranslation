@@ -112,6 +112,7 @@ export default function LoginScreen({navigation}) {
                         toastMessage = "Your password is invalid or the user does not have a password. " +
                             "Please try using forgot password or login with Google."
 
+                        toast.hideAll();
                         toast.show(toastMessage, {
                             type: toastType,
                             placement: "top",
