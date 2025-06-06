@@ -15,7 +15,7 @@ import {
     Button,
 } from "native-base";
 import {fetchRomanizer} from "../backend/API/HokkienHanziRomanizerService";
-import {generateImage} from "../backend/API/TextToImageService";
+import {generateImage, generateImageWithGemini} from "../backend/API/TextToImageService";
 import TextToSpeech from "./components/TextToSpeech";
 import LoadingScreen from "./LoadingScreen";
 import {CheckDatabase} from "../backend/CheckDatabase";
@@ -184,7 +184,8 @@ const ResultScreen = ({route}) => {
     useEffect(() => {
         const loadImage = async () => {
             try {
-                const {imgBase64, error} = await generateImage(query);
+                // const {imgBase64, error} = await generateImage(query);
+                const {imgBase64, error} = await generateImageWithGemini(query);
                 if (error) {
                     throw new Error(error); // Throw an error if one exists
                 }
@@ -196,12 +197,12 @@ const ResultScreen = ({route}) => {
             }
         };
 
-        if (hokkienTranslation && !dataFromDatabase?.sentence?.imageURL) {
+        if (hokkienTranslation) {
             loadImage(); // wait for database before loading image
         } else if (hokkienTranslation) {
             updateProgress(0.2);
         }
-    }, [hokkienTranslation, dataFromDatabase]);
+    }, [hokkienTranslation, dataFromDatabase, query]);
 
     if (progress < 1.0 && !romanizerErrorMessage && !imageErrorMessage && !feedbackErrorMessage && !databaseErrorMessage && !dismissedError) {
         return <LoadingScreen progress={progress}/>;
@@ -406,7 +407,8 @@ const ResultScreen = ({route}) => {
                                 </Text>
                                 <Box alignItems="center" justifyContent="center" mb={2}>
                                     <Image
-                                        source={{uri: dataFromDatabase.sentence.imageURL}}
+                                        source={{uri: `data:image/jpeg;base64,${imageUrl}`}}
+                                        // source={{uri: `${dataFromDatabase.sentence.imageURL}`}}
                                         size="2xl"
                                         resizeMode="contain"
                                     />

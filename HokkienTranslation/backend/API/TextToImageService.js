@@ -1,4 +1,6 @@
 import axios from "axios";
+import {GoogleGenAI, Modality} from "@google/genai";
+
 // import { IMAGE_API_URL, API_KEY } from "@env";
 
 // const apiUrl = IMAGE_API_URL;
@@ -35,4 +37,43 @@ const generateImage = async (prompt) => {
   }
 };
 
-export { generateImage };
+const apiKeyForGemini = process.env.GEMINI_API_KEY;
+
+const generateImageWithGemini = async (prompt) => {
+    if (!prompt) return {imgBase64: null, error: null};
+    console.log("Gemini image generation is being used");
+
+    const ai = new GoogleGenAI({apiKey: apiKeyForGemini});
+
+    const promptContent = `Generate an image representing: ${prompt}`;
+
+    try {
+        const response = await ai.models.generateContent({
+            model: "gemini-2.0-flash-preview-image-generation",
+            contents: [{
+                role: "user",
+                parts: [{text: promptContent}]
+            }],
+            config: {
+                responseModalities: [Modality.TEXT, Modality.IMAGE],
+            },
+        });
+
+        // Check if response has candidates and content
+        if (response.candidates && response.candidates[0] && response.candidates[0].content) {
+            for (const part of response.candidates[0].content.parts) {
+                if (part.inlineData && part.inlineData.data) {
+                    const imageData = part.inlineData.data;
+                    return {imgBase64: imageData, error: null};
+                }
+            }
+        }
+
+        return {imgBase64: null, error: "No image data found in response"};
+    } catch (error) {
+        console.error("Gemini API Error:", error);
+        return {imgBase64: null, error: error.message || "Failed to generate image with Gemini"};
+    }
+};
+
+export { generateImage, generateImageWithGemini };
