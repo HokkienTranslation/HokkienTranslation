@@ -1,9 +1,10 @@
 import {useEffect, useState} from "react";
 import {View, Text, HStack} from "native-base";
+import {StyleSheet, TouchableOpacity} from "react-native";
+import * as Progress from "react-native-progress";
+import {useNavigation} from '@react-navigation/native';
 import getCurrentUser from "../../backend/database/GetCurrentUser";
 import {getUserLevel, getUserPoints} from "../../backend/database/LeitnerSystemHelpers";
-import {StyleSheet} from "react-native";
-import * as Progress from "react-native-progress";
 import {useTheme} from "../context/ThemeProvider"
 
 export const LevelProgress = () => {
@@ -11,8 +12,12 @@ export const LevelProgress = () => {
     const [userLevel, setUserLevel] = useState(null);
     const [userPoints, setUserPoints] = useState(null);
     const [levelProgress, setLevelProgress] = useState(0);
+    const [currentUser, setCurrentUser] = useState(null);
+
     const {themes, theme} = useTheme();
     const colors = themes?.[theme] || {};
+    const navigation = useNavigation();
+
     const pointsPerLevel = 100;
 
     useEffect(() => {
@@ -23,6 +28,8 @@ export const LevelProgress = () => {
                     setLoading(false);
                     return;
                 }
+
+                setCurrentUser(user); // Store the user for navigation
 
                 const level = await getUserLevel(user, pointsPerLevel);
                 const points = await getUserPoints(user);
@@ -43,6 +50,12 @@ export const LevelProgress = () => {
         fetchUserLevelData();
     }, []);
 
+    const handlePress = () => {
+        if (currentUser) {
+            navigation.navigate('BadgeScreen', {userId: currentUser.uid});
+        }
+    };
+
     if (loading) {
         return (
             <View style={styles.levelContainer}>
@@ -54,15 +67,16 @@ export const LevelProgress = () => {
     }
 
     return (
-        <View style={styles.levelContainer}>
-            <HStack space={2} alignItems="center" justifyContent="center">
-                <Text style={[styles.levelText, {color: colors.onSurface}]}>
-                     {userLevel || "..."}
+        <TouchableOpacity onPress={handlePress} activeOpacity={0.7}>
+            <View style={styles.levelContainer}>
+                <Text style={[styles.levelText, {color: colors.text}]}>
+                    Level {userLevel || "..."}
                 </Text>
+
                 <Progress.Bar
                     progress={levelProgress || 0}
                     width={80}
-                    height={15}
+                    height={10}
                     color={colors.primaryContainer}
                     unfilledColor={colors.surface}
                     borderWidth={0}
@@ -70,8 +84,8 @@ export const LevelProgress = () => {
                 <Text style={[styles.pointsText, {color: colors.onSurface}]}>
                     {userPoints || 0}/{(userLevel || 1) * 100}
                 </Text>
-            </HStack>
-        </View>
+            </View>
+        </TouchableOpacity>
     );
 };
 
@@ -79,6 +93,7 @@ const styles = StyleSheet.create({
     levelContainer: {
         alignItems: 'center',
         justifyContent: 'center',
+        padding: 8, // Add padding for better touch area
     },
     levelText: {
         fontSize: 14,

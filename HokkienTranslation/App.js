@@ -27,6 +27,7 @@ import FlashcardFeedback from "./screens/Notifications/NotificationFeedbackScree
 import {Audio} from 'expo-av';
 import {Platform} from "react-native";
 import {ToastProvider} from "react-native-toast-notifications";
+import BadgeScreen from "./screens/badges/BadgeScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -60,6 +61,11 @@ const HomeStack = () => {
                 name="FlashcardBox"
                 component={FlashcardBoxScreen}
                 options={{title: "Your Flashcard Learning Progress"}}
+            />
+            <Stack.Screen
+                name="BadgeScreen"
+                component={BadgeScreen}
+                options={{title: 'Badge Collection'}}
             />
         </Stack.Navigator>
     );
