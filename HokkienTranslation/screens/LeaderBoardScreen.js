@@ -11,46 +11,17 @@ const LeaderboardScreen = () => {
   const [loading, setLoading] = useState(true);
   const { themes, theme } = useTheme();
   const colors = themes[theme];
+  const baseUrl = "https://api-n72gsjbtpa-uc.a.run.app/";
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
-        // const [levelsRes, streaksRes] = await Promise.all([
-        //   fetch("https://your-api.com/api/leaderboard/levels"),
-        //   fetch("https://your-api.com/api/leaderboard/streaks")
-        // ]);
-        // const levels = await levelsRes.json();
-        // const streaks = await streaksRes.json();
-
-
-        // I don't have access to firebase console currently, so this is the 
-        // mock data
-        const levels = [
-        { username: "Alice", value: 12 },
-        { username: "Bob", value: 11 },
-        { username: "Charlie", value: 10 },
-        { username: "David", value: 9 },
-        { username: "Eve", value: 8 },
-        { username: "Frank", value: 7 },
-        { username: "Grace", value: 6 },
-        { username: "Heidi", value: 5 },
-        { username: "Ivan", value: 4 },
-        { username: "Judy", value: 3 },
-      ];
-
-      // Mock data for top 10 users by streak
-      const streaks = [
-        { username: "Kevin", value: 22 },
-        { username: "Lucy", value: 21 },
-        { username: "Mike", value: 19 },
-        { username: "Nina", value: 18 },
-        { username: "Oscar", value: 17 },
-        { username: "Paul", value: 15 },
-        { username: "Queen", value: 14 },
-        { username: "Rita", value: 13 },
-        { username: "Steve", value: 12 },
-        { username: "Tina", value: 11 },
-      ];
+        const [levelsRes, streaksRes] = await Promise.all([
+          fetch(`${baseUrl}leaderboard/points`),
+          fetch(`${baseUrl}leaderboard/streaks`)
+        ]);
+        const levels = await levelsRes.json();
+        const streaks = await streaksRes.json();
 
         setLevelBoard(levels);
         setStreakBoard(streaks);
