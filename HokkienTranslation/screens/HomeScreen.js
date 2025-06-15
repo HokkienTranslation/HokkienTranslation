@@ -60,9 +60,24 @@ export default function HomeScreen({ navigation }) {
         <Box
           w="80%"
           flexDirection="row"
-          justifyContent="flex-end"
+          // justifyContent="flex-end"
+          justifyContent="space-between"
           alignItems="center"
         >
+          {/* Leaderboard Button */}
+          <IconButton
+            icon={
+              <Ionicons
+                name="trophy-outline"
+                size={25}
+                color={colors.onSurfaceVariant}
+              />
+            }
+            _hover={{ bg: "transparent" }}
+            _pressed={{ bg: "transparent" }}
+            onPress={() => navigation.navigate("Leaderboard")}
+          />
+          {/*Settings Button*/}
           <IconButton
             icon={
               <Ionicons
